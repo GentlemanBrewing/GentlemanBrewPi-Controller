@@ -21,8 +21,19 @@ def Resistance(self, channel)
   # Wheatstone bridge calculation
   Rx = (R2 * R3 + R3 * (R1 + R2) * (Vb / Vin)) / (R1 - (R1 + R2) * (Vb / Vin))
   return Rx
-  
+
+# Calculate Temperature for PT100  
 def Temperature(self, channel)
   resistance = self.Resistance(channel)
   t = (resistance - 100) / 38.51 ) * 100
   return t
+  
+while (true):
+  os.system('clear")
+
+  print (adc.read_raw(1))
+  print (adc.read_voltage(1))
+  print (Resistance(1))
+  print (Temperature(1))
+  
+  time.sleep (5)
