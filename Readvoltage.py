@@ -29,7 +29,7 @@ def Temperature(self, channel):
   return t
   
 while (true):
-  os.system('clear")
+  os.system('clear')
 
   print (adc.read_raw(1))
   print (adc.read_voltage(1))
