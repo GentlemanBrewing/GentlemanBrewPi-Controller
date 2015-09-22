@@ -2,7 +2,7 @@
 # Convert Voltage from ADC to Temperature Reading
 
 From ABE_ADCPI import ADCPi
-From ABE_HELPERS import ABEHelpers
+From ABE_Helpers import ABEHelpers
 import time
 import os
 
