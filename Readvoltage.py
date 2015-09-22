@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 # Convert Voltage from ADC to Temperature Reading
 
-From ABE_ADCPi import ADCPi
-From ABE_Helpers import ABEHelpers
+from ABE_ADCPi import ADCPi
+from ABE_Helpers import ABEHelpers
 import time
 import os
 
@@ -25,7 +25,7 @@ def Resistance(self, channel):
 # Calculate Temperature for PT100  
 def Temperature(self, channel):
   resistance = self.Resistance(channel)
-  t = (resistance - 100) / 38.51 ) * 100
+  t = ((resistance - 100) / 38.51 ) * 100
   return t
   
 while (true):
