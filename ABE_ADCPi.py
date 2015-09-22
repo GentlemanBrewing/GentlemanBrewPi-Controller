@@ -193,30 +193,30 @@ class ADCPi:
         if gain == 1:
             self.__config1 = self.__updatebyte(self.__config1, 0, 0)
             self.__config1 = self.__updatebyte(self.__config1, 1, 0)
-            self.__config2 = self.__updatebyte(self.__config2, 0, 0)
-            self.__config2 = self.__updatebyte(self.__config2, 1, 0)
+            #self.__config2 = self.__updatebyte(self.__config2, 0, 0)
+            #self.__config2 = self.__updatebyte(self.__config2, 1, 0)
             self.__pga = 0.5
         if gain == 2:
             self.__config1 = self.__updatebyte(self.__config1, 0, 1)
             self.__config1 = self.__updatebyte(self.__config1, 1, 0)
-            self.__config2 = self.__updatebyte(self.__config2, 0, 1)
-            self.__config2 = self.__updatebyte(self.__config2, 1, 0)
+            #self.__config2 = self.__updatebyte(self.__config2, 0, 1)
+            #self.__config2 = self.__updatebyte(self.__config2, 1, 0)
             self.__pga = 1
         if gain == 4:
             self.__config1 = self.__updatebyte(self.__config1, 0, 0)
             self.__config1 = self.__updatebyte(self.__config1, 1, 1)
-            self.__config2 = self.__updatebyte(self.__config2, 0, 0)
-            self.__config2 = self.__updatebyte(self.__config2, 1, 1)
+            #self.__config2 = self.__updatebyte(self.__config2, 0, 0)
+            #self.__config2 = self.__updatebyte(self.__config2, 1, 1)
             self.__pga = 2
         if gain == 8:
             self.__config1 = self.__updatebyte(self.__config1, 0, 1)
             self.__config1 = self.__updatebyte(self.__config1, 1, 1)
-            self.__config2 = self.__updatebyte(self.__config2, 0, 1)
-            self.__config2 = self.__updatebyte(self.__config2, 1, 1)
+            #self.__config2 = self.__updatebyte(self.__config2, 0, 1)
+            #self.__config2 = self.__updatebyte(self.__config2, 1, 1)
             self.__pga = 4
 
         self._bus.write_byte(self.__address, self.__config1)
-        self._bus.write_byte(self.__address2, self.__config2)
+        #self._bus.write_byte(self.__address2, self.__config2)
         return
 
     def set_bit_rate(self, rate):
@@ -231,34 +231,34 @@ class ADCPi:
         if rate == 12:
             self.__config1 = self.__updatebyte(self.__config1, 2, 0)
             self.__config1 = self.__updatebyte(self.__config1, 3, 0)
-            self.__config2 = self.__updatebyte(self.__config2, 2, 0)
-            self.__config2 = self.__updatebyte(self.__config2, 3, 0)
+            #self.__config2 = self.__updatebyte(self.__config2, 2, 0)
+            #self.__config2 = self.__updatebyte(self.__config2, 3, 0)
             self.__bitrate = 12
             self.__lsb = 0.0005
         if rate == 14:
             self.__config1 = self.__updatebyte(self.__config1, 2, 1)
             self.__config1 = self.__updatebyte(self.__config1, 3, 0)
-            self.__config2 = self.__updatebyte(self.__config2, 2, 1)
-            self.__config2 = self.__updatebyte(self.__config2, 3, 0)
+            #self.__config2 = self.__updatebyte(self.__config2, 2, 1)
+            #self.__config2 = self.__updatebyte(self.__config2, 3, 0)
             self.__bitrate = 14
             self.__lsb = 0.000125
         if rate == 16:
             self.__config1 = self.__updatebyte(self.__config1, 2, 0)
             self.__config1 = self.__updatebyte(self.__config1, 3, 1)
-            self.__config2 = self.__updatebyte(self.__config2, 2, 0)
-            self.__config2 = self.__updatebyte(self.__config2, 3, 1)
+            #self.__config2 = self.__updatebyte(self.__config2, 2, 0)
+            #self.__config2 = self.__updatebyte(self.__config2, 3, 1)
             self.__bitrate = 16
             self.__lsb = 0.00003125
         if rate == 18:
             self.__config1 = self.__updatebyte(self.__config1, 2, 1)
             self.__config1 = self.__updatebyte(self.__config1, 3, 1)
-            self.__config2 = self.__updatebyte(self.__config2, 2, 1)
-            self.__config2 = self.__updatebyte(self.__config2, 3, 1)
+            #self.__config2 = self.__updatebyte(self.__config2, 2, 1)
+            #self.__config2 = self.__updatebyte(self.__config2, 3, 1)
             self.__bitrate = 18
             self.__lsb = 0.0000078125
 
         self._bus.write_byte(self.__address, self.__config1)
-        self._bus.write_byte(self.__address2, self.__config2)
+        #self._bus.write_byte(self.__address2, self.__config2)
         return
     
     def set_conversion_mode(self, mode):
@@ -269,11 +269,11 @@ class ADCPi:
         """
         if (mode == 0):
             self.__config1 = self.__updatebyte(self.__config1, 4, 0)
-            self.__config2 = self.__updatebyte(self.__config2, 4, 0)
+            #self.__config2 = self.__updatebyte(self.__config2, 4, 0)
             self.__conversionmode = 0
         if (mode == 1):
             self.__config1 = self.__updatebyte(self.__config1, 4, 1)
-            self.__config2 = self.__updatebyte(self.__config2, 4, 1)
+            #writeself.__config2 = self.__updatebyte(self.__config2, 4, 1)
             self.__conversionmode = 1
         #self._bus.write_byte(self.__address, self.__config1)
         #self._bus.write_byte(self.__address2, self.__config2)    
