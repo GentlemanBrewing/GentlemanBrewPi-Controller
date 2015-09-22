@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # Convert Voltage from ADC to Temperature Reading
 
-From ABE_ADCPI import ADCPi
+From ABE_ADCPi import ADCPi
 From ABE_Helpers import ABEHelpers
 import time
 import os
