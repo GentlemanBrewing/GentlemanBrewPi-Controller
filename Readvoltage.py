@@ -28,7 +28,7 @@ def Temperature(self, channel):
   t = ((resistance - 100) / 38.51 ) * 100
   return t
   
-while (true):
+while (True):
   os.system('clear')
 
   print (adc.read_raw(1))
