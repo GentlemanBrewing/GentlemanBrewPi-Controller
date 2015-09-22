@@ -30,6 +30,7 @@ def Temperature(channel):
   
 while (True):
   os.system('clear')
+  adc.set_gain(8)
 
   print (adc.read_raw(1))
   print (adc.read_voltage(1))
