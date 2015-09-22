@@ -11,7 +11,7 @@ bus = i2c_helper.get_smbus()
 adc = ADCPi(bus, 0x68, 0x69, 16)
 
   
-def Resistance(self, channel):
+def Resistance(channel):
   # Default Resistance values in wheatstone bridge
   R1 = 3300
   R2 = 100
@@ -23,8 +23,8 @@ def Resistance(self, channel):
   return Rx
 
 # Calculate Temperature for PT100  
-def Temperature(self, channel):
-  resistance = self.Resistance(channel)
+def Temperature(channel):
+  resistance = Resistance(channel)
   t = ((resistance - 100) / 38.51 ) * 100
   return t
   
