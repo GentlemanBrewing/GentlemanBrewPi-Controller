@@ -111,8 +111,7 @@ class ADCPi:
         if (self.__signbit):
             return float(0.0)  # returned a negative voltage so return 0
         else:
-            voltage = float(
-                (raw * (self.__lsb / self.__pga)) * 2.471)
+            voltage = float(raw * (self.__lsb / self.__pga))
             return float(voltage)
 
     def read_raw(self, channel):
