@@ -41,6 +41,27 @@ class ADCTEMP:
     resistance = self.Resistance(channel)
     t = ((resistance - 100) / 38.51 ) * 100
     return float(t)
+    
+  # PID Controller
+  def PID_Output(self, setpoint, channel, Kp, Ki, Kd, e1, e2):
+    # Initialize PID control variables
+    k1 = kp + ki + kd
+    k2 = -ki - 2 * kd
+    k3 = kd
+    
+    # Update error variables
+    temp = self.Temperature(channel)
+    e2 = e1
+    e1 = e
+    e = setpoint - temp
+    
+    delta_u = k1 * e + k2 * e1 + k3 * e2
+    u = u + delta_u
+    return float(u)
+  
+  
+  
+  
   
   while (True):
     os.system('clear')
@@ -48,8 +69,8 @@ class ADCTEMP:
 
     print (adc.read_raw(1))
     print (adc.read_voltage(1))
-    print (Resistance(1))
-    print (Temperature(1))
+    print (self.Resistance(1))
+    print (self.Temperature(1))
   
     time.sleep (5)
 
