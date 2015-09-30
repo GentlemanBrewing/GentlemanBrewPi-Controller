@@ -45,9 +45,9 @@ class ADCTEMP:
   # PID Controller
   def PID_Output(self, setpoint, channel, Kp, Ki, Kd, e1, e2):
     # Initialize PID control variables
-    k1 = kp + ki + kd
-    k2 = -ki - 2 * kd
-    k3 = kd
+    k1 = Kp + Ki + Kd
+    k2 = -Ki - 2 * Kd
+    k3 = Kd
     
     # Update error variables
     temp = self.Temperature(channel)
