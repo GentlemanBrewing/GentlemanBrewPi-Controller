@@ -19,7 +19,7 @@ class ADCTEMP:
   __Rx = 0.0
   __Vin = 0.0
   
-  def __init__(self, channel, R1=3300, R2=100, R3=3300, Vin=3.3)
+  def __init__(self, channel, R1=3300, R2=100, R3=3300, Vin=3.3):
     self.__R1 = R1
     self.__R2 = R2
     self.__R3 = R3
