@@ -1,0 +1,16 @@
+#!/usr/bin/python3
+
+import time
+import os
+from Readvoltage import ADCTEMP
+
+temp = ADCTEMP(1)
+
+  while (True):
+    os.system('clear')
+    adc.set_pga(8)
+
+    print (temp.Resistance(1))
+    print (temp.Temperature(1))
+  
+    time.sleep (5)
