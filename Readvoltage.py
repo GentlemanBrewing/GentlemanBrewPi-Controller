@@ -1,3 +1,4 @@
+verander
 #!/usr/bin/python3
 # Convert Voltage from ADC to Temperature Reading
 
@@ -26,7 +27,7 @@ class ADCTEMP:
     self.__Vin = Vin
   
   def Resistance(self, channel):
-   Vb = adc.read_voltage(channel)
+    Vb = adc.read_voltage(channel)
     #Input variables
     R1 = self.__R1
     R2 = self.__R2
