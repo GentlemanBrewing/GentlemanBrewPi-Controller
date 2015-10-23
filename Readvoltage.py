@@ -1,4 +1,3 @@
-verander
 #!/usr/bin/python3
 # Convert Voltage from ADC to Temperature Reading
 
@@ -20,11 +19,12 @@ class ADCTEMP:
   __Rx = 0.0
   __Vin = 0.0
   
-  def __init__(self, channel, R1=3300, R2=100, R3=3300, Vin=3.3):
+  def __init__(self, R1=3300, R2=100, R3=3300, Vin=3.3):
     self.__R1 = R1
     self.__R2 = R2
     self.__R3 = R3
     self.__Vin = Vin
+    adc.set_pga(8)
   
   def Resistance(self, channel):
     Vb = adc.read_voltage(channel)
@@ -59,21 +59,3 @@ class ADCTEMP:
     delta_u = k1 * e + k2 * e1 + k3 * e2
     u = u + delta_u
     return float(u)
-  
-  
-  
-  
-  
-  while (True):
-    os.system('clear')
-    adc.set_pga(8)
-
-    print (adc.read_raw(1))
-    print (adc.read_voltage(1))
-    print (self.Resistance(1))
-    print (self.Temperature(1))
-  
-    time.sleep (5)
-
-  
-  
