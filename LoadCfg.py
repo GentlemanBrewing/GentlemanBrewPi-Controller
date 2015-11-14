@@ -19,5 +19,5 @@ def Writeconfig(data):
 
 Config = Loadconfig()
 print(Config)
-datanew = {'Kp' : 5000, 'Ki' : 300}
+datanew = {'Kp' : 5000, 'Ki' : 300, 'Kd' : 0, 'Setpoint' : 18}
 Writeconfig(datanew)

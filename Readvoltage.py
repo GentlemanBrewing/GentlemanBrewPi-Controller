@@ -44,18 +44,14 @@ class ADCTEMP:
     return float(t)
     
   # PID Controller
-  def PID_Output(self, setpoint, channel, Kp, Ki, Kd, e1, e2):
+  def PID_Output(self, Kp, Ki, Kd, e0, e1, e2):
     # Initialize PID control variables
     k1 = Kp + Ki + Kd
     k2 = -Ki - 2 * Kd
     k3 = Kd
     
     # Update error variables
-    temp = self.Temperature(channel)
-    e2 = e1
-    e1 = e
-    e = setpoint - temp
-    
-    delta_u = k1 * e + k2 * e1 + k3 * e2
+      
+    delta_u = k1 * e0 + k2 * e1 + k3 * e2
     u = u + delta_u
     return float(u)
