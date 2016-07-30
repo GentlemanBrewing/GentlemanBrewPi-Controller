@@ -32,10 +32,10 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(27, GPIO.OUT)
 while (True):
 	temperature = adc.Temperature(1)
-	if temperature > Setpoint +1 :
+	if temperature > 10 :
 		GPIO.output(27, True)
-	elif temperature < Setpoint -1:
-		GPIO.output(27, False)
+	#elif temperature < Setpoint -1:
+		#GPIO.output(27, False)
 	
 	print(temperature)
 	time.sleep(5)
