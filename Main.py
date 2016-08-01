@@ -29,14 +29,15 @@ Setpoint = variables['Setpoint']
 	
 Relay_Output = 0
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(27, GPIO.OUT)
-while (True):
-	temperature = adc.Temperature(1)
-	if temperature > Setpoint +1:
-		GPIO.output(27, True)
-	elif temperature < Setpoint -1:
-		GPIO.output(27, False)
+GPIO.setup(22, GPIO.OUT)
+#while (True):
+temperature = adc.Temperature(1)
+	#if temperature > Setpoint +1:
+GPIO.output(22, True)
+	#elif temperature < Setpoint -1:
+		#GPIO.output(22, False)
 	
-	print(temperature)
-	print(Setpoint)
-	time.sleep(5)
+print(temperature)
+print(Setpoint)
+time.sleep(5)
+GPIO.cleanup()
