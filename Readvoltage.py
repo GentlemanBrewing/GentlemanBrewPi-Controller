@@ -11,6 +11,7 @@ bus = i2c_helper.get_smbus()
 adc = ADCPi(bus, 0x68, 0x69, 16)
 
 class ADCTEMP:
+
   
   #Initialize Variables
   __R1 = 0
@@ -28,7 +29,7 @@ class ADCTEMP:
   
   def Resistance(self, channel):
     Vb = adc.read_voltage(channel)
-    #Input variables
+    # Input variables
     R1 = self.__R1
     R2 = self.__R2
     R3 = self.__R3
@@ -42,16 +43,4 @@ class ADCTEMP:
     resistance = self.Resistance(channel)
     t = ((resistance - 100) / 38.51 ) * 100
     return float(t)
-    
-  # PID Controller
-  def PID_Output(self, Kp, Ki, Kd, e0, e1, e2):
-    # Initialize PID control variables
-    k1 = Kp + Ki + Kd
-    k2 = -Ki - 2 * Kd
-    k3 = Kd
-    
-    # Update error variables
-      
-    delta_u = k1 * e0 + k2 * e1 + k3 * e2
-    u = u + delta_u
-    return float(u)
+

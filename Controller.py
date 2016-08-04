@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 import multiprocessing
-import datetime as datetime
+import datetime
 import time
-from Readvoltage import ADCTEMP
+from ABE_ADCPi import ADCPi
 import RPi.GPIO as GPIO
 
 
@@ -12,7 +12,7 @@ class PIDController(multiprocessing.Process):
 
     def __init__(self, inputqueue, outputqueue):
         multiprocessing.Process.__init__(self)
-        self.adc = ADCTEMP()
+        self.safetytrigger = False
 
         # Use correct communication queues
         self.inputqueue = inputqueue
@@ -25,12 +25,22 @@ class PIDController(multiprocessing.Process):
             'ki': 0,
             'kd': 0,
             'setpoint': 0,
-            'input_channel': 1,
+            'control_channel': 1,
+            'control_k1': 0,
+            'control_k2': 27,
+            'control-k3': 0,
+            'safety_channel': 2,
+            'safety_k1': 0,
+            'safety_k2': 27,
+            'safety_k3': 0,
+            'safety_value': 0,
+            'safety_mode': "off",
             'umax': 0,
             'umin': 0,
             'moutput': "auto",
             'ssrduty': 1,
             'ssrpin': 4,
+            'ssrmode': "pwm",
             'pwm_frequency': 1,
             'relayduty': {'Relay1': 0, 'Relay2': 0, 'Relay3': 0, 'Relay4': 0, 'Relay5': 0},
             'relaypin': {'Relay1': 0, 'Relay2': 0, 'Relay3': 0, 'Relay4': 0, 'Relay5': 0},
@@ -87,8 +97,17 @@ class PIDController(multiprocessing.Process):
             u = self.output
 
             # Read New Measured Variable
-            channel = self.variabledict['input_channel']
-            mv = self.adc.Temperature(channel)
+            mvchannel = self.variabledict['control_channel']
+            v = ADCPi.read_voltage(mvchannel)
+            mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
+
+            # Read safety variable
+            if self.variabledict['safety_mode'] != "off":
+                svchannel = self.variabledict['safety_channel']
+                sv = ADCPi.read_voltage(svchannel)
+                safetytemp = self.variabledict['safety_k1'] * sv * sv + self.variabledict['safety_k2'] * sv + self.variabledict['safety_k3']
+            else:
+                safetytemp = "off"
 
             # Update error variables
             e2 = e1
@@ -107,6 +126,14 @@ class PIDController(multiprocessing.Process):
                 u = self.variabledict['umax']
             elif u < self.variabledict['umin']:
                 u = self.variabledict['umin']
+
+            # Check for safety variable
+            if self.variabledict['safety_mode'] == "max" and self.variabledict['safety_value'] > safetytemp:
+                u = 0
+                self.safetytrigger = True
+            elif self.variabledict['safety_mode'] == "min" and self.variabledict['safety_value'] < safetytemp:
+                u = 0
+                self.safetytrigger = True
 
             duty = u / self.variabledict['umax']
 
@@ -152,11 +179,11 @@ class PIDController(multiprocessing.Process):
             pwm.ChangeDutyCycle(ssr_pwmduty)
 
             # Update output dictionary
-            self.outputdict['Date'] = datetime.date.today()
-            self.outputdict['Time'] = time.time()
+            self.outputdict['DateTime'] = datetime.datetime.now()
             self.outputdict['Temperature'] = mv
             self.outputdict['Duty'] = duty
             self.outputdict['Setpoint'] = sp
+            self.outputdict['SafetyTemp'] = safetytemp
 
             # Send output to Manager
             self.outputqueue.put(self.outputdict)
