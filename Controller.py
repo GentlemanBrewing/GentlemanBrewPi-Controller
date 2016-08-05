@@ -184,6 +184,7 @@ class PIDController(multiprocessing.Process):
             self.outputdict['Duty'] = duty
             self.outputdict['Setpoint'] = sp
             self.outputdict['SafetyTemp'] = safetytemp
+            self.outputdict['SafetyTrigger'] = self.safetytrigger
 
             # Send output to Manager
             self.outputqueue.put(self.outputdict)
