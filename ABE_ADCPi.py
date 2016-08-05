@@ -192,26 +192,26 @@ class ADCPi:
         if gain == 1:
             self.__config1 = self.__updatebyte(self.__config1, 0, 0)
             self.__config1 = self.__updatebyte(self.__config1, 1, 0)
-            #self.__config2 = self.__updatebyte(self.__config2, 0, 0)
-            #self.__config2 = self.__updatebyte(self.__config2, 1, 0)
+            self.__config2 = self.__updatebyte(self.__config2, 0, 0)
+            self.__config2 = self.__updatebyte(self.__config2, 1, 0)
             self.__pga = 0.5
         if gain == 2:
             self.__config1 = self.__updatebyte(self.__config1, 0, 1)
             self.__config1 = self.__updatebyte(self.__config1, 1, 0)
-            #self.__config2 = self.__updatebyte(self.__config2, 0, 1)
-            #self.__config2 = self.__updatebyte(self.__config2, 1, 0)
+            self.__config2 = self.__updatebyte(self.__config2, 0, 1)
+            self.__config2 = self.__updatebyte(self.__config2, 1, 0)
             self.__pga = 1
         if gain == 4:
             self.__config1 = self.__updatebyte(self.__config1, 0, 0)
             self.__config1 = self.__updatebyte(self.__config1, 1, 1)
-            #self.__config2 = self.__updatebyte(self.__config2, 0, 0)
-            #self.__config2 = self.__updatebyte(self.__config2, 1, 1)
+            self.__config2 = self.__updatebyte(self.__config2, 0, 0)
+            self.__config2 = self.__updatebyte(self.__config2, 1, 1)
             self.__pga = 2
         if gain == 8:
             self.__config1 = self.__updatebyte(self.__config1, 0, 1)
             self.__config1 = self.__updatebyte(self.__config1, 1, 1)
-            #self.__config2 = self.__updatebyte(self.__config2, 0, 1)
-            #self.__config2 = self.__updatebyte(self.__config2, 1, 1)
+            self.__config2 = self.__updatebyte(self.__config2, 0, 1)
+            self.__config2 = self.__updatebyte(self.__config2, 1, 1)
             self.__pga = 4
 
         self._bus.write_byte(self.__address, self.__config1)

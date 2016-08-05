@@ -12,7 +12,7 @@ adc = ADCPi(bus, 0x68, 0x69, 16)
 
 class ADCTEMP:
 
-  
+
   #Initialize Variables
   __R1 = 0
   __R2 = 0
