@@ -40,11 +40,10 @@ class BrewManager(multiprocessing.Process):
     def write_to_database(self):
         try:
             with self.conn:
-                self.conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty,'
-                                  'Setpoint, SafetyTemp, SafetyTrigger) VALUES (:DateTime, :ProcessName,'
+                self.conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint, SafetyTemp, SafetyTrigger) VALUES (:DateTime, :ProcessName,'
                                   ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger)', self.data)
         except sqlite3.IntegrityError:
-            self.buzzer(3000, 1)
+            self.buzzer(2000, 1)
 
     def run(self):
         # Initialize processes as per config file
@@ -61,6 +60,8 @@ class BrewManager(multiprocessing.Process):
             # Get output from process and record in database
             for process in self.processinformation.items():
                 self.data = process['process_data']['outputqueue'].get()
+                if self.data['SafetyTrigger'] == True:
+                    self.buzzer(4000,60)
                 self.data['ProcessName'] = process
                 self.write_to_database()
 
@@ -68,7 +69,7 @@ class BrewManager(multiprocessing.Process):
                 processname = #variable here
                 self.processinformation[processname]['process_data']['inputqueue'].put(#variable here)
 
-            
+
 
 
   
