@@ -34,7 +34,7 @@ time.sleep(1)
 
 
 for pin, mode in gpiopins.items():
-    #if gpiopins[pin] == 'GPIO.OUT':
+    if gpiopins[pin] == 'GPIO.OUT':
         pinnum = int(pin)
         print(gpiopins[pin])
         print("setting pin %r high" % pinnum)
