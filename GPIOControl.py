@@ -34,7 +34,7 @@ time.sleep(10)
 
 
 for pin in gpiopins.items():
-    if gpiopins[pin] == "GPIO.OUT":
+    if gpiopins[pin] == 'GPIO.OUT':
         pinnum = int(pin)
         print("setting pin %r high" % pinnum)
         GPIO.output(pinnum, 1)
