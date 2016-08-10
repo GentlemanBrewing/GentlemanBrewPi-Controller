@@ -40,5 +40,5 @@ totaldict = {'process_data': processdict,
 
 
 f = open('Confignew.yaml', "w")
-yaml.dump(variabledict, f)
+yaml.dump(totaldict, f)
 f.close
