@@ -29,7 +29,7 @@ for pin, mode in gpiopins.items():
     pinnum = int(pin)
     print(pinnum)
     print(mode)
-    GPIO.setup(pinnum, mode)
+    GPIO.setup(pinnum, GPIO.OUT)
 time.sleep(10)
 
 
