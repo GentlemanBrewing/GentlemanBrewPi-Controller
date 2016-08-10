@@ -32,8 +32,9 @@ class BrewManager(multiprocessing.Process):
         yaml.dump(data, f)
         f.close
 
-    def buzzer(self):
+    def buzzer(self, frequency, duration):
         #Code for buzzer here
+
 
     # Function for writing to database
     def write_to_database(self):
@@ -43,7 +44,7 @@ class BrewManager(multiprocessing.Process):
                                   'Setpoint, SafetyTemp, SafetyTrigger) VALUES (:DateTime, :ProcessName,'
                                   ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger)', self.data)
         except sqlite3.IntegrityError:
-            self.buzzer()
+            self.buzzer(3000, 1)
 
     def run(self):
         # Initialize processes as per config file
@@ -55,10 +56,19 @@ class BrewManager(multiprocessing.Process):
                 process['process_data']['inputqueue'].put(process['process_variables'])
 
         # Main loop
-        while True():
+        while True:
+
+            # Get output from process and record in database
             for process in self.processinformation.items():
                 self.data = process['process_data']['outputqueue'].get()
                 self.data['ProcessName'] = process
+                self.write_to_database()
+
+            # Put new variable in correct queue
+                processname = #variable here
+                self.processinformation[processname]['process_data']['inputqueue'].put(#variable here)
+
+            
 
 
   
