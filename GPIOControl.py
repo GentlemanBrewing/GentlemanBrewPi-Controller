@@ -33,7 +33,7 @@ for pin, mode in gpiopins.items():
 time.sleep(1)
 
 
-for pin in gpiopins.items():
+for pin, mode in gpiopins.items():
     #if gpiopins[pin] == 'GPIO.OUT':
         pinnum = int(pin)
         print(gpiopins[pin])
