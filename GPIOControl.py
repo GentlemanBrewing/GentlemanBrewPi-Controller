@@ -30,15 +30,16 @@ for pin, mode in gpiopins.items():
     print(pinnum)
     print(mode)
     GPIO.setup(pinnum, GPIO.OUT)
-time.sleep(10)
+time.sleep(1)
 
 
 for pin in gpiopins.items():
-    if gpiopins[pin] == 'GPIO.OUT':
+    #if gpiopins[pin] == 'GPIO.OUT':
         pinnum = int(pin)
+        print(gpiopins[pin])
         print("setting pin %r high" % pinnum)
-        GPIO.output(pinnum, 1)
-        time.sleep(1)
-        GPIO.output(pin, 0)
+        #GPIO.output(pinnum, 1)
+        time.sleep(5)
+        #GPIO.output(pin, 0)
 
 GPIO.cleanup()
