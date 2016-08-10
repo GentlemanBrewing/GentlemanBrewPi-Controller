@@ -26,12 +26,17 @@ gpiopins = {'4': GPIO.OUT,
 GPIO.setmode(GPIO.BCM)
 
 for pin, mode in gpiopins.items():
-    GPIO.setup(pin, mode)
+    pinnum = int(pin)
+    print(pinnum)
+    print(mode)
+time.sleep(10)
+    #GPIO.setup(pin, mode)
 
-for pin in gpiopins.items():
-    if gpiopins[pin] == GPIO.OUT:
-        GPIO.output(pin, 1)
-        time.sleep(1)
-        GPIO.output(pin, 0)
+
+#for pin in gpiopins.items():
+    #if gpiopins[pin] == GPIO.OUT:
+        #GPIO.output(pin, 1)
+        #time.sleep(1)
+        #GPIO.output(pin, 0)
 
 GPIO.cleanup()
