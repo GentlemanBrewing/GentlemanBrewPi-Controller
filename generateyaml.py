@@ -30,13 +30,13 @@ variabledict = {
             'terminate': 0
 }
 
-processdict = {'inputqueue':0
+processdict = {'inputqueue': 0,
                'outputqueue': 0
-}
+               }
 
-totaldict = {'process_data': processdict
+totaldict = {'process_data': processdict,
              'process_variables': variabledict
-}
+             }
 
 
 f = open('Config.yaml', "w")
