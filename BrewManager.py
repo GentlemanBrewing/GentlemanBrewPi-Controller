@@ -15,7 +15,7 @@ class BrewManager(multiprocessing.Process):
 
     def __init__(self):
         multiprocessing.Process.__init__(self)
-        self.processinformation = loadconfig(self)
+        self.processinformation = self.loadconfig()
         self.conn = sqlite3.connect('Log.db')
         self.cur = self.conn.cursor()
         self.counter = 0
@@ -81,7 +81,7 @@ class BrewManager(multiprocessing.Process):
 
             # Check for changing setpoint and use interpolation function
 
-            #a
+            #
 
             # Put new variable in correct queue
             processname = #variable here
