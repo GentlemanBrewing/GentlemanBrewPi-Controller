@@ -83,11 +83,11 @@ class PIDController(multiprocessing.Process):
         while True:
 
             # Check for updated variables
-            next_message = self.inputqueue.get()
-            if next_message is not None:
-                updated_variables = next_message
+            try:
+                updated_variables = self.inputqueue.get()
                 for variable, value in updated_variables.items():
                     self.variabledict[variable] = value
+            except Queue.Empty:
 
             # Update control parameters
             k1 = self.variabledict['kp'] + self.variabledict['ki'] + self.variabledict['kd']

@@ -18,6 +18,7 @@ class BrewManager(multiprocessing.Process):
         self.processinformation = loadconfig(self)
         self.conn = sqlite3.connect('Log.db')
         self.cur = self.conn.cursor()
+        self.counter = 0
 
     # Function for loading config file
     def loadconfig(self):
@@ -45,6 +46,11 @@ class BrewManager(multiprocessing.Process):
         except sqlite3.IntegrityError:
             self.buzzer(2000, 1)
 
+    # Function for interpolating setpoint
+    def setpoint_interpolate(self, timenow, time1, value1, time2, value2):
+        sp = ((time2 - time1) / (value2 - value1)) * (timenow - time1) + value1
+        return sp
+
     def run(self):
         # Initialize processes as per config file
         for process in self.processinformation.items():
@@ -60,16 +66,28 @@ class BrewManager(multiprocessing.Process):
             # Get output from process and record in database
             for process in self.processinformation.items():
                 self.data = process['process_data']['outputqueue'].get()
+                # Check for Safetytrigger from process and sound buzzer if present
                 if self.data['SafetyTrigger'] == True:
                     self.buzzer(4000,60)
                 self.data['ProcessName'] = process
                 self.write_to_database()
 
+            # Write to config.yaml every 3600 iterations
+            if self.counter < 3600:
+                self.counter += 1
+            else:
+                self.counter = 0
+                self.writeconfig(self.processinformation)
+
+            # Check for changing setpoint and use interpolation function
+
+            #
+
             # Put new variable in correct queue
-                processname = #variable here
-                self.processinformation[processname]['process_data']['inputqueue'].put(#variable here)
+            processname = #variable here
+            self.processinformation[processname]['process_data']['inputqueue'].put(#variable here)
 
-
+            time.sleep(1)
 
 
   
