@@ -41,6 +41,9 @@ for pin, mode in gpiopins.items():
         #time.sleep(5)
         #GPIO.output(pin, 0)
 
+print("all pins low")
+
+time.sleep(10)
 
 for pin, mode in gpiopins.items():
     if gpiopins[pin] == 'GPIO.OUT':
