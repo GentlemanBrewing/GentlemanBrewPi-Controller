@@ -51,4 +51,5 @@ for pin, mode in gpiopins.items():
         time.sleep(2)
         GPIO.output(pinnum, 0)
 
+time.sleep(30)
 GPIO.cleanup()
