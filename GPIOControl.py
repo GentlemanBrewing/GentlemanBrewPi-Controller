@@ -49,6 +49,6 @@ for pin, mode in gpiopins.items():
         print("setting pin %r high" % pinnum)
         GPIO.output(pinnum, 1)
         time.sleep(2)
-        GPIO.output(pin, 0)
+        GPIO.output(pinnum, 0)
 
 GPIO.cleanup()
