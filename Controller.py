@@ -24,7 +24,10 @@ class PIDController(multiprocessing.Process):
             'kp': 0,
             'ki': 0,
             'kd': 0,
-            'setpoint': 0,
+            'setpoint': {
+                'time': ['2016-08-11T17:45:20.524828', '2016-08-11T17:45:20.524828'],
+                'value': [20, 25]
+            },
             'control_channel': 1,
             'control_k1': 0,
             'control_k2': 27,
@@ -49,7 +52,22 @@ class PIDController(multiprocessing.Process):
 
         # Initialize required variables
         self.output = 0
+        self.setpoint = 0
+        self.setpointchanges = 2
         self.outputdict = {}
+
+    # Function for interpolating setpoint
+    def setpoint_interpolate(self):
+        self.setpointchanges = len(self.variabledict['setpoint']['time'])
+        if datetime.datetime.now().isoformat() < self.variabledict['setpoint']['time'][0]:
+            self.setpoint = "off"
+        elif datetime.datetime.now().isoformat() > self.variabledict['setpoint']['time'][self.setpointchanges]:
+            self.setpoint = "off"
+        else:
+            for x in range(0,self.setpointchanges):
+                #
+                #Code vanaf hier
+                #
 
     # Main looping function of the PID Controller
     def run(self):
@@ -89,11 +107,14 @@ class PIDController(multiprocessing.Process):
                     self.variabledict[variable] = value
             except Queue.Empty:
 
+            #Get new setpoint based on current values
+            self.setpoint_interpolate()
+
             # Update control parameters
             k1 = self.variabledict['kp'] + self.variabledict['ki'] + self.variabledict['kd']
             k2 = - self.variabledict['ki'] - 2 * self.variabledict['kd']
             k3 = self.variabledict['kd']
-            sp = self.variabledict['setpoint']
+            sp = self.setpoint
             u = self.output
 
             # Read New Measured Variable

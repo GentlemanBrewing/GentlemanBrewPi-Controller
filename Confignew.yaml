@@ -1,4 +1,6 @@
-process_data: {inputqueue: 0, outputqueue: 0}
+process_data:
+  inputqueue: 0
+  outputqueue: 0
 process_variables:
   control_channel: 1
   control_k1: 0
@@ -9,8 +11,18 @@ process_variables:
   kp: 0
   moutput: auto
   pwm_frequency: 1
-  relayduty: {Relay1: 0, Relay2: 0, Relay3: 0, Relay4: 0, Relay5: 0}
-  relaypin: {Relay1: 0, Relay2: 0, Relay3: 0, Relay4: 0, Relay5: 0}
+  relayduty:
+    Relay1: 0
+    Relay2: 0
+    Relay3: 0
+    Relay4: 0
+    Relay5: 0
+  relaypin:
+    Relay1: 0
+    Relay2: 0
+    Relay3: 0
+    Relay4: 0
+    Relay5: 0
   safety_channel: 2
   safety_k1: 0
   safety_k2: 27

@@ -24,14 +24,14 @@ class BrewManager(multiprocessing.Process):
     def loadconfig(self):
         f = open('Config.yaml')
         datamap = yaml.safe_load(f)
-        f.close
+        f.close()
         return datamap
   
     # Function for updating config file
     def writeconfig(data):
         f = open('Config.yaml', "w")
         yaml.dump(data, f)
-        f.close
+        f.close()
 
     def buzzer(self, frequency, duration):
         #Code for buzzer here
@@ -45,11 +45,6 @@ class BrewManager(multiprocessing.Process):
                                   ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger)', self.data)
         except sqlite3.IntegrityError:
             self.buzzer(2000, 1)
-
-    # Function for interpolating setpoint
-    def setpoint_interpolate(self, timenow, time1, value1, time2, value2):
-        sp = ((time2 - time1) / (value2 - value1)) * (timenow - time1) + value1
-        return sp
 
     def run(self):
         # Initialize processes as per config file
