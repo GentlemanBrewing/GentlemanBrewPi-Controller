@@ -81,7 +81,7 @@ class BrewManager(multiprocessing.Process):
 
             # Check for changing setpoint and use interpolation function
 
-            #
+            #a
 
             # Put new variable in correct queue
             processname = #variable here
