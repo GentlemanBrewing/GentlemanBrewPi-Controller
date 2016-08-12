@@ -222,7 +222,7 @@ class PIDController(multiprocessing.Process):
 
             # Calculate PWM duty needed from ssr
             ssroutput = output - relayoutput
-            ssr_pwmduty = ssroutput // ssrduty * 100
+            ssr_pwmduty = ( ssroutput * 100 ) // ssrduty
             print(ssr_pwmduty)
 
             # Activate pins to switch relays
