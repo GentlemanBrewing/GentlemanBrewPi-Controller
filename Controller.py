@@ -222,6 +222,20 @@ class PIDController(multiprocessing.Process):
             ssroutput = output - relayoutput
             ssr_pwmduty = ssroutput / ssrduty * 100
 
+            # Debug print
+            print('u')
+            print(u)
+            print('output')
+            print(output)
+            print('relayout')
+            print(relayoutput)
+            print('ssrduty')
+            print(ssrduty)
+            print('ssroutput')
+            print(ssroutput)
+            print('ssrpwmduty')
+            print(ssr_pwmduty)
+
             # Activate pins to switch relays
             for relay in sorted(relaypin.keys()):
                 if relaypin[relay] != "off":
