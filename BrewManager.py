@@ -20,8 +20,8 @@ class Buzzer(multiprocessing.Process):
         self.variabledict = {
             'frequency': 2000,
             'duty': 50,
-            'duration': 1
-            'pin': 12
+            'duration': 1,
+            'pin': 12,
             'terminate': 1
         }
 
@@ -32,10 +32,10 @@ class Buzzer(multiprocessing.Process):
         while True:
             # Check for new input
             try:
-                updated_variables = self.inputqueue.get()
+                updated_variables = self.inputqueue._nowait()
                 for variable, value in updated_variables.items():
                     self.variabledict[variable] = value
-            except Queue.Empty:
+            except Queue.Empty
 
             if self.variabledict['duration'] != 0:
                 p = GPIO.PWM(self.variabledict['pin'], self.variabledict['frequency'])
@@ -108,13 +108,17 @@ class BrewManager(multiprocessing.Process):
         while True:
 
             # Get output from process and record in database
-            for process in self.processinformation.items():
-                self.data = process['process_data']['outputqueue'].get()
-                # Check for Safetytrigger from process and sound buzzer if present
-                if self.data['SafetyTrigger'] == True:
-                    self.buzzer(4000,60)
-                self.data['ProcessName'] = process
-                self.write_to_database()
+            for process in self.processdata.keys():
+                try:
+                    self.data = self.processdata[process]['outputqueue'].get_nowait()
+                    # Check for Safetytrigger from process and sound buzzer if present
+                    if self.data['SafetyTrigger'] == True:
+                        self.buzzer(4000,4)
+                    # Add process name to the collected variables
+                    self.data['ProcessName'] = process
+                    # log to database
+                    self.write_to_database()
+                except  Queue.Empty
 
             # Write to config.yaml every 3600 iterations
             if self.counter < 3600:
