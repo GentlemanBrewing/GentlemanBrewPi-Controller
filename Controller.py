@@ -224,20 +224,6 @@ class PIDController(multiprocessing.Process):
             ssroutput = output - relayoutput
             ssr_pwmduty = ssroutput / ssrduty * 100
 
-            # Debug print
-            print('u')
-            print(u)
-            print('output')
-            print(output)
-            print('relayout')
-            print(relayoutput)
-            print('ssrduty')
-            print(ssrduty)
-            print('ssroutput')
-            print(ssroutput)
-            print('ssrpwmduty')
-            print(ssr_pwmduty)
-
             # Activate pins to switch relays
             for relay in sorted(relaypin.keys()):
                 if relaypin[relay] != "off":
@@ -261,12 +247,6 @@ class PIDController(multiprocessing.Process):
             # Check terminate variable
             if self.variabledict['terminate'] == 1:
                 break
-
-            #For debugging
-            print('mv')
-            print(mv)
-            #print('setpoint')
-            #print(self.setpoint)
 
             # Wait before running loop again
             time.sleep(self.variabledict['sleeptime'])
