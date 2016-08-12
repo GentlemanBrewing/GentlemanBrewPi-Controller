@@ -61,18 +61,18 @@ class PIDController(multiprocessing.Process):
     def setpoint_interpolate(self):
         timelist = self.variabledict['setpoint']['time']
         valuelist = self.variabledict['setpoint']['value']
-        setpointchanges = len(timelist)
+        setpointchanges = len(timelist) - 1
         timenow = datetime.datetime.now()
 
         if timenow < datetime.datetime.strptime(timelist[0], '%Y-%m-%d %H:%M:%S'):
             self.setpoint = "off"
         elif timenow == datetime.datetime.strptime(timelist[0], '%Y-%m-%d %H:%M:%S'):
             self.setpoint = valuelist[0]
-        elif timenow >= datetime.datetime.strptime(timelist[setpointchanges - 1], '%Y-%m-%d %H:%M:%S'):
+        elif timenow >= datetime.datetime.strptime(timelist[setpointchanges], '%Y-%m-%d %H:%M:%S'):
             self.setpoint = "off"
         else:
             self.setpoint = "off"
-            for x in range(setpointchanges - 1, 0):
+            for x in range(setpointchanges, 0):
                 # Check for current timeframe and adjust setpoint by interpolation
                 if datetime.datetime.strptime(timelist[x], '%Y-%m-%d %H:%M:%S') < timenow:
                     time1 = datetime.datetime.strptime(timelist[x], '%Y-%m-%d %H:%M:%S')
