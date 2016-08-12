@@ -120,9 +120,9 @@ class PIDController(multiprocessing.Process):
                 for variable, value in updated_variables.items():
                     self.variabledict[variable] = value
             except Queue.Empty:
+                pass
 
-
-            #Get new setpoint based on current date and time
+            # Get new setpoint based on current date and time
             self.setpoint_interpolate()
 
             # Check if setpoint is active and calculate control output if it is
