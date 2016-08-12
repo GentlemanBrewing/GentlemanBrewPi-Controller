@@ -95,12 +95,9 @@ class PIDController(multiprocessing.Process):
         # Initialize variables
         e = 0
         e1 = 0
-
-        relayduty = self.variabledict['relayduty']
-        relaypin = self.variabledict['relaypin']
-        ssrduty = self.variabledict['ssrduty']
         max_relay_output = 0
         relaystate = {}
+        relayduty = self.variabledict['relayduty']
         for relay in relayduty.keys():
             relaystate[relay] = 0
         relayoutput = 0
@@ -117,6 +114,11 @@ class PIDController(multiprocessing.Process):
                         self.variabledict[variable] = value
             except queue.Empty:
                 pass
+
+            # Update Variables
+            relayduty = self.variabledict['relayduty']
+            relaypin = self.variabledict['relaypin']
+            ssrduty = self.variabledict['ssrduty']
 
             #setup GPIO
             GPIO.setup(self.variabledict['ssrpin'], GPIO.OUT)
@@ -263,8 +265,8 @@ class PIDController(multiprocessing.Process):
             #For debugging
             print('mv')
             print(mv)
-            print('setpoint')
-            print(self.setpoint)
+            #print('setpoint')
+            #print(self.setpoint)
 
             # Wait before running loop again
             time.sleep(self.variabledict['sleeptime'])
