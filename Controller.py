@@ -22,7 +22,7 @@ class PIDController(multiprocessing.Process):
 
         # Configure ADC correctly
         self.i2c_helper = ABEHelpers()
-        self.bus = i2c_helper.get_smbus()
+        self.bus = self.i2c_helper.get_smbus()
         self.adc = ADCPi(self.bus, 0x68, 0x69, 16)
         self.adc.set_pga(8)
 
