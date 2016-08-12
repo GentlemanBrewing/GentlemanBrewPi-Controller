@@ -40,7 +40,8 @@ class ADCTEMP:
 
   # Calculate Temperature for PT100  
   def Temperature(self, channel):
-    resistance = self.Resistance(channel)
-    t = ((resistance - 100) / 38.51 ) * 100
+    t = adc.read_voltage(channel)
+    #resistance = self.Resistance(channel)
+    #t = ((resistance - 100) / 38.51 ) * 100
     return float(t)
 
