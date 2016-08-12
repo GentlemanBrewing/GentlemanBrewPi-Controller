@@ -61,6 +61,7 @@ class PIDController(multiprocessing.Process):
         # Initialize required variables
         self.setpoint = 0
         self.setpointchanges = 2
+        self.output = 0
         self.outputdict = {}
 
     # Function for interpolating setpoint
@@ -142,6 +143,7 @@ class PIDController(multiprocessing.Process):
             k2 = - self.variabledict['ki'] - 2 * self.variabledict['kd']
             k3 = self.variabledict['kd']
             sp = self.setpoint
+            u = self.output
 
             # Read New Measured Variable
             mvchannel = self.variabledict['control_channel']
@@ -185,6 +187,7 @@ class PIDController(multiprocessing.Process):
             else:
                 safetytemp = "off"
 
+            self.output = u
             duty = u / self.variabledict['umax'] * 100
 
             # Determine current output
