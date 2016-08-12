@@ -29,12 +29,14 @@ class Buzzer(multiprocessing.Process):
     def run(self):
         while True:
             # Check for new input
-            try:
-                updated_variables = self.inputqueue.get_nowait()
-                for variable, value in updated_variables.items():
-                    self.variabledict[variable] = value
-            except queue.Empty:
-                pass
+            while True:
+                try:
+                    updated_variables = self.inputqueue.get_nowait()
+                    for variable, value in updated_variables.items():
+                        self.variabledict[variable] = value
+                except queue.Empty:
+                    break
+                    pass
 
             if self.variabledict['duration'] != 0:
                 print("Buzzing")
@@ -47,7 +49,7 @@ class Buzzer(multiprocessing.Process):
                 self.variabledict['duration'] = 0
                 GPIO.cleanup()
 
-            time.sleep(0.1)
+            time.sleep(1)
 
 
 # Main Manager class
