@@ -8,7 +8,7 @@ Steam Boiler:
   ki: 0
   kp: 1
   moutput: auto
-  pwm_frequency: 1
+  pwm_frequency: 10
   relayduty:
     Relay1: 0
     Relay2: 0
@@ -30,7 +30,7 @@ Steam Boiler:
   setpoint:
     time: ['2016-08-12 09:00:00', '2016-08-13 09:00:00', '2016-08-14 09:00:00']
     value: [30, 35, 40]
-  sleeptime: 5
+  sleeptime: 20
   ssrduty: 4
   ssrmode: pwm
   ssrpin: 22

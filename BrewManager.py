@@ -114,17 +114,19 @@ class BrewManager(multiprocessing.Process):
 
             # Get output from process and record in database
             for process in self.processdata.keys():
-                try:
-                    self.data = self.processdata[process]['outputqueue'].get_nowait()
-                    # Check for Safetytrigger from process and sound buzzer if present
-                    if self.data['SafetyTrigger'] == True:
-                        self.buzzer(4000,4)
-                    # Add process name to the collected variables
-                    self.data['ProcessName'] = process
-                    # log to database
-                    self.write_to_database()
-                except queue.Empty:
-                    pass
+                while True:
+                    try:
+                        self.data = self.processdata[process]['outputqueue'].get_nowait()
+                        # Check for Safetytrigger from process and sound buzzer if present
+                        if self.data['SafetyTrigger'] == True:
+                            self.buzzer(4000,4)
+                        # Add process name to the collected variables
+                        self.data['ProcessName'] = process
+                        # log to database
+                        self.write_to_database()
+                    except queue.Empty:
+                        break
+                        pass
 
             # Write to config.yaml every 3600 iterations
             if self.counter < 30:
