@@ -25,8 +25,8 @@ class PIDController(multiprocessing.Process):
             'ki': 0,
             'kd': 0,
             'setpoint': {
-                'time': ['2016-08-11T17:45:20.524828', '2016-08-11T17:45:20.524828'],
-                'value': [20, 25]
+                'time': ['2016-08-12 09:00:00', '2016-08-13 09:00:00'],
+                'value': [20, 20]
             },
             'control_channel': 1,
             'control_k1': 0,
@@ -58,15 +58,29 @@ class PIDController(multiprocessing.Process):
 
     # Function for interpolating setpoint
     def setpoint_interpolate(self):
-        self.setpointchanges = len(self.variabledict['setpoint']['time'])
-        if datetime.datetime.now().isoformat() < self.variabledict['setpoint']['time'][0]:
+        timelist = self.variabledict['setpoint']['time']
+        valuelist = self.variabledict['setpoint']['value']
+        setpointchanges = len(timelist)
+        timenow = datetime.datetime.now()
+
+        if timenow < datetime.datetime.strptime(timelist[0], '%Y-%m-%d %H:%M:%S'):
             self.setpoint = "off"
-        elif datetime.datetime.now().isoformat() > self.variabledict['setpoint']['time'][self.setpointchanges]:
+        elif timenow == datetime.datetime.strptime(timelist[0], '%Y-%m-%d %H:%M:%S'):
+            self.setpoint = valuelist[0]
+        elif timenow >= datetime.datetime.strptime(timelist[setpointchanges], '%Y-%m-%d %H:%M:%S'):
             self.setpoint = "off"
         else:
-            for x in range(0,self.setpointchanges):
-                #
-                #Code vanaf hier
+            self.setpoint = "off"
+            for x in range(setpointchanges, 0):
+                # Check for current timeframe and adjust setpoint by interpolation
+                if datetime.datetime.strptime(timelist[x], '%Y-%m-%d %H:%M:%S') < timenow:
+                    time1 = datetime.datetime.strptime(timelist[x], '%Y-%m-%d %H:%M:%S')
+                    value1 = valuelist[x]
+                    time2 = datetime.datetime.strptime(timelist[x+1], '%Y-%m-%d %H:%M:%S')
+                    value2 = valuelist[x+1]
+                    self.setpoint = ((timenow - time1) / (time2 - time1)) * (value2 - value1)  + value1
+                    break
+
                 #
 
     # Main looping function of the PID Controller
@@ -107,36 +121,32 @@ class PIDController(multiprocessing.Process):
                     self.variabledict[variable] = value
             except Queue.Empty:
 
-            #Get new setpoint based on current values
+            #Get new setpoint based on current date and time
             self.setpoint_interpolate()
 
-            # Update control parameters
-            k1 = self.variabledict['kp'] + self.variabledict['ki'] + self.variabledict['kd']
-            k2 = - self.variabledict['ki'] - 2 * self.variabledict['kd']
-            k3 = self.variabledict['kd']
-            sp = self.setpoint
-            u = self.output
+            # Check if setpoint is active and calculate control output if it is
+            if self.setpoint != "off":
+                # Update control parameters
+                k1 = self.variabledict['kp'] + self.variabledict['ki'] + self.variabledict['kd']
+                k2 = - self.variabledict['ki'] - 2 * self.variabledict['kd']
+                k3 = self.variabledict['kd']
+                sp = self.setpoint
+                u = self.output
 
-            # Read New Measured Variable
-            mvchannel = self.variabledict['control_channel']
-            v = ADCPi.read_voltage(mvchannel)
-            mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
+                # Read New Measured Variable
+                mvchannel = self.variabledict['control_channel']
+                v = ADCPi.read_voltage(mvchannel)
+                mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
-            # Read safety variable
-            if self.variabledict['safety_mode'] != "off":
-                svchannel = self.variabledict['safety_channel']
-                sv = ADCPi.read_voltage(svchannel)
-                safetytemp = self.variabledict['safety_k1'] * sv * sv + self.variabledict['safety_k2'] * sv + self.variabledict['safety_k3']
+                # Update error variables
+                e2 = e1
+                e1 = e
+                e = sp - mv
+
+                delta_u = k1 * e + k2 * e1 + k3 * e2
+                u += delta_u
             else:
-                safetytemp = "off"
-
-            # Update error variables
-            e2 = e1
-            e1 = e
-            e = sp - mv
-
-            delta_u = k1 * e + k2 * e1 + k3 * e2
-            u += delta_u
+                u = 0
 
             # check for manual mode
             if self.variabledict['moutput'] != "auto":
@@ -148,13 +158,20 @@ class PIDController(multiprocessing.Process):
             elif u < self.variabledict['umin']:
                 u = self.variabledict['umin']
 
-            # Check for safety variable
-            if self.variabledict['safety_mode'] == "max" and self.variabledict['safety_value'] > safetytemp:
-                u = 0
-                self.safetytrigger = True
-            elif self.variabledict['safety_mode'] == "min" and self.variabledict['safety_value'] < safetytemp:
-                u = 0
-                self.safetytrigger = True
+            # Check safety variable
+            if self.variabledict['safety_mode'] != "off":
+                svchannel = self.variabledict['safety_channel']
+                sv = ADCPi.read_voltage(svchannel)
+                safetytemp = self.variabledict['safety_k1'] * sv * sv + self.variabledict['safety_k2'] * sv + self.variabledict['safety_k3']
+
+                if self.variabledict['safety_mode'] == "max" and self.variabledict['safety_value'] > safetytemp:
+                    u = 0
+                    self.safetytrigger = True
+                elif self.variabledict['safety_mode'] == "min" and self.variabledict['safety_value'] < safetytemp:
+                    u = 0
+                    self.safetytrigger = True
+            else:
+                safetytemp = "off"
 
             duty = u / self.variabledict['umax']
 

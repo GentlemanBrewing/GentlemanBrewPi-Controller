@@ -74,10 +74,6 @@ class BrewManager(multiprocessing.Process):
                 self.counter = 0
                 self.writeconfig(self.processinformation)
 
-            # Check for changing setpoint and use interpolation function
-
-            #
-
             # Put new variable in correct queue
             processname = #variable here
             self.processinformation[processname]['process_data']['inputqueue'].put(#variable here)
