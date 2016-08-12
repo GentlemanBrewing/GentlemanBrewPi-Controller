@@ -106,7 +106,7 @@ class PIDController(multiprocessing.Process):
 
         # Set GPIO pins as outputs
         for relay in sorted(relaypin.keys()):
-            GPIO.setup(relaypin[relay], GPIO.out)
+            GPIO.setup(relaypin[relay], GPIO.OUT)
 
         # Determine maximum output
         for relay in sorted(relayduty.keys()):
