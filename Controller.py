@@ -248,6 +248,7 @@ class PIDController(multiprocessing.Process):
             if self.variabledict['terminate'] == 1:
                 break
 
+            #For debugging
             print(mv)
 
             # Wait before running loop again
