@@ -92,6 +92,15 @@ class PIDController(multiprocessing.Process):
     # Main looping function of the PID Controller
     def run(self):
 
+        # Get updated variables from queue
+        try:
+            while True:
+                updated_variables = self.inputqueue.get_nowait()
+                for variable, value in updated_variables.items():
+                    self.variabledict[variable] = value
+        except queue.Empty:
+            pass
+
         # Initialize variables
         e = 0
         e1 = 0
@@ -102,6 +111,17 @@ class PIDController(multiprocessing.Process):
             relaystate[relay] = 0
         relayoutput = 0
         GPIO.setmode(GPIO.BCM)
+        relaypin = self.variabledict['relaypin']
+
+        # setup GPIO
+        GPIO.setup(self.variabledict['ssrpin'], GPIO.OUT)
+        pwm = GPIO.PWM(self.variabledict['ssrpin'], 1)
+        pwm.start(0)
+
+        # Set GPIO pins as outputs
+        for relay in sorted(relaypin.keys()):
+            if relaypin[relay] != "off":
+                GPIO.setup(relaypin[relay], GPIO.OUT)
 
         # Main control loop
         while True:
@@ -119,16 +139,6 @@ class PIDController(multiprocessing.Process):
             relayduty = self.variabledict['relayduty']
             relaypin = self.variabledict['relaypin']
             ssrduty = self.variabledict['ssrduty']
-
-            #setup GPIO
-            GPIO.setup(self.variabledict['ssrpin'], GPIO.OUT)
-            pwm = GPIO.PWM(self.variabledict['ssrpin'], 1)
-            pwm.start(0)
-
-            # Set GPIO pins as outputs
-            for relay in sorted(relaypin.keys()):
-                if relaypin[relay] != "off":
-                    GPIO.setup(relaypin[relay], GPIO.OUT)
 
             # Determine maximum output
             for relay in sorted(relayduty.keys()):
