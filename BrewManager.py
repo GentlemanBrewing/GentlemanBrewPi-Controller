@@ -98,15 +98,16 @@ class BrewManager(multiprocessing.Process):
                 self.processdata[process] = {}
                 self.processdata[process]['inputqueue'] = multiprocessing.Queue()
                 self.processdata[process]['outputqueue'] = multiprocessing.Queue()
-                Controller.PIDController(self.processdata[process]['inputqueue'], self.processdata[process]['outputqueue']).start()
                 self.processdata[process]['inputqueue'].put(pvariables)
+                Controller.PIDController(self.processdata[process]['inputqueue'], self.processdata[process]['outputqueue']).start()
+
 
         # Create buzzer process
         self.processdata['Buzzer'] = {}
         self.processdata['Buzzer']['inputqueue'] = multiprocessing.Queue()
         self.processdata['Buzzer']['outputqueue'] = multiprocessing.Queue()
-        Buzzer(self.processdata['Buzzer']['inputqueue']).start()
         self.processdata['Buzzer']['inputqueue'].put(self.processinformation['Buzzer'])
+        Buzzer(self.processdata['Buzzer']['inputqueue']).start()
 
         # Main loop
         while True:
