@@ -248,6 +248,8 @@ class PIDController(multiprocessing.Process):
             if self.variabledict['terminate'] == 1:
                 break
 
+            print(mv)
+
             # Wait before running loop again
             time.sleep(self.variabledict['sleeptime'])
 
