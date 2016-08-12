@@ -21,10 +21,10 @@ class PIDController(multiprocessing.Process):
         self.outputqueue = outputqueue
 
         # Configure ADC correctly
-        i2c_helper = ABEHelpers()
-        bus = i2c_helper.get_smbus()
-        adc = ADCPi(bus, 0x68, 0x69, 16)
-        adc.set_pga(8)
+        self.i2c_helper = ABEHelpers()
+        self.bus = i2c_helper.get_smbus()
+        self.adc = ADCPi(self.bus, 0x68, 0x69, 16)
+        self.adc.set_pga(8)
 
         # Setup variables dictionary with initial values
         self.variabledict = {
@@ -150,7 +150,7 @@ class PIDController(multiprocessing.Process):
 
                 # Read New Measured Variable
                 mvchannel = self.variabledict['control_channel']
-                v = adc.read_voltage(mvchannel)
+                v = self.adc.read_voltage(mvchannel)
                 mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
                 # Update error variables
@@ -176,7 +176,7 @@ class PIDController(multiprocessing.Process):
             # Check safety variable
             if self.variabledict['safety_mode'] != "off":
                 svchannel = self.variabledict['safety_channel']
-                sv = adc.read_voltage(svchannel)
+                sv = self.adc.read_voltage(svchannel)
                 safetytemp = self.variabledict['safety_k1'] * sv * sv + self.variabledict['safety_k2'] * sv + self.variabledict['safety_k3']
 
                 if self.variabledict['safety_mode'] == "max" and self.variabledict['safety_value'] > safetytemp:
@@ -226,7 +226,8 @@ class PIDController(multiprocessing.Process):
 
             # Activate pins to switch relays
             for relay in sorted(relaypin.keys()):
-                GPIO.output(relaypin[relay], relaystate[relay])
+                if relaypin[relay] != "off":
+                    GPIO.output(relaypin[relay], relaystate[relay])
 
             # Change ssr PWM
             pwm.ChangeFrequency(self.variabledict['pwm_frequency'])
