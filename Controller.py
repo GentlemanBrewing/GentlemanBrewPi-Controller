@@ -54,7 +54,7 @@ class PIDController(multiprocessing.Process):
             'ssrmode': "pwm",
             'pwm_frequency': 1,
             'relayduty': {'Relay1': 0, 'Relay2': 0, 'Relay3': 0, 'Relay4': 0, 'Relay5': 0},
-            'relaypin': {'Relay1': 0, 'Relay2': 0, 'Relay3': 0, 'Relay4': 0, 'Relay5': 0},
+            'relaypin': {'Relay1': "off", 'Relay2': "off", 'Relay3': "off", 'Relay4': "off", 'Relay5': "off"},
             'terminate': 0
         }
 
@@ -107,29 +107,33 @@ class PIDController(multiprocessing.Process):
             relaystate[relay] = 0
         relayoutput = 0
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self.variabledict['ssrpin'],GPIO.OUT)
-        pwm = GPIO.PWM(self.variabledict['ssrpin'], 1)
-        pwm.start(0)
-
-        # Set GPIO pins as outputs
-        for relay in sorted(relaypin.keys()):
-            GPIO.setup(relaypin[relay], GPIO.OUT)
-
-        # Determine maximum output
-        for relay in sorted(relayduty.keys()):
-            max_relay_output += relayduty[relay]
-        max_output = self.variabledict['ssrduty'] + max_relay_output
 
         # Main control loop
         while True:
 
             # Check for updated variables
             try:
-                updated_variables = self.inputqueue.get_nowait()
-                for variable, value in updated_variables.items():
-                    self.variabledict[variable] = value
+                while True:
+                    updated_variables = self.inputqueue.get_nowait()
+                    for variable, value in updated_variables.items():
+                        self.variabledict[variable] = value
             except queue.Empty:
                 pass
+
+            #setup GPIO
+            GPIO.setup(self.variabledict['ssrpin'], GPIO.OUT)
+            pwm = GPIO.PWM(self.variabledict['ssrpin'], 1)
+            pwm.start(0)
+
+            # Set GPIO pins as outputs
+            for relay in sorted(relaypin.keys()):
+                if relaypin[relay] != "off":
+                    GPIO.setup(relaypin[relay], GPIO.OUT)
+
+            # Determine maximum output
+            for relay in sorted(relayduty.keys()):
+                max_relay_output += relayduty[relay]
+            max_output = self.variabledict['ssrduty'] + max_relay_output
 
             # Get new setpoint based on current date and time
             self.setpoint_interpolate()
