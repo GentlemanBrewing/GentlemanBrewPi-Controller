@@ -127,11 +127,13 @@ class BrewManager(multiprocessing.Process):
                     pass
 
             # Write to config.yaml every 3600 iterations
-            if self.counter < 3600:
+            if self.counter < 30:
                 self.counter += 1
             else:
                 self.counter = 0
-                self.writeconfig(self.processinformation)
+                #self.writeconfig(self.processinformation)
+                self.buzzer(2000, 2)
+
 
             # Put new variable in correct queue
             try:

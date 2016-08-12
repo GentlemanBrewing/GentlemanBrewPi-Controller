@@ -42,5 +42,5 @@ Buzzer:
   frequency: 2000
   duty: 50
   duration: 0
-  pin: 12
+  pin: 27
   terminate: 1
