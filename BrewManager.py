@@ -35,7 +35,8 @@ class Buzzer(multiprocessing.Process):
                 updated_variables = self.inputqueue._nowait()
                 for variable, value in updated_variables.items():
                     self.variabledict[variable] = value
-            except Queue.Empty
+            except Queue.Empty:
+                pass
 
             if self.variabledict['duration'] != 0:
                 p = GPIO.PWM(self.variabledict['pin'], self.variabledict['frequency'])
@@ -48,8 +49,6 @@ class Buzzer(multiprocessing.Process):
             time.sleep(1)
 
 
-
-
 # Main Manager class
 class BrewManager(multiprocessing.Process):
 
@@ -60,6 +59,7 @@ class BrewManager(multiprocessing.Process):
         self.cur = self.conn.cursor()
         self.counter = 0
         self.processdata = {}
+        self.data = {}
 
     # Function for loading config file
     def loadconfig(self, filename):
@@ -118,7 +118,8 @@ class BrewManager(multiprocessing.Process):
                     self.data['ProcessName'] = process
                     # log to database
                     self.write_to_database()
-                except  Queue.Empty
+                except  Queue.Empty:
+                    pass
 
             # Write to config.yaml every 3600 iterations
             if self.counter < 3600:
@@ -130,14 +131,14 @@ class BrewManager(multiprocessing.Process):
             # Put new variable in correct queue
             try:
                 updatedvars = self.loadconfig('newvar.yaml')
-                for processname, variables in updatedvars.items()
+                for processname, variables in updatedvars.items():
                     self.processdata[processname]['inputqueue'].put(variables)
                 os.remove('newvar.yaml')
                 time.sleep(1)
 
             except NameError:
+                pass
 
   
 if __name__ == 'main':
     BrewManager.start()
-

@@ -121,10 +121,12 @@ class PIDController(multiprocessing.Process):
                     self.variabledict[variable] = value
             except Queue.Empty:
 
+
             #Get new setpoint based on current date and time
             self.setpoint_interpolate()
 
             # Check if setpoint is active and calculate control output if it is
+            mv = 0
             if self.setpoint != "off":
                 # Update control parameters
                 k1 = self.variabledict['kp'] + self.variabledict['ki'] + self.variabledict['kd']
@@ -220,7 +222,7 @@ class PIDController(multiprocessing.Process):
             self.outputdict['DateTime'] = datetime.datetime.now()
             self.outputdict['Temperature'] = mv
             self.outputdict['Duty'] = duty
-            self.outputdict['Setpoint'] = sp
+            self.outputdict['Setpoint'] = self.setpoint
             self.outputdict['SafetyTemp'] = safetytemp
             self.outputdict['SafetyTrigger'] = self.safetytrigger
 

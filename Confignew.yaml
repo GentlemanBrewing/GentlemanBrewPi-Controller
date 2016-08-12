@@ -28,7 +28,7 @@ Steam Boiler:
   safety_value: 0
   setpoint: 0
   sleeptime: 5
-  ssrduty: 1
+  ssrduty: 4
   ssrmode: pwm
   ssrpin: 4
   terminate: 0
