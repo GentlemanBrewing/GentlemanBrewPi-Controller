@@ -28,7 +28,7 @@ Steam Boiler:
   safety_value: 0
   setpoint:
     time: ['2016-08-12 09:00:00', '2016-08-13 09:00:00']
-    value: [20, 20]
+    value: [20, 25]
   sleeptime: 5
   ssrduty: 4
   ssrmode: pwm
