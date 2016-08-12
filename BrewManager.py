@@ -140,7 +140,10 @@ class BrewManager(multiprocessing.Process):
             updatedvars = self.loadconfig('newvar.yaml')
             for processname, variables in updatedvars.items():
                 self.processdata[processname]['inputqueue'].put(variables)
-            os.remove('newvar.yaml')
+            try:
+                os.remove('newvar.yaml')
+            except FileNotFoundError:
+                pass
             time.sleep(1)
 
   
