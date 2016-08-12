@@ -47,7 +47,7 @@ class Buzzer(multiprocessing.Process):
                 self.variabledict['duration'] = 0
                 GPIO.cleanup()
 
-            time.sleep(1)
+            time.sleep(0.1)
 
 
 # Main Manager class
