@@ -100,6 +100,7 @@ class PIDController(multiprocessing.Process):
             relaystate[relay] = 0
         relayoutput = 0
         GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.variabledict['ssrpin'],GPIO.OUT)
         pwm = GPIO.PWM(self.variabledict['ssrpin'], 1)
         pwm.start(0)
 
@@ -217,6 +218,7 @@ class PIDController(multiprocessing.Process):
                 GPIO.output(relaypin[relay], relaystate[relay])
 
             # Change ssr PWM
+            pwm.ChangeFrequency(self.variabledict['pwm_frequency'])
             pwm.ChangeDutyCycle(ssr_pwmduty)
 
             # Update output dictionary
