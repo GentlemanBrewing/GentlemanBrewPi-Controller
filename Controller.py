@@ -46,7 +46,7 @@ class PIDController(multiprocessing.Process):
             'safety_k3': 0,
             'safety_value': 0,
             'safety_mode': "off",
-            'umax': 0,
+            'umax': 100,
             'umin': 0,
             'moutput': "auto",
             'ssrduty': 1,
