@@ -30,7 +30,7 @@ Steam Boiler:
   setpoint:
     time: ['2016-08-12 09:00:00', '2016-08-13 09:00:00', '2016-08-14 09:00:00']
     value: [30, 35, 40]
-  sleeptime: 20
+  sleeptime: 5
   ssrduty: 4
   ssrmode: pwm
   ssrpin: 22
