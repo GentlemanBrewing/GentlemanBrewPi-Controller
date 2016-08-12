@@ -94,6 +94,7 @@ class BrewManager(multiprocessing.Process):
         # Initialize processes as per config file
         for process, pvariables in self.processinformation.items():
             if pvariables['terminate'] == 0:
+                self.processdata[process] = {}
                 self.processdata[process]['inputqueue'] = multiprocessing.Queue()
                 self.processdata[process]['outputqueue'] = multiprocessing.Queue()
                 Controller.PIDController(self.processdata[process]['inputqueue'], self.processdata[process]['outputqueue']).start()
