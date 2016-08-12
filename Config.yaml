@@ -1,1 +1,43 @@
-{Kd: 0, Ki: 300, Kp: 5000, Setpoint: 30}
+Steam Boiler:
+  control_channel: 1
+  control_k1: 0
+  control_k2: 27
+  control_k3: 0
+  kd: 0
+  ki: 0
+  kp: 0
+  moutput: auto
+  pwm_frequency: 1
+  relayduty:
+    Relay1: 0
+    Relay2: 0
+    Relay3: 0
+    Relay4: 0
+    Relay5: 0
+  relaypin:
+    Relay1: 0
+    Relay2: 0
+    Relay3: 0
+    Relay4: 0
+    Relay5: 0
+  safety_channel: 2
+  safety_k1: 0
+  safety_k2: 27
+  safety_k3: 0
+  safety_mode: 'off'
+  safety_value: 0
+  setpoint: 0
+  sleeptime: 5
+  ssrduty: 4
+  ssrmode: pwm
+  ssrpin: 4
+  terminate: 0
+  umax: 0
+  umin: 0
+
+Buzzer:
+  frequency: 2000
+  duty: 50
+  duration: 0
+  pin: 12
+  terminate: 1
