@@ -193,7 +193,7 @@ class PIDController(multiprocessing.Process):
                 relayoutput += relaystate[relay] * relayduty[relay]
 
             # Determine Required Output
-            output = duty * max_output
+            output = duty /100 * max_output
 
             # Check which relays should be switched on or off
             # If at max duty all should be on
