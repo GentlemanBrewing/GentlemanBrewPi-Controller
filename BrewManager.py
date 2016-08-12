@@ -101,6 +101,7 @@ class BrewManager(multiprocessing.Process):
                 self.processdata[process]['inputqueue'].put(pvariables)
 
         # Create buzzer process
+        self.processdata['Buzzer'] = {}
         self.processdata['Buzzer']['inputqueue'] = multiprocessing.Queue()
         Buzzer(self.processdata['Buzzer']['inputqueue']).start()
         self.processdata['Buzzer']['inputqueue'].put(self.processinformation['Buzzer'])
