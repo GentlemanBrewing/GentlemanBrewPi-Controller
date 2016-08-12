@@ -19,6 +19,11 @@ class PIDController(multiprocessing.Process):
         self.inputqueue = inputqueue
         self.outputqueue = outputqueue
 
+        # Configure ADC correctly
+        bus = i2c_helper.get_smbus()
+        adc = ADCPi(bus, 0x68, 0x69, 16)
+        adc.set_pga(8)
+
         # Setup variables dictionary with initial values
         self.variabledict = {
             'sleeptime': 5,
@@ -139,7 +144,7 @@ class PIDController(multiprocessing.Process):
 
                 # Read New Measured Variable
                 mvchannel = self.variabledict['control_channel']
-                v = ADCPi.read_voltage(mvchannel)
+                v = adc.read_voltage(mvchannel)
                 mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
                 # Update error variables
@@ -165,7 +170,7 @@ class PIDController(multiprocessing.Process):
             # Check safety variable
             if self.variabledict['safety_mode'] != "off":
                 svchannel = self.variabledict['safety_channel']
-                sv = ADCPi.read_voltage(svchannel)
+                sv = adc.read_voltage(svchannel)
                 safetytemp = self.variabledict['safety_k1'] * sv * sv + self.variabledict['safety_k2'] * sv + self.variabledict['safety_k3']
 
                 if self.variabledict['safety_mode'] == "max" and self.variabledict['safety_value'] > safetytemp:
