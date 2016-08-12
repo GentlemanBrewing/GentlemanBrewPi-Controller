@@ -64,9 +64,13 @@ class BrewManager(multiprocessing.Process):
 
     # Function for loading config file
     def loadconfig(self, filename):
-        f = open(filename)
-        datamap = yaml.safe_load(f)
-        f.close()
+        try:
+            f = open(filename)
+            datamap = yaml.safe_load(f)
+            f.close()
+        except FileNotFoundError:
+            datamap = {}
+            pass
         return datamap
   
     # Function for updating config file
@@ -133,15 +137,11 @@ class BrewManager(multiprocessing.Process):
                 self.writeconfig(self.processinformation)
 
             # Put new variable in correct queue
-            try:
-                updatedvars = self.loadconfig('newvar.yaml')
-                for processname, variables in updatedvars.items():
-                    self.processdata[processname]['inputqueue'].put(variables)
-                os.remove('newvar.yaml')
-                time.sleep(1)
-
-            except NameError:
-                pass
+            updatedvars = self.loadconfig('newvar.yaml')
+            for processname, variables in updatedvars.items():
+                self.processdata[processname]['inputqueue'].put(variables)
+            os.remove('newvar.yaml')
+            time.sleep(1)
 
   
 if __name__ == "__main__":
