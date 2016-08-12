@@ -34,7 +34,7 @@ Steam Boiler:
   ssrmode: pwm
   ssrpin: 22
   terminate: 0
-  umax: 0
+  umax: 100
   umin: 0
 
 Buzzer:

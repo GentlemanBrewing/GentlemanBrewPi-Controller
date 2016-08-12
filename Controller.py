@@ -177,7 +177,7 @@ class PIDController(multiprocessing.Process):
             else:
                 safetytemp = "off"
 
-            duty = u / self.variabledict['umax']
+            duty = u / self.variabledict['umax'] * 100
 
             # Determine current output
             for relay in sorted(relayduty.keys()):
