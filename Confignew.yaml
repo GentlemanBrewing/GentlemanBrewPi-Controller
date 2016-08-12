@@ -1,7 +1,4 @@
-process_data:
-  inputqueue: 0
-  outputqueue: 0
-process_variables:
+Steam Boiler:
   control_channel: 1
   control_k1: 0
   control_k2: 27
@@ -37,3 +34,10 @@ process_variables:
   terminate: 0
   umax: 0
   umin: 0
+
+Buzzer:
+  frequency: 2000
+  duty: 50
+  duration: 0
+  pin: 12
+  terminate: 1

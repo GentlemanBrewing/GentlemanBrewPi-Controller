@@ -8,6 +8,46 @@ import RPi.GPIO as GPIO
 import sqlite3
 import yaml
 import Controller
+import os
+
+
+# Buzzer class
+class Buzzer(multiprocessing.Process):
+    def __init__(self, inputqueue):
+        multiprocessing.Process.__init__(self)
+        self.inputqueue = inputqueue
+
+        self.variabledict = {
+            'frequency': 2000,
+            'duty': 50,
+            'duration': 1
+            'pin': 12
+            'terminate': 1
+        }
+
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(self.variabledict['pin'], GPIO.OUT)
+
+    def run(self):
+        while True:
+            # Check for new input
+            try:
+                updated_variables = self.inputqueue.get()
+                for variable, value in updated_variables.items():
+                    self.variabledict[variable] = value
+            except Queue.Empty:
+
+            if self.variabledict['duration'] != 0:
+                p = GPIO.PWM(self.variabledict['pin'], self.variabledict['frequency'])
+                p.start(self.variabledict['duty'])
+                time.sleep(self.variabledict['duration'])
+                p.stop()
+                self.variabledict['duration'] = 0
+                GPIO.cleanup()
+
+            time.sleep(1)
+
+
 
 
 # Main Manager class
@@ -15,27 +55,31 @@ class BrewManager(multiprocessing.Process):
 
     def __init__(self):
         multiprocessing.Process.__init__(self)
-        self.processinformation = self.loadconfig()
+        self.processinformation = self.loadconfig('Config.yaml')
         self.conn = sqlite3.connect('Log.db')
         self.cur = self.conn.cursor()
         self.counter = 0
+        self.processdata = {}
 
     # Function for loading config file
-    def loadconfig(self):
-        f = open('Config.yaml')
+    def loadconfig(self, filename):
+        f = open(filename)
         datamap = yaml.safe_load(f)
         f.close()
         return datamap
   
     # Function for updating config file
-    def writeconfig(data):
+    def writeconfig(self, data):
         f = open('Config.yaml', "w")
         yaml.dump(data, f)
         f.close()
 
     def buzzer(self, frequency, duration):
-        #Code for buzzer here
-
+        buzzervariables = {
+            'frequency': frequency,
+            'duration': duration
+        }
+        self.processdata['Buzzer']['inputqueue'].put(buzzervariables)
 
     # Function for writing to database
     def write_to_database(self):
@@ -48,12 +92,17 @@ class BrewManager(multiprocessing.Process):
 
     def run(self):
         # Initialize processes as per config file
-        for process in self.processinformation.items():
-            if process['process_variables']['terminate'] == 0:
-                process['process_data']['inputqueue'] = multiprocessing.Queue()
-                process['process_data']['outputqueue'] = multiprocessing.Queue()
-                Controller.PIDController( process['process_data']['inputqueue'], process['process_data']['outputqueue']).start()
-                process['process_data']['inputqueue'].put(process['process_variables'])
+        for process, pvariables in self.processinformation.items():
+            if pvariables['terminate'] == 0:
+                self.processdata[process]['inputqueue'] = multiprocessing.Queue()
+                self.processdata[process]['outputqueue'] = multiprocessing.Queue()
+                Controller.PIDController(self.processdata[process]['inputqueue'], self.processdata[process]['outputqueue']).start()
+                self.processdata[process]['inputqueue'].put(pvariables)
+
+        # Create buzzer process
+        self.processdata['Buzzer']['inputqueue'] = multiprocessing.Queue()
+        Buzzer(self.processdata['Buzzer']['inputqueue']).start()
+        self.processdata['Buzzer']['inputqueue'].put(self.processinformation['Buzzer'])
 
         # Main loop
         while True:
@@ -75,11 +124,14 @@ class BrewManager(multiprocessing.Process):
                 self.writeconfig(self.processinformation)
 
             # Put new variable in correct queue
-            processname = #variable here
-            self.processinformation[processname]['process_data']['inputqueue'].put(#variable here)
+            try:
+                updatedvars = self.loadconfig('newvar.yaml')
+                for processname, variables in updatedvars.items()
+                    self.processdata[processname]['inputqueue'].put(variables)
+                os.remove('newvar.yaml')
+                time.sleep(1)
 
-            time.sleep(1)
-
+            except NameError:
 
   
 if __name__ == 'main':
