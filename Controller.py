@@ -249,7 +249,7 @@ class PIDController(multiprocessing.Process):
                 break
 
             #For debugging
-            print(mv)
+            print(self.setpoint)
 
             # Wait before running loop again
             time.sleep(self.variabledict['sleeptime'])
