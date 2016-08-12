@@ -80,8 +80,6 @@ class PIDController(multiprocessing.Process):
         else:
             self.setpoint = "off"
             for x in range(setpointchanges, -1, -1):
-                print('x')
-                print(x)
                 # Check for current timeframe and adjust setpoint by interpolation
                 if datetime.datetime.strptime(timelist[x], '%Y-%m-%d %H:%M:%S') < timenow:
                     time1 = datetime.datetime.strptime(timelist[x], '%Y-%m-%d %H:%M:%S')
