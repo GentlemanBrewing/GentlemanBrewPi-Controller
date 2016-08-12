@@ -50,7 +50,7 @@ class PIDController(multiprocessing.Process):
             'umin': 0,
             'moutput': "auto",
             'ssrduty': 1,
-            'ssrpin': 4,
+            'ssrpin': 27,
             'ssrmode': "pwm",
             'pwm_frequency': 1,
             'relayduty': {'Relay1': 0, 'Relay2': 0, 'Relay3': 0, 'Relay4': 0, 'Relay5': 0},
