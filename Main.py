@@ -25,7 +25,7 @@ def Writeconfig(data):
 
 
 variables = Loadconfig()
-Setpoint = variables['Setpoint']
+Setpoint = variables['Steam Boiler']['Setpoint']
 	
 Relay_Output = 0
 GPIO.setmode(GPIO.BCM)
