@@ -59,7 +59,6 @@ class PIDController(multiprocessing.Process):
         }
 
         # Initialize required variables
-        self.output = 0
         self.setpoint = 0
         self.setpointchanges = 2
         self.outputdict = {}
@@ -78,7 +77,7 @@ class PIDController(multiprocessing.Process):
         elif timenow >= datetime.datetime.strptime(timelist[setpointchanges], '%Y-%m-%d %H:%M:%S'):
             self.setpoint = "off"
         else:
-            self.setpoint = 2
+            self.setpoint = "off"
             for x in range(setpointchanges, -1, -1):
                 print('x')
                 print(x)
@@ -138,21 +137,19 @@ class PIDController(multiprocessing.Process):
             # Get new setpoint based on current date and time
             self.setpoint_interpolate()
 
+            # Update control parameters
+            k1 = self.variabledict['kp'] + self.variabledict['ki'] + self.variabledict['kd']
+            k2 = - self.variabledict['ki'] - 2 * self.variabledict['kd']
+            k3 = self.variabledict['kd']
+            sp = self.setpoint
+
+            # Read New Measured Variable
+            mvchannel = self.variabledict['control_channel']
+            v = self.adc.read_voltage(mvchannel)
+            mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
+
             # Check if setpoint is active and calculate control output if it is
-            mv = 0
             if self.setpoint != "off":
-                # Update control parameters
-                k1 = self.variabledict['kp'] + self.variabledict['ki'] + self.variabledict['kd']
-                k2 = - self.variabledict['ki'] - 2 * self.variabledict['kd']
-                k3 = self.variabledict['kd']
-                sp = self.setpoint
-                u = self.output
-
-                # Read New Measured Variable
-                mvchannel = self.variabledict['control_channel']
-                v = self.adc.read_voltage(mvchannel)
-                mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
-
                 # Update error variables
                 e2 = e1
                 e1 = e
