@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import multiprocessing
+import queue
 import datetime
 import time
 from ABE_ADCPi import ADCPi
@@ -119,7 +120,7 @@ class PIDController(multiprocessing.Process):
                 updated_variables = self.inputqueue.get_nowait
                 for variable, value in updated_variables.items():
                     self.variabledict[variable] = value
-            except Queue.Empty:
+            except queue.Empty:
                 pass
 
             # Get new setpoint based on current date and time

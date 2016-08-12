@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import multiprocessing
+import queue
 import datetime
 import time
 from ABE_ADCPi import ADCPi
@@ -35,7 +36,7 @@ class Buzzer(multiprocessing.Process):
                 updated_variables = self.inputqueue._nowait()
                 for variable, value in updated_variables.items():
                     self.variabledict[variable] = value
-            except Queue.Empty:
+            except queue.Empty:
                 pass
 
             if self.variabledict['duration'] != 0:
@@ -120,7 +121,7 @@ class BrewManager(multiprocessing.Process):
                     self.data['ProcessName'] = process
                     # log to database
                     self.write_to_database()
-                except  Queue.Empty:
+                except queue.Empty:
                     pass
 
             # Write to config.yaml every 3600 iterations
