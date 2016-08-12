@@ -5,6 +5,7 @@ import queue
 import datetime
 import time
 from ABE_ADCPi import ADCPi
+from ABE_Helpers import ABEHelpers
 import RPi.GPIO as GPIO
 
 
@@ -20,6 +21,7 @@ class PIDController(multiprocessing.Process):
         self.outputqueue = outputqueue
 
         # Configure ADC correctly
+        i2c_helper = ABEHelpers()
         bus = i2c_helper.get_smbus()
         adc = ADCPi(bus, 0x68, 0x69, 16)
         adc.set_pga(8)
