@@ -79,7 +79,7 @@ class PIDController(multiprocessing.Process):
             self.setpoint = "off"
         else:
             self.setpoint = 2
-            for x in range(setpointchanges, 0, -1):
+            for x in range(setpointchanges, -1, -1):
                 print('x')
                 print(x)
                 # Check for current timeframe and adjust setpoint by interpolation
