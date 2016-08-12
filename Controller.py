@@ -131,7 +131,7 @@ class PIDController(multiprocessing.Process):
             # Determine maximum output
             for relay in sorted(relayduty.keys()):
                 max_relay_output += relayduty[relay]
-            max_output = self.variabledict['ssrduty'] + max_relay_output
+            max_output = self.variabledict['ssrduty'] * .99 + max_relay_output
 
             # Get new setpoint based on current date and time
             self.setpoint_interpolate()
