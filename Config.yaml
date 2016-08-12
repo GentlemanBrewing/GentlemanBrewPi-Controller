@@ -6,7 +6,7 @@ Steam Boiler:
   control_k3: 0
   kd: 0
   ki: 0
-  kp: 1
+  kp: 1000
   moutput: auto
   pwm_frequency: 0.1
   relayduty:
