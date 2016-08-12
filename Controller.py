@@ -96,7 +96,7 @@ class PIDController(multiprocessing.Process):
         ssrduty = self.variabledict['ssrduty']
         max_relay_output = 0
         relaystate = {}
-        for relay, in relayduty.keys():
+        for relay in relayduty.keys():
             relaystate = {relay: 0}
         relayoutput = 0
         GPIO.setmode(GPIO.BCM)

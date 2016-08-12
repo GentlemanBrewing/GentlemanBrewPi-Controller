@@ -33,7 +33,7 @@ class Buzzer(multiprocessing.Process):
         while True:
             # Check for new input
             try:
-                updated_variables = self.inputqueue._nowait()
+                updated_variables = self.inputqueue.get_nowait()
                 for variable, value in updated_variables.items():
                     self.variabledict[variable] = value
             except queue.Empty:
