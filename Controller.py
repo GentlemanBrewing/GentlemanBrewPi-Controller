@@ -118,7 +118,6 @@ class PIDController(multiprocessing.Process):
 
             # Check for updated variables
             try:
-                updated_variables = {}
                 updated_variables = self.inputqueue.get_nowait
                 for variable, value in updated_variables.items():
                     self.variabledict[variable] = value

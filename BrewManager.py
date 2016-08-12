@@ -64,13 +64,9 @@ class BrewManager(multiprocessing.Process):
 
     # Function for loading config file
     def loadconfig(self, filename):
-        try:
-            f = open(filename)
-            datamap = yaml.safe_load(f)
-            f.close()
-        except FileNotFoundError:
-            datamap = {}
-            pass
+        f = open(filename)
+        datamap = yaml.safe_load(f)
+        f.close()
         return datamap
   
     # Function for updating config file
@@ -137,10 +133,12 @@ class BrewManager(multiprocessing.Process):
                 self.writeconfig(self.processinformation)
 
             # Put new variable in correct queue
-            updatedvars = self.loadconfig('newvar.yaml')
-            for processname, variables in updatedvars.items():
-                self.processdata[processname]['inputqueue'].put(variables)
             try:
+                f = open('newvar.yaml')
+                updatedvars = yaml.safe_load(f)
+                f.close()
+                for processname, variables in updatedvars.items():
+                    self.processdata[processname]['inputqueue'].put(variables)
                 os.remove('newvar.yaml')
             except FileNotFoundError:
                 pass
