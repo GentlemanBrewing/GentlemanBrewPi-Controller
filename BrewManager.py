@@ -141,6 +141,6 @@ class BrewManager(multiprocessing.Process):
 
   
 if __name__ == "__main__":
-    man = BrewManager
+    man = BrewManager()
     man.start()
     man.join()
