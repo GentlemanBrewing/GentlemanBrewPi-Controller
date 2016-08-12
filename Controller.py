@@ -251,6 +251,7 @@ class PIDController(multiprocessing.Process):
             # Wait before running loop again
             time.sleep(self.variabledict['sleeptime'])
 
-    # Ensure GPIO is cleaned up before exiting loop
-    GPIO.cleanup()
-    print('exiting')
+        # Ensure GPIO is cleaned up before exiting loop
+        GPIO.cleanup()
+        print('exiting')
+        print(self.variabledict['name'])
