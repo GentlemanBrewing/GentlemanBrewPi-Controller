@@ -135,8 +135,7 @@ class BrewManager(multiprocessing.Process):
                 self.counter += 1
             else:
                 self.counter = 0
-                #self.writeconfig(self.processinformation)
-                self.buzzer(2000, 2)
+                self.writeconfig(self.processinformation)
 
 
             # Put new variable in correct queue
@@ -150,6 +149,8 @@ class BrewManager(multiprocessing.Process):
             except FileNotFoundError:
                 pass
             time.sleep(1)
+
+
 
   
 if __name__ == "__main__":
