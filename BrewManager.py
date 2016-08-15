@@ -63,6 +63,7 @@ class BrewManager(multiprocessing.Process):
         self.counter = 0
         self.processdata = {}
         self.data = {}
+        self.process_output = {}
 
     # Function for loading config file
     def loadconfig(self, filename):
@@ -103,7 +104,6 @@ class BrewManager(multiprocessing.Process):
                 self.processdata[process]['inputqueue'].put(pvariables)
                 Controller.PIDController(self.processdata[process]['inputqueue'], self.processdata[process]['outputqueue']).start()
 
-
         # Create buzzer process
         self.processdata['Buzzer'] = {}
         self.processdata['Buzzer']['inputqueue'] = multiprocessing.Queue()
@@ -121,14 +121,18 @@ class BrewManager(multiprocessing.Process):
                         self.data = self.processdata[process]['outputqueue'].get_nowait()
                         # Check for Safetytrigger from process and sound buzzer if present
                         if self.data['SafetyTrigger'] == True:
-                            self.buzzer(4000,4)
+                            self.buzzer(4000, 4)
                         # Add process name to the collected variables
                         self.data['ProcessName'] = process
+                        # Record in process_output
+                        self.process_output[process] = self.data['Temperature']
                         # log to database
                         self.write_to_database()
                     except queue.Empty:
                         break
                         pass
+
+            # Update the web server
 
             # Write to config.yaml every 3600 iterations
             if self.counter < 30:
@@ -136,7 +140,6 @@ class BrewManager(multiprocessing.Process):
             else:
                 self.counter = 0
                 self.writeconfig(self.processinformation)
-
 
             # Put new variable in correct queue
             try:
