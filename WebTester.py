@@ -7,7 +7,7 @@ import yaml
 import WebServer
 
 
-class TestWeb(multiprocessing.Process):
+class WebTest(multiprocessing.Process):
 
     def __init__(self):
         multiprocessing.Process.__init__(self)
@@ -53,6 +53,6 @@ class TestWeb(multiprocessing.Process):
 
 
 if __name__ == "__main__":
-    man = TestWeb()
+    man = WebTest()
     man.start()
     man.join()
