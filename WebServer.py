@@ -51,11 +51,14 @@ def queuemonitor(inputqueue, outputqueue):
     # Check for new data from main process
     data = {}
     while True:
-        try:
-            data = inputqueue.get_nowait()
-            WSHandler.send_updates(data)
-        except queue.Empty:
-            break
+        while True:
+            try:
+                data = inputqueue.get_nowait()
+                WSHandler.send_updates(data)
+            except queue.Empty:
+                break
+        # sleep
+        time.sleep(1)
 
 def main(inputqueue, outputqueue):
 
