@@ -49,13 +49,16 @@ application = tornado.web.Application([
 
 def queuemonitor(inputqueue, outputqueue):
     # Check for new data from main process
+    print('queuemonitor started')
     data = {}
     while True:
         while True:
             try:
                 data = inputqueue.get_nowait()
                 WSHandler.send_updates(data)
+                print('data aquired')
             except queue.Empty:
+                print('no data')
                 break
         # sleep
         time.sleep(1)

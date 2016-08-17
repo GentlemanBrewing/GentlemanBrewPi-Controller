@@ -12,6 +12,7 @@ class WebTest(multiprocessing.Process):
     def __init__(self):
         multiprocessing.Process.__init__(self)
         self.processinformation = self.loadconfig('Config.yaml')
+        print("config loaded")
         self.processes = {'Steam Boiler': 90, 'Fermenter1': 17, 'Fermenter2': 18, 'Fermenter3': 19}
         self.process_output = {}
         self.process_output = self.processes
@@ -28,10 +29,12 @@ class WebTest(multiprocessing.Process):
         return datamap
 
     def run(self):
+        print("starting to run")
         # put data in queue
         self.inputqueue.put(self.process_output)
         # start web server
-        WebServer.main(self.inputqueue, self.outputqueue)
+        webserv = multiprocessing.Process(target=WebServer.main, args=(self.inputqueue, self.outputqueue))
+        webserv.start()
         while True:
             # Generate data for webserver
             for process, temp in self.processes.items():
@@ -46,10 +49,13 @@ class WebTest(multiprocessing.Process):
                 self.process_output[process] = temp
 
             # Put updated data in queue
-            self.outputqueue.put(self.process_output)
+            self.inputqueue.put(self.process_output)
+
+            print("data in queue")
+            print(self.process_output)
 
             # Sleep
-            time.sleep(1)
+            time.sleep(10)
 
 
 if __name__ == "__main__":
