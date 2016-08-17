@@ -2,9 +2,7 @@
 
 import multiprocessing
 import queue
-import datetime
 import time
-from ABE_ADCPi import ADCPi
 import RPi.GPIO as GPIO
 import sqlite3
 import yaml
