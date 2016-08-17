@@ -126,11 +126,11 @@ class BrewManager(multiprocessing.Process):
                         self.process_output[process] = self.data['Temperature']
                         # log to database
                         self.write_to_database()
+                        # Update the web server
+                        # Code here
                     except queue.Empty:
                         break
                         pass
-
-            # Update the web server
 
             # Write to config.yaml every 3600 iterations
             if self.counter < 30:
