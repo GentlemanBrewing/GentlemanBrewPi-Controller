@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#! /usr/bin/env python3
 
 import multiprocessing
 import queue
@@ -133,7 +133,7 @@ class BrewManager(multiprocessing.Process):
                         pass
 
             # Write to config.yaml every 3600 iterations
-            if self.counter < 30:
+            if self.counter < 3600:
                 self.counter += 1
             else:
                 self.counter = 0

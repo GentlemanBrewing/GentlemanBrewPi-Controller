@@ -47,18 +47,19 @@ application = tornado.web.Application([
     (r'/', IndexHandler),
 ])
 
-def queuemonitor(webinputqueue):
+def queuemonitor(inputqueue, outputqueue):
     # Check for new data from main process
     data = {}
     while True:
         try:
-            data = webinputqueue.get_nowait()
+            data = inputqueue.get_nowait()
             WSHandler.send_updates(data)
         except queue.Empty:
             break
 
-def main():
-    threading.Thread(target=queuemonitor).start()
+def main(inputqueue, outputqueue):
+
+    threading.Thread(target=queuemonitor, args=(inputqueue, outputqueue)).start()
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8000)
     tornado.ioloop.IOLoop.instance().start()
