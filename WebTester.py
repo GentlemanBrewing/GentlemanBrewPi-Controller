@@ -6,11 +6,13 @@ import time
 import yaml
 import WebServer
 
+
 class TestWeb(multiprocessing.Process):
+
     def __init__(self):
         multiprocessing.Process.__init__(self)
         self.processinformation = self.loadconfig('Config.yaml')
-        self.processes = {'Steam Boiler': 90, 'Fermenter1': 17, 'Fermenter2': 18, 'Fermenter3': 19,}
+        self.processes = {'Steam Boiler': 90, 'Fermenter1': 17, 'Fermenter2': 18, 'Fermenter3': 19}
         self.process_output = {}
         self.process_output = self.processes
 
@@ -46,12 +48,8 @@ class TestWeb(multiprocessing.Process):
             # Put updated data in queue
             self.outputqueue.put(self.process_output)
 
-            #Sleep
+            # Sleep
             time.sleep(1)
-
-
-
-
 
 
 if __name__ == "__main__":
