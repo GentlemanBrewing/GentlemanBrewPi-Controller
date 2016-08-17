@@ -52,6 +52,7 @@ class WebTest(multiprocessing.Process):
             self.inputqueue.put(self.process_output)
 
             print("data in queue")
+
             print(self.process_output)
 
             # Sleep
