@@ -1,2 +1,1 @@
-# GentlemanBrewPi-Controller
-Controller for GentlemanBrewPi
+BrewManager for controller everything in the brewhouse
