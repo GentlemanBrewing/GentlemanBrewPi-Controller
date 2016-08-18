@@ -164,22 +164,15 @@ function opensubTab(evt, subtabName) {
         var dict = JSON.parse(data);
         var concatname
         for (var process in dict) {
-            document.getElementById("demo").innerHTML = "running";
-            /*
             if (dict.hasOwnProperty(process)) {
-                for (var pvariable in dict[process] {
+                for (var pvariable in dict[process]) {
                     if (dict[process].hasOwnProperty(pvariable)) {
                         concatname = process + pvariable;
-                        writeToScreen(namestr)
-                        //document.getElementById(key).value = dict[key];
+                        document.getElementById(concatname).value = dict[process][pvariable];
                     }
                 }
             }
-            */
         }
-        //var key = "Steam Boiler"
-        //var chngeID = "demo";
-        //document.getElementById(key).value = dict[key];
     }
 
     function testWebSocket() {
@@ -254,7 +247,7 @@ function opensubTab(evt, subtabName) {
     <div id="{{process}}" class="tabcontent">
         <h3>Paris</h3>
         <p>Paris is the capital of France.</p>
-        <!--
+
         <div class="variableform">
         {% for variable in pdict[process].keys() %}
             <label for="{{str(process) + str(variable)}}">{{variable}}</label>
@@ -262,7 +255,7 @@ function opensubTab(evt, subtabName) {
             <br>
         {% end %}
         </div>
-        -->
+
 
     </div>
 {% end %}
