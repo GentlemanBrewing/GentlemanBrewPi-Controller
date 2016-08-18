@@ -1,4 +1,4 @@
-#! /usr/bin/env python3
+#!/usr/bin/python3
 
 import multiprocessing
 import queue
@@ -232,7 +232,7 @@ class PIDController(multiprocessing.Process):
 
             # Calculate PWM duty needed from ssr
             ssroutput = output - relayoutput
-            ssr_pwmduty = (ssroutput * 100) // ssrduty
+            ssr_pwmduty = ( ssroutput * 100 ) // ssrduty
             print(ssr_pwmduty)
 
             # Activate pins to switch relays

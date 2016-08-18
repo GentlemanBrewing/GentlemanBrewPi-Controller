@@ -1,14 +1,15 @@
-#! /usr/bin/env python3
+#!/usr/bin/python3
 
 import multiprocessing
 import queue
+import datetime
 import time
+from ABE_ADCPi import ADCPi
 import RPi.GPIO as GPIO
 import sqlite3
 import yaml
 import Controller
 import os
-import WebServer
 
 
 # Buzzer class
@@ -61,9 +62,7 @@ class BrewManager(multiprocessing.Process):
         self.cur = self.conn.cursor()
         self.counter = 0
         self.processdata = {}
-        self.controllerdata = {}
-        self.process_output = self.processinformation
-        self.webdata = {}
+        self.data = {}
 
     # Function for loading config file
     def loadconfig(self, filename):
@@ -90,82 +89,57 @@ class BrewManager(multiprocessing.Process):
         try:
             with self.conn:
                 self.conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint, SafetyTemp, SafetyTrigger) VALUES (:DateTime, :ProcessName,'
-                                  ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger)', self.controllerdata)
+                                  ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger)', self.data)
         except sqlite3.IntegrityError:
             self.buzzer(2000, 1)
 
-    # Main running function
     def run(self):
-        # Start the buzzer process
+        # Initialize processes as per config file
+        for process, pvariables in self.processinformation.items():
+            if pvariables['terminate'] == 0:
+                self.processdata[process] = {}
+                self.processdata[process]['inputqueue'] = multiprocessing.Queue()
+                self.processdata[process]['outputqueue'] = multiprocessing.Queue()
+                self.processdata[process]['inputqueue'].put(pvariables)
+                Controller.PIDController(self.processdata[process]['inputqueue'], self.processdata[process]['outputqueue']).start()
+
+
+        # Create buzzer process
         self.processdata['Buzzer'] = {}
         self.processdata['Buzzer']['inputqueue'] = multiprocessing.Queue()
         self.processdata['Buzzer']['outputqueue'] = multiprocessing.Queue()
         self.processdata['Buzzer']['inputqueue'].put(self.processinformation['Buzzer'])
         Buzzer(self.processdata['Buzzer']['inputqueue']).start()
 
-        # Start the web server process
-        self.processdata['WebServ'] = {}
-        self.processdata['WebServ']['inputqueue'] = multiprocessing.Queue()
-        self.processdata['WebServ']['outputqueue'] = multiprocessing.Queue()
-        self.processdata['WebServ']['inputqueue'].put(self.process_output)
-        webserver = multiprocessing.Process(target=WebServer.main, args=(self.processdata['WebServ']['inputqueue'], self.processdata['WebServ']['outputqueue']))
-        webserver.start()
-
         # Main loop
         while True:
 
-            # Start new processes not already running
-            for process, pvariables in self.processinformation.items():
-                if pvariables['terminate'] == 0 and process in self.processdata.keys() is False:
-                    self.processdata[process] = {}
-                    self.processdata[process]['inputqueue'] = multiprocessing.Queue()
-                    self.processdata[process]['outputqueue'] = multiprocessing.Queue()
-                    self.processdata[process]['inputqueue'].put(pvariables)
-                    Controller.PIDController(self.processdata[process]['inputqueue'],
-                                             self.processdata[process]['outputqueue']).start()
-                    self.buzzer(2000, 1)
-
-            # Update the dictionary for the web output
-            self.process_output = self.processinformation
             # Get output from process and record in database
             for process in self.processdata.keys():
                 while True:
                     try:
-                        self.controllerdata = self.processdata[process]['outputqueue'].get_nowait()
+                        self.data = self.processdata[process]['outputqueue'].get_nowait()
                         # Check for Safetytrigger from process and sound buzzer if present
-                        if self.controllerdata['SafetyTrigger'] == True:
-                            self.buzzer(3500, 3)
+                        if self.data['SafetyTrigger'] == True:
+                            self.buzzer(4000,4)
                         # Add process name to the collected variables
-                        self.controllerdata['ProcessName'] = process
-                        # Record the output variables in process_output for web server
-                        for outputvar in self.controllerdata.keys():
-                            self.process_output[process][outputvar] = self.controllerdata[outputvar]
+                        self.data['ProcessName'] = process
                         # log to database
                         self.write_to_database()
                     except queue.Empty:
                         break
+                        pass
 
-            # Send updated process_output to web server
-            self.processdata['WebServ']['inputqueue'].put(self.process_output)
+            # Write to config.yaml every 3600 iterations
+            if self.counter < 30:
+                self.counter += 1
+            else:
+                self.counter = 0
+                #self.writeconfig(self.processinformation)
+                self.buzzer(2000, 2)
 
-            # Get information from webserver
-            while True:
-                try:
-                    self.webdata = self.processdata['WebServ']['outputqueue'].get_nowait()
-                    for process in self.webdata.keys():
-                        if process in self.processinformation.keys() is False:
-                            self.processinformation[process] = {}
-                        for pvar in self.webdata[process].keys():
-                            self.processinformation[process][pvar] = self.webdata[process][pvar]
-                except queue.Empty:
-                    break
 
-            # Put new variables from webserver in process queues if process is running
-            for processname, variables in self.webdata.items():
-                if processname in self.processdata.keys() is True:
-                    self.processdata[processname]['outputqueue'].put(variables)
-
-            # Put new variable from newvar.yaml in correct queue
+            # Put new variable in correct queue
             try:
                 f = open('newvar.yaml')
                 updatedvars = yaml.safe_load(f)
@@ -175,19 +149,7 @@ class BrewManager(multiprocessing.Process):
                 os.remove('newvar.yaml')
             except FileNotFoundError:
                 pass
-
-            # Write to config.yaml every 3600 iterations
-            if self.counter < 3600:
-                self.counter += 1
-            else:
-                self.counter = 0
-                self.writeconfig(self.processinformation)
-
             time.sleep(1)
-
-
-
-
 
   
 if __name__ == "__main__":
