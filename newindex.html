@@ -6,6 +6,7 @@
     var wsUri = "ws://localhost:8000/ws";
     var websocket = new WebSocket(wsUri);
     var output;
+    var msgtext= document.getElementById("demo").innerHTML;
     function init() {
         output = document.getElementById("outputDiv");
         if (!'WebSocket' in window){
@@ -15,7 +16,7 @@
         }
     }
     function onOpen(evt) {
-        writeToScreen("CONNECTED");
+        msgtext = "Opening";
         doSend("Hi there!");
     }
     function onClose(evt) {

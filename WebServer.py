@@ -37,7 +37,10 @@ class IndexHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     def get(self):
         #self.write("This is your response")
-        self.render("index.html")
+        newdict = {"Steam Boiler": 100, "Fermenter1": 10, "Fermenter2": 12, "Fermenter3": 30}
+        pdict = {"Steam Boiler": 90, "Fermenter1": 17, "Fermenter2": 18, "Fermenter3": 19}
+        list = ["Item1", "Item2", "Item4"]
+        self.render("index.html", items=list, pdict=pdict, newdict=newdict)
         print("new web page opened")
         #we don't need self.finish() because self.render() is fallowed by self.finish() inside tornado
         #self.finish()
