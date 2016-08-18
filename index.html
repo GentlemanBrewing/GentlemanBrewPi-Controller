@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <meta charset="utf-8" />
 <title>WebSocket Test</title>
 <script language="javascript" type="text/javascript">
@@ -23,6 +24,7 @@
     }
     function onMessage(evt) {
         writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
+        writeToInput(evt.data);
     }
     function onError(evt) {
         writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
@@ -37,6 +39,18 @@
         pre.innerHTML = message;
         output.appendChild(pre);
     }
+    function writeToInput(data) {
+        var dict = JSON.parse(data);
+        for (var key in dict) {
+            document.getElementById("demo").innerHTML = "running";
+            if (dict.hasOwnProperty(key)) {
+                document.getElementById(key).value = dict[key];
+            }
+        }
+        //var key = "Steam Boiler"
+        //var chngeID = "demo";
+        //document.getElementById(key).value = dict[key];
+    }
     function testWebSocket() {
         websocket.onopen = function(evt) { onOpen(evt) };
         websocket.onclose = function(evt) { onClose(evt) };
@@ -50,12 +64,27 @@
     }
     window.addEventListener("load", init, false);
 </script>
-</div>
+
 <h2>WebSocket Test</h2>
+
 <div id="inputDiv">
-    <input id="inputTxt" type="text"/>
+    <input id="inputTxt" value="Initial" type="text"/>
     <button id="send" onclick=>send</button>
+    <p id="demo">Click the button to change the text in this paragraph.</p>
 </div>
+
+<div id="staticDiv">
+    {% for item in items %}
+         <input id={{ item }} type="text"/><br>
+    {% end %}
+    <br>
+    {% for name, value in sorted(pdict.items()) %}
+        {{ escape(name) }}
+         <input id="{{ name }}" value="{{ value }}" type="text"/><br>
+    {% end %}
+</div>
+
 <div id="outputDiv">
 </div>
+
 </html>
