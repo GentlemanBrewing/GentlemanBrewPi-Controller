@@ -30,6 +30,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         for waiter in cls.waiters:
             try:
                 waiter.write_message(index)
+                print('msg sent to waiters')
             except:
                 print("Error sending message")
 
@@ -37,40 +38,45 @@ class IndexHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     def get(self):
         #self.write("This is your response")
-        processdict = QueueMonitor.processdata
+        processdict = QueueMonitor.processdictionary
+        strvar = ""
         newdict = {"Steam Boiler": 100, "Fermenter1": 10, "Fermenter2": 12, "Fermenter3": 30}
         pdict = {"Steam Boiler": 90, "Fermenter1": 17, "Fermenter2": 18, "Fermenter3": 19}
         list = ["Item1", "Item2", "Item4"]
-        self.render("newindex.html", items=list, pdict=pdict, newdict=newdict)
+        self.render("newindex.html", items=list, pdict=processdict, newdict=newdict, strvar=strvar )
         print("new web page opened")
         #we don't need self.finish() because self.render() is fallowed by self.finish() inside tornado
         #self.finish()
-
 
 
 application = tornado.web.Application([
     (r'/ws', WSHandler),
     (r'/', IndexHandler),
 ])
-class QueueMonitor():
+class QueueMonitor(threading.Thread):
 
-    def __init__(self):
+    processdictionary = {}
+
+    def __init__(self, inputqueue, outputqueue):
+        threading.Thread.__init__(self)
+        self.inputqueue = inputqueue
+        self.outputqueue = outputqueue
         self.newinput = {}
         self.newoutput = {}
         self.processdata = {}
         self.inputdifference = {}
 
-    def run(self, inputqueue, outputqueue):
+    def run(self):
 
         print('queuemonitor started')
         # Check for new data from main process every second
         while True:
             while True:
                 try:
-                    self.newinput = inputqueue.get_nowait()
+                    self.newinput = self.inputqueue.get_nowait()
                     for process, variables in self.newinput.items():
                         # If process is not in dictionary create it and add whole process to difference dictionary
-                        if process in self.processdata is False:
+                        if process not in self.processdata:
                             self.processdata[process] = variables
                             self.inputdifference[process] = variables
                         # If process variables are not the same as the new variables update the required variables
@@ -82,6 +88,7 @@ class QueueMonitor():
                                     self.inputdifference[process][key] = variable
 
                     WSHandler.send_updates(self.inputdifference)
+                    QueueMonitor.processdictionary = self.processdata
                     self.inputdifference = {}
                     print('data aquired')
                 except queue.Empty:
@@ -93,11 +100,12 @@ class QueueMonitor():
 
 def main(inputqueue, outputqueue):
 
-    threading.Thread(target=QueueMonitor.run, args=(inputqueue, outputqueue)).start()
-    time.sleep(10) # Ensure Queuemonitor has time to initialize before starting tornado
+    QueueMonitor(inputqueue, outputqueue).start()
+    #time.sleep(10) # Ensure Queuemonitor has time to initialize before starting tornado
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8000)
     tornado.ioloop.IOLoop.instance().start()
+    print('webserver started')
 
 if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(application)

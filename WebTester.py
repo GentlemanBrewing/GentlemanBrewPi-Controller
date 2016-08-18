@@ -13,7 +13,12 @@ class WebTest(multiprocessing.Process):
         multiprocessing.Process.__init__(self)
         self.processinformation = self.loadconfig('Config.yaml')
         print("config loaded")
-        self.processes = {'Steam Boiler': 90, 'Fermenter1': 17, 'Fermenter2': 18, 'Fermenter3': 19}
+        self.processes = {
+            'Steam Boiler': {'Temperature': 90, 'Setpoint': 92},
+            'Fermenter1': {'Temperature': 17, 'Setpoint': 17},
+            'Fermenter2': {'Temperature': 18, 'Setpoint': 18},
+            'Fermenter3': {'Temperature': 190, 'Setpoint': 19}
+        }
         self.process_output = {}
         self.process_output = self.processes
 
@@ -35,18 +40,19 @@ class WebTest(multiprocessing.Process):
         # start web server
         webserv = multiprocessing.Process(target=WebServer.main, args=(self.inputqueue, self.outputqueue))
         webserv.start()
+        print('web server started')
         while True:
             # Generate data for webserver
-            for process, temp in self.processes.items():
-                temp += 1
+            for process, variables in self.processes.items():
+
+                variables['Temperature'] += 1
                 if process == 'Steam Boiler':
-                    if temp > 95:
-                        temp = 90
+                    if variables['Temperature'] > 95:
+                        variables['Temperature'] = 90
                 else:
-                    if temp > 22:
-                        temp = 17
-                self.processes[process] = temp
-                self.process_output[process] = temp
+                    if variables['Temperature'] > 22:
+                        variables['Temperature'] = 17
+                self.process_output[process] = variables
 
             # Put updated data in queue
             self.inputqueue.put(self.process_output)
@@ -60,6 +66,6 @@ class WebTest(multiprocessing.Process):
 
 
 if __name__ == "__main__":
-    man = WebTest()
-    man.start()
-    man.join()
+    webgen = WebTest()
+    webgen.start()
+    webgen.join()
