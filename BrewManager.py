@@ -111,7 +111,8 @@ class BrewManager(multiprocessing.Process):
 
         # Main loop
         while True:
-
+            # Update the dictionary for the web output
+            self.process_output = self.processinformation
             # Get output from process and record in database
             for process in self.processdata.keys():
                 while True:
@@ -122,15 +123,17 @@ class BrewManager(multiprocessing.Process):
                             self.buzzer(4000, 4)
                         # Add process name to the collected variables
                         self.data['ProcessName'] = process
-                        # Record in process_output
-                        self.process_output[process] = self.data['Temperature']
+                        # Record the output variables in process_output
+                        for outputvar in self.data.keys():
+                            self.process_output[process][outputvar] = self.data[outputvar]
                         # log to database
                         self.write_to_database()
-                        # Update the web server
-                        # Code here
                     except queue.Empty:
                         break
                         pass
+
+            # Send updated process_output to web server
+
 
             # Write to config.yaml every 3600 iterations
             if self.counter < 3600:

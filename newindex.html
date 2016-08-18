@@ -1,12 +1,132 @@
 <!DOCTYPE html>
+<html>
 <meta charset="utf-8" />
-<title>WebSocket Test</title>
-<script language="javascript" type="text/javascript">
+<title>BrewManager</title>
+<style>
+body {font-family: "Lato", sans-serif;}
+
+ul.tab {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Float the list items side by side */
+ul.tab li {float: left;}
+
+/* Style the links inside the list items */
+ul.tab li a {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of links on hover */
+ul.tab li a:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+ul.tab li a:focus, .active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+/* Style the subtabs */
+
+ul.subtab {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Float the list items side by side */
+ul.subtab li {float: left;}
+
+/* Style the links inside the list items */
+ul.subtab li a {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of links on hover */
+ul.subtab li a:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current subtablink class */
+ul.subtab li a:focus, .active {
+    background-color: #ccc;
+}
+
+/* Style the subtab content */
+.subtabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+</style>
+<script id="Tabs" language="javascript" type="text/javascript" >
+// Function for controlling tabs
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+// Function for controlling Subtabs
+function opensubTab(evt, subtabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("subtabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("subtablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(subtabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+</script>
+<script id="Websocket" language="javascript" type="text/javascript">
+
+    // Script for controlling websockets
 
     var wsUri = "ws://localhost:8000/ws";
     var websocket = new WebSocket(wsUri);
     var output;
-    var msgtext= document.getElementById("demo").innerHTML;
     function init() {
         output = document.getElementById("outputDiv");
         if (!'WebSocket' in window){
@@ -16,7 +136,7 @@
         }
     }
     function onOpen(evt) {
-        msgtext = "Opening";
+        writeToScreen("CONNECTED");
         doSend("Hi there!");
     }
     function onClose(evt) {
@@ -24,7 +144,7 @@
     }
     function onMessage(evt) {
         writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
-        writeToInput(evt.data);
+        //writeToInput(evt.data);
     }
     function onError(evt) {
         writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
@@ -64,27 +184,79 @@
     }
     window.addEventListener("load", init, false);
 </script>
+<body>
 
-<h2>WebSocket Test</h2>
+<h1>BrewManager</h1>
+<p>Welcome to the BrewManager control page</p>
 
-<div id="inputDiv">
-    <input id="inputTxt" value="Initial" type="text"/>
-    <button id="send" onclick=>send</button>
-    <p id="demo">Click the button to change the text in this paragraph.</p>
-</div>
+<ul class="tab">
 
-<div id="staticDiv">
-    {% for item in items %}
-         <input id={{ item }} type="text"/><br>
+    <li><a href="#" class="tablinks" onclick="openTab(event, 'Main')">Main</a></li>
+    {% for process in sorted(pdict.keys()) %}
+        <li><a href="#" class="tablinks" onclick="openTab(event, '{{process}}')">{{process}}</a></li>
     {% end %}
-    <br>
-    {% for name, value in sorted(pdict.items()) %}
-        {{ escape(name) }}
-         <input id="{{ name }}" value="{{ value }}" type="text"/><br>
-    {% end %}
+</ul>
+
+<div id="Main" class="tabcontent">
+    <h3>Controller Setup</h3>
+    <p>London is the capital city of England.</p>
+
+    <ul class="subtab">
+      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'Main Setup')">Main Setup</a></li>
+      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'New Brew')">New Brew</a></li>
+      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'Controller')">Controller</a></li>
+    </ul>
+
+    <div id="Main Setup" class="subtabcontent">
+        <h2>WebSocket Test</h2>
+
+        <div id="inputDiv">
+            <input id="inputTxt" value="Initial" type="text"/>
+            <button id="send" onclick=>send</button>
+            <p id="demo">Click the button to change the text in this paragraph.</p>
+        </div>
+
+        <div id="staticDiv">
+            {% for item in items %}
+                 <input id={{ item }} type="text"/><br>
+            {% end %}
+            <br>
+        </div>
+
+        <div id="outputDiv">
+        </div>
+    </div>
+
+    <div id="New Brew" class="subtabcontent">
+      <h3>Paris</h3>
+      <p>Paris is the capital of France.</p>
+    </div>
+
+    <div id="Controller" class="subtabcontent">
+      <h3>Paris</h3>
+      <p>Paris is the capital of France.</p>
+    </div>
+
 </div>
 
-<div id="outputDiv">
+{% for process in sorted(pdict.keys()) %}
+    <div id="{{process}}" class="tabcontent">
+      <h3>Paris</h3>
+      <p>Paris is the capital of France.</p>
+    </div>
+{% end %}
+
+<!--
+<div id="Paris" class="tabcontent">
+      <h3>Paris</h3>
+      <p>Paris is the capital of France.</p>
 </div>
 
+<div id="Tokyo" class="tabcontent">
+      <h3>Tokyo</h3>
+      <p>Tokyo is the capital of Japan.</p>
+</div>
+*/
+</body>
+-->
 </html>
