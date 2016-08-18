@@ -144,7 +144,7 @@ function opensubTab(evt, subtabName) {
     }
     function onMessage(evt) {
         writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
-        // writeToInput(evt.data);
+        writeToInput(evt.data);
     }
     function onError(evt) {
         writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
@@ -159,27 +159,29 @@ function opensubTab(evt, subtabName) {
         pre.innerHTML = message;
         output.appendChild(pre);
     }
-    /*
+
     function writeToInput(data) {
         var dict = JSON.parse(data);
-        var namestr = ""
+        var concatname
         for (var process in dict) {
-            //document.getElementById("demo").innerHTML = "running";
+            document.getElementById("demo").innerHTML = "running";
+            /*
             if (dict.hasOwnProperty(process)) {
                 for (var pvariable in dict[process] {
                     if (dict[process].hasOwnProperty(pvariable)) {
-                        namestr = process + pvariable;
+                        concatname = process + pvariable;
                         writeToScreen(namestr)
                         //document.getElementById(key).value = dict[key];
                     }
                 }
             }
+            */
         }
         //var key = "Steam Boiler"
         //var chngeID = "demo";
         //document.getElementById(key).value = dict[key];
     }
-    */
+
     function testWebSocket() {
         websocket.onopen = function(evt) { onOpen(evt) };
         websocket.onclose = function(evt) { onClose(evt) };
