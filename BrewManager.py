@@ -96,7 +96,7 @@ class BrewManager(multiprocessing.Process):
 
     # Main running function
     def run(self):
-        # Create buzzer process
+        # Start the buzzer process
         self.processdata['Buzzer'] = {}
         self.processdata['Buzzer']['inputqueue'] = multiprocessing.Queue()
         self.processdata['Buzzer']['outputqueue'] = multiprocessing.Queue()
@@ -137,7 +137,7 @@ class BrewManager(multiprocessing.Process):
                             self.buzzer(3500, 3)
                         # Add process name to the collected variables
                         self.controllerdata['ProcessName'] = process
-                        # Record the output variables in process_output
+                        # Record the output variables in process_output for web server
                         for outputvar in self.controllerdata.keys():
                             self.process_output[process][outputvar] = self.controllerdata[outputvar]
                         # log to database
@@ -148,7 +148,7 @@ class BrewManager(multiprocessing.Process):
             # Send updated process_output to web server
             self.processdata['WebServ']['inputqueue'].put(self.process_output)
 
-            # Get and parse information from webserver
+            # Get information from webserver
             while True:
                 try:
                     self.webdata = self.processdata['WebServ']['outputqueue'].get_nowait()

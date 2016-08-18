@@ -37,6 +37,7 @@ class IndexHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     def get(self):
         #self.write("This is your response")
+        processdict = QueueMonitor.processdata
         newdict = {"Steam Boiler": 100, "Fermenter1": 10, "Fermenter2": 12, "Fermenter3": 30}
         pdict = {"Steam Boiler": 90, "Fermenter1": 17, "Fermenter2": 18, "Fermenter3": 19}
         list = ["Item1", "Item2", "Item4"]
@@ -45,30 +46,55 @@ class IndexHandler(tornado.web.RequestHandler):
         #we don't need self.finish() because self.render() is fallowed by self.finish() inside tornado
         #self.finish()
 
+
+
 application = tornado.web.Application([
     (r'/ws', WSHandler),
     (r'/', IndexHandler),
 ])
+class QueueMonitor():
 
-def queuemonitor(inputqueue, outputqueue):
-    # Check for new data from main process
-    print('queuemonitor started')
-    data = {}
-    while True:
+    def __init__(self):
+        self.newinput = {}
+        self.newoutput = {}
+        self.processdata = {}
+        self.inputdifference = {}
+
+    def run(self, inputqueue, outputqueue):
+
+        print('queuemonitor started')
+        # Check for new data from main process every second
         while True:
-            try:
-                data = inputqueue.get_nowait()
-                WSHandler.send_updates(data)
-                print('data aquired')
-            except queue.Empty:
-                print('no data')
-                break
-        # sleep
-        time.sleep(1)
+            while True:
+                try:
+                    self.newinput = inputqueue.get_nowait()
+                    for process, variables in self.newinput.items():
+                        # If process is not in dictionary create it and add whole process to difference dictionary
+                        if process in self.processdata is False:
+                            self.processdata[process] = variables
+                            self.inputdifference[process] = variables
+                        # If process variables are not the same as the new variables update the required variables
+                        elif self.processdata[process] != variables:
+                            self.inputdifference[process] = {}
+                            for key, variable in variables.items():
+                                if self.processdata[process][key] != variable:
+                                    self.processdata[process][key] = variable
+                                    self.inputdifference[process][key] = variable
+
+                    WSHandler.send_updates(self.inputdifference)
+                    self.inputdifference = {}
+                    print('data aquired')
+                except queue.Empty:
+                    print('no data')
+                    break
+
+            # sleep
+            time.sleep(1)
 
 def main(inputqueue, outputqueue):
 
-    threading.Thread(target=queuemonitor, args=(inputqueue, outputqueue)).start()
+    threading.Thread(target=QueueMonitor.run, args=(inputqueue, outputqueue)).start()
+    time.sleep(10) # Ensure Queuemonitor has time to initialize before starting tornado
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8000)
     tornado.ioloop.IOLoop.instance().start()
