@@ -20,7 +20,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         print('message received %s' % message)
-        self.write_message('You wrote: %s' % message )
+        self.write_message(QueueMonitor.processdictionary)
 
     def on_close(self):
       print('connection closed')
