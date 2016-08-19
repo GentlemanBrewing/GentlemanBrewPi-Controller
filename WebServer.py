@@ -59,6 +59,7 @@ application = tornado.web.Application([
 class QueueMonitor(threading.Thread):
 
     processdictionary = {}
+    processJSON = ""
 
     def __init__(self, inputqueue, outputqueue):
         threading.Thread.__init__(self)
@@ -68,6 +69,28 @@ class QueueMonitor(threading.Thread):
         self.newoutput = {}
         self.processdata = {}
         self.inputdifference = {}
+
+    def converttojson(self,dict):
+        jsonstr = "{"
+        for process in dict.keys():
+            jsonstr += str(process) + ": "
+            if hasattr(dict[process], 'items') is True:
+                jsonstr += "{"
+                for variable in dict[process].keys():
+                    jsonstr += str(variable) + ": "
+                    if hasattr(dict[process][variable], 'items') is True:
+                        for k, v in dict[process][variable].items():
+                            jsonstr += str(k) + ": " + str(v) + ", "
+                jsonstr += "}"
+            else:
+                jsonstr += str(dict[process]) + ", "
+        jsonstr += "}"
+
+
+
+
+
+
 
     def run(self):
 

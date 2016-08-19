@@ -165,22 +165,28 @@ function opensubTab(evt, subtabName) {
         var concatname
         var dictlist = {% raw dictionarylist %};
         var strdict = ""
+        var counter
+        var keyid = ""
+        var valueid = ""
         for (var process in dict) {
             if (dict.hasOwnProperty(process)) {
                 for (var pvariable in dict[process]) {
                     if (dict[process].hasOwnProperty(pvariable)) {
                         concatname = process + pvariable;
                         if (dictlist.indexOf(pvariable) != -1) {
-
+                            counter = 0;
                             for (var key in dict[process][pvariable]) {
-                                if (dict[process][pvariable].hasOwnProperty(pvariable)) {
-
+                                if (dict[process][pvariable].hasOwnProperty(key)) {
+                                    keyid = concatname + 'k' + counter;
+                                    valueid = concatname + 'v' + counter;
+                                    document.getElementById(keyid).value = key;
+                                    document.getElementById(valueid).value = dict[process][pvariable][key];
+                                    counter = counter + 1;
                                 }
                             }
-
-                            strdict = dict[process][pvariable].toSource()
+                            //strdict = dict[process][pvariable].toSource()
                             //alert(strdict)
-                            document.getElementById(concatname).value = strdict;
+                            //document.getElementById(concatname).value = strdict;
                         }else {
                             document.getElementById(concatname).value = dict[process][pvariable];
                         }
