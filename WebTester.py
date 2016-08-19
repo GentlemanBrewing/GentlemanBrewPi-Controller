@@ -17,10 +17,12 @@ class WebTest(multiprocessing.Process):
             'Steam Boiler': {'Temperature': 90, 'Setpoint': 92},
             'Fermenter1': {'Temperature': 17, 'Setpoint': 17},
             'Fermenter2': {'Temperature': 18, 'Setpoint': 18},
-            'Fermenter3': {'Temperature': 190, 'Setpoint': 19}
+            'Fermenter3': {'Temperature': 19, 'Setpoint': 19}
         }
         self.process_output = {}
-        self.process_output = self.processes
+        self.process_output = self.processinformation
+        self.processes = self.processinformation
+        print(self.processes)
 
         # create communication queues
         self.inputqueue = multiprocessing.Queue()
@@ -44,7 +46,6 @@ class WebTest(multiprocessing.Process):
         while True:
             # Generate data for webserver
             for process, variables in self.processes.items():
-
                 variables['Temperature'] += 1
                 if process == 'Steam Boiler':
                     if variables['Temperature'] > 95:
@@ -57,10 +58,6 @@ class WebTest(multiprocessing.Process):
             # Put updated data in queue
             self.inputqueue.put(self.process_output)
 
-            print("data in queue")
-
-            print(self.process_output)
-
             # Sleep
             time.sleep(10)
 
@@ -68,4 +65,3 @@ class WebTest(multiprocessing.Process):
 if __name__ == "__main__":
     webgen = WebTest()
     webgen.start()
-    webgen.join()

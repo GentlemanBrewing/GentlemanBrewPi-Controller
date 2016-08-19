@@ -33,8 +33,8 @@ class PIDController(multiprocessing.Process):
             'ki': 0,
             'kd': 0,
             'setpoint': {
-                'time': ['2016-08-12 09:00:00', '2016-08-13 09:00:00'],
-                'value': [20, 20]
+                '2016-08-12 09:00:00': 20,
+                '2016-08-13 09:00:00': 20
             },
             'control_channel': 1,
             'control_k1': 885,
@@ -66,8 +66,11 @@ class PIDController(multiprocessing.Process):
 
     # Function for interpolating setpoint
     def setpoint_interpolate(self):
-        timelist = self.variabledict['setpoint']['time']
-        valuelist = self.variabledict['setpoint']['value']
+        timelist = []
+        valuelist = []
+        for time, value in sorted(self.variabledict['setpoint']):
+            timelist.append(time)
+            valuelist.append(value)
         setpointchanges = len(timelist) - 1
         timenow = datetime.datetime.now()
 

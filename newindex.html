@@ -163,12 +163,27 @@ function opensubTab(evt, subtabName) {
     function writeToInput(data) {
         var dict = JSON.parse(data);
         var concatname
+        var dictlist = {% raw dictionarylist %};
+        var strdict = ""
         for (var process in dict) {
             if (dict.hasOwnProperty(process)) {
                 for (var pvariable in dict[process]) {
                     if (dict[process].hasOwnProperty(pvariable)) {
                         concatname = process + pvariable;
-                        document.getElementById(concatname).value = dict[process][pvariable];
+                        if (dictlist.indexOf(pvariable) != -1) {
+
+                            for (var key in dict[process][pvariable]) {
+                                if (dict[process][pvariable].hasOwnProperty(pvariable)) {
+
+                                }
+                            }
+
+                            strdict = dict[process][pvariable].toSource()
+                            //alert(strdict)
+                            document.getElementById(concatname).value = strdict;
+                        }else {
+                            document.getElementById(concatname).value = dict[process][pvariable];
+                        }
                     }
                 }
             }
@@ -187,6 +202,38 @@ function opensubTab(evt, subtabName) {
 
     }
     window.addEventListener("load", init, false);
+</script>
+<script id="Formcollection" language="JavaScript" type="text/javascript">
+
+    // Function for collecting form data and sending to websocket
+
+
+    function formparse(formname) {
+        alert("Form Submitted" + formname);
+        var dictlist = {% raw dictionarylist %};
+        var formvar = document.getElementById(formname).elements;
+        var processname = formname.replace('form','');
+        var formdata = processname +  ": {";
+        for (var i = 0; i < formvar.length; i++) {
+            if (formvar[i].type === "text") {
+                if (dictlist.indexOf(formvar[i].name) != -1) {
+                    formdata = formdata + formvar[i].name + ": {" + formvar[i].value + "}"
+                }else {
+                    formdata = formdata + formvar[i].name + ": " + formvar[i].value;
+                }
+                if (i + 2 < formvar.length) {
+                    formdata = formdata + ", ";
+                }
+            }
+        }
+        formdata = formdata + "}";
+        showinalert(formdata);
+        //doSend(formdata);
+    }
+
+    function showinalert(data)
+        alert(data)
+
 </script>
 <body>
 
@@ -248,14 +295,45 @@ function opensubTab(evt, subtabName) {
         <h3>Paris</h3>
         <p>Paris is the capital of France.</p>
 
-        <div class="variableform">
-        {% for variable in pdict[process].keys() %}
-            <label for="{{str(process) + str(variable)}}">{{variable}}</label>
-            <input type="text" id="{{str(process) + str(variable)}}" value="{{pdict[process][variable]}}">
+        <form id="{{str(process)+'form'}}">
+            <fieldset>
+                <legend>Output Variables</legend>
+                {% for variable in sorted(pdict[process].keys()) %}
+                    {% if variable in outputlist %}
+                        <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                        <input type="text" id="{{str(process) + str(variable)}}" class="" name="{{str(variable)}}" value="">
+                        <br>
+                    {% end %}
+                {% end %}
+            </fieldset>
             <br>
-        {% end %}
-        </div>
+            <fieldset>
+                <legend>Input Variables</legend>
+                {% for variable in sorted(pdict[process].keys()) %}
+                    {% if variable not in outputlist %}
+                        {% if variable in dictionarylist %}
+                            <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                            <input type="text" id="{{str(process) + str(variable)}}" class="" name="{{str(variable)}}" value="">
+                            <br>
+                            {% for counter in range(len(pdict[process][variable].keys())) %}
+                                <input type="text" id="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(process) + str(variable)}}" name="{{str(variable)}}" value="">
+                                <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" class="{{str(process) + str(variable)}}" name="{{str(variable)}}" value="">
+                                <br>
+                            {% end %}
+                        {% else %}
+                            <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                            <input type="text" id="{{str(process) + str(variable)}}" class="" name="{{str(variable)}}" value="">
+                            <br>
+                        {% end %}
+                    {% end %}
+                {% end %}
+            </fieldset>
+            <br>
+            <input type="button" value="Update Data" onclick="formparse('{{str(process)+'form'}}')">
+        </form>
+        <div>
 
+        </div>
 
     </div>
 {% end %}

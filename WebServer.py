@@ -39,11 +39,14 @@ class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         #self.write("This is your response")
         processdict = QueueMonitor.processdictionary
+        outputlist = ['Temperature', 'Setpoint']
+        dictionarylist = ["setpoint", "relayduty", "relaypin"]
+        counter = 0
+
         strvar = ""
         newdict = {"Steam Boiler": 100, "Fermenter1": 10, "Fermenter2": 12, "Fermenter3": 30}
-        pdict = {"Steam Boiler": 90, "Fermenter1": 17, "Fermenter2": 18, "Fermenter3": 19}
         list = ["Item1", "Item2", "Item4"]
-        self.render("newindex.html", items=list, pdict=processdict, newdict=newdict, strvar=strvar )
+        self.render("newindex.html", items=list, pdict=processdict, newdict=newdict, strvar=strvar, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter )
         print("new web page opened")
         #we don't need self.finish() because self.render() is fallowed by self.finish() inside tornado
         #self.finish()
@@ -90,9 +93,7 @@ class QueueMonitor(threading.Thread):
                     WSHandler.send_updates(self.inputdifference)
                     QueueMonitor.processdictionary = self.processdata
                     self.inputdifference = {}
-                    print('data aquired')
                 except queue.Empty:
-                    print('no data')
                     break
 
             # sleep
