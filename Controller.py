@@ -118,8 +118,9 @@ class PIDController(multiprocessing.Process):
 
         # setup GPIO
         GPIO.setup(self.variabledict['ssrpin'], GPIO.OUT)
-        pwm = GPIO.PWM(self.variabledict['ssrpin'], 1)
-        pwm.start(0)
+        if self.variabledict['ssrmode'] == 'pwm':
+            pwm = GPIO.PWM(self.variabledict['ssrpin'], 1)
+            pwm.start(0)
 
         # Set GPIO pins as outputs
         for relay in sorted(relaypin.keys()):
@@ -236,7 +237,6 @@ class PIDController(multiprocessing.Process):
             # Calculate PWM duty needed from ssr
             ssroutput = output - relayoutput
             ssr_pwmduty = (ssroutput * 100) // ssrduty
-            print(ssr_pwmduty)
 
             # Activate pins to switch relays
             for relay in sorted(relaypin.keys()):
@@ -244,8 +244,14 @@ class PIDController(multiprocessing.Process):
                     GPIO.output(relaypin[relay], relaystate[relay])
 
             # Change ssr PWM
-            pwm.ChangeFrequency(self.variabledict['pwm_frequency'])
-            pwm.ChangeDutyCycle(ssr_pwmduty)
+            if self.variabledict['ssrmode'] == 'pwm':
+                pwm.ChangeFrequency(self.variabledict['pwm_frequency'])
+                pwm.ChangeDutyCycle(ssr_pwmduty)
+            elif self.variabledict['ssrmode'] == 'relay':
+                if ssr_pwmduty > 50:
+                    GPIO.output(self.variabledict['ssrpin'], 1)
+                else:
+                    GPIO.output(self.variabledict['ssrpin'], 0)
 
             # Update output dictionary
             self.outputdict['DateTime'] = datetime.datetime.now()

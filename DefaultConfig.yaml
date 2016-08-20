@@ -6,7 +6,7 @@ Steam Boiler:
   kd: 0
   ki: 0
   kp: 10
-  moutput: auto
+  moutput: 0
   pwm_frequency: 1
   relayduty:
     Relay1: 0
@@ -37,8 +37,8 @@ Steam Boiler:
   terminate: 0
   umax: 100
   umin: 0
-  Temperature: 90
-  Setpoint: 92
+  Temperature: 20
+  Setpoint: 20
 
 Buzzer:
   frequency: 2000
@@ -47,18 +47,3 @@ Buzzer:
   pin: 27
   Temperature: 0
 
-Fermenter1:
-  Temperature: 17
-  Setpoint: 17
-
-Fermenter2:
-  Temperature: 120
-  Setpoint: 18
-
-Fermenter3:
-  Temperature: 18
-  Setpoint: 19
-
-Pumps:
-  pump1pin: 17
-  pump2pin: 22

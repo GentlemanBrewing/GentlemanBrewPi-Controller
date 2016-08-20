@@ -176,6 +176,8 @@ class BrewManager(multiprocessing.Process):
             for processname, variables in self.webdata.items():
                 if processname in self.processdata.keys():
                     self.processdata[processname]['outputqueue'].put(variables)
+                    if variables['terminate'] == 1:
+                        del self.processdata[processname]
 
             # Put new variable from newvar.yaml in correct queue
             try:
