@@ -139,7 +139,7 @@ class PIDControllertester(multiprocessing.Process):
             duty = u / self.variabledict['umax'] * 100
 
             # Update output dictionary
-            self.outputdict['DateTime'] = datetime.datetime.now()
+            self.outputdict['DateTime'] = datetime.datetime.now().isoformat()
             self.outputdict['Temperature'] = mv
             self.outputdict['Duty'] = duty
             self.outputdict['Setpoint'] = self.setpoint

@@ -42,7 +42,7 @@ class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         # Variables needed for web page generation
         processdict = QueueMonitor.processdictionary
-        outputlist = ['Temperature', 'Setpoint']
+        outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger']
         dictionarylist = ["setpoint", "relayduty", "relaypin"]
         counter = 0
 
@@ -92,18 +92,20 @@ class QueueMonitor(threading.Thread):
             while True:
                 try:
                     self.newinput = self.inputqueue.get_nowait()
-                    for process, variables in self.newinput.items():
+                    for process in self.newinput.keys():
                         # If process is not in dictionary create it and add whole process to difference dictionary
                         if process not in self.processdata:
-                            self.processdata[process] = variables
-                            self.inputdifference[process] = variables
+                            self.processdata[process] = self.newinput[process]
+                            self.inputdifference[process] = self.newinput[process]
                         # If process variables are not the same as the new variables update the required variables
-                        elif self.processdata[process] != variables:
+                        elif self.processdata[process] != self.newinput[process]:
                             self.inputdifference[process] = {}
-                            for key, variable in variables.items():
-                                if self.processdata[process][key] != variable:
-                                    self.processdata[process][key] = variable
-                                    self.inputdifference[process][key] = variable
+                            for variable in self.newinput[process].keys():
+                                if variable not in self.processdata[process]:
+                                    self.processdata[process][variable] = ""
+                                if self.processdata[process][variable] != self.newinput[process][variable]:
+                                    self.processdata[process][variable] = self.newinput[process][variable]
+                                    self.inputdifference[process][variable] = self.newinput[process][variable]
                     self.jsoninputdifference = json.dumps(self.inputdifference, sort_keys=True)
                     WSHandler.send_updates(self.jsoninputdifference)
                     QueueMonitor.processdictionary = self.processdata
