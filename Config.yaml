@@ -1,5 +1,4 @@
 Steam Boiler:
-  name: 'Steam'
   control_channel: 1
   control_k1: 885
   control_k2: 2790
@@ -46,7 +45,6 @@ Buzzer:
   duty: 50
   duration: 0
   pin: 27
-  terminate: 1
   Temperature: 0
 
 Fermenter1:
