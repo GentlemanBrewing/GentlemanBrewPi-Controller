@@ -3,10 +3,11 @@
 import multiprocessing
 import queue
 import time
-import RPi.GPIO as GPIO
+#import RPi.GPIO as GPIO
 import sqlite3
 import yaml
-import Controller
+#import Controller
+import Controllertester
 import os
 import WebServer
 
@@ -23,7 +24,7 @@ class Buzzer(multiprocessing.Process):
             'pin': 12,
             'terminate': 1
         }
-        GPIO.setmode(GPIO.BCM)
+        #GPIO.setmode(GPIO.BCM)
 
     def run(self):
         while True:
@@ -32,21 +33,21 @@ class Buzzer(multiprocessing.Process):
                 try:
                     updated_variables = self.inputqueue.get_nowait()
                     for variable, value in updated_variables.items():
-                        self.variabledict[variable] = value
+                         self.variabledict[variable] = value
                 except queue.Empty:
                     break
                     pass
 
             if self.variabledict['duration'] != 0:
                 print("Buzzing")
-                GPIO.setmode(GPIO.BCM)
-                GPIO.setup(self.variabledict['pin'], GPIO.OUT)
-                p = GPIO.PWM(self.variabledict['pin'], self.variabledict['frequency'])
-                p.start(self.variabledict['duty'])
+                #GPIO.setmode(GPIO.BCM)
+                #GPIO.setup(self.variabledict['pin'], GPIO.OUT)
+                #p = GPIO.PWM(self.variabledict['pin'], self.variabledict['frequency'])
+                #p.start(self.variabledict['duty'])
                 time.sleep(self.variabledict['duration'])
-                p.stop()
+                #p.stop()
                 self.variabledict['duration'] = 0
-                GPIO.cleanup()
+                #GPIO.cleanup()
 
             time.sleep(1)
 
@@ -116,8 +117,10 @@ class BrewManager(multiprocessing.Process):
         self.processdata['WebServ']['inputqueue'] = multiprocessing.Queue()
         self.processdata['WebServ']['outputqueue'] = multiprocessing.Queue()
         self.processdata['WebServ']['inputqueue'].put(self.process_output)
-        webserver = multiprocessing.Process(target=WebServer.main, args=(self.processdata['WebServ']['inputqueue'], self.processdata['WebServ']['outputqueue']))
-        webserver.start()
+        webserv = multiprocessing.Process(target=WebServer.main, args=(self.processdata['WebServ']['inputqueue'], self.processdata['WebServ']['outputqueue']))
+        webserv.start()
+        print('webserver started - BrewMan')
+
 
         # Main loop
         while True:
@@ -129,7 +132,7 @@ class BrewManager(multiprocessing.Process):
                     self.processdata[process]['inputqueue'] = multiprocessing.Queue()
                     self.processdata[process]['outputqueue'] = multiprocessing.Queue()
                     self.processdata[process]['inputqueue'].put(pvariables)
-                    Controller.PIDController(self.processdata[process]['inputqueue'],
+                    Controllertester.PIDControllertester(self.processdata[process]['inputqueue'],
                                              self.processdata[process]['outputqueue']).start()
                     self.buzzer(2000, 1)
 
@@ -157,6 +160,8 @@ class BrewManager(multiprocessing.Process):
 
             # Send updated process_output to web server
             self.processdata['WebServ']['inputqueue'].put(self.process_output)
+            print('sent output to webserver')
+            print(self.process_output)
 
             # Get information from webserver
             while True:
@@ -197,8 +202,10 @@ class BrewManager(multiprocessing.Process):
                 self.counter = 0
                 self.writeconfig(self.processinformation)
 
-            time.sleep(1)
+            time.sleep(5)
 
+
+        print('BrewManager exiting')
 
 
 

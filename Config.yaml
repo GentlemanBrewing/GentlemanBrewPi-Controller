@@ -30,7 +30,7 @@ Steam Boiler:
     '2016-08-12 09:00:00': 30
     '2016-08-13 09:00:00': 35
     '2016-08-14 09:00:00': 40
-  sleeptime: 5
+  sleeptime: 2
   ssrduty: 4
   ssrmode: pwm
   ssrpin: 22
@@ -46,19 +46,24 @@ Buzzer:
   duration: 0
   pin: 27
   Temperature: 0
+  terminate: 0
 
 Fermenter1:
   Temperature: 17
   Setpoint: 17
+  terminate: 0
 
 Fermenter2:
   Temperature: 120
   Setpoint: 18
+  terminate: 0
 
 Fermenter3:
   Temperature: 18
   Setpoint: 19
+  terminate: 0
 
 Pumps:
   pump1pin: 17
   pump2pin: 22
+  terminate: 0

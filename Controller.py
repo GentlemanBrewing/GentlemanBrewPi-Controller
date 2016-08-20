@@ -68,7 +68,7 @@ class PIDController(multiprocessing.Process):
     def setpoint_interpolate(self):
         timelist = []
         valuelist = []
-        for time, value in sorted(self.variabledict['setpoint']):
+        for time, value in sorted(self.variabledict['setpoint'].items()):
             timelist.append(time)
             valuelist.append(value)
         setpointchanges = len(timelist) - 1

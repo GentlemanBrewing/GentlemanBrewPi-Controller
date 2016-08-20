@@ -61,7 +61,7 @@ class PIDControllertester(multiprocessing.Process):
     def setpoint_interpolate(self):
         timelist = []
         valuelist = []
-        for time, value in sorted(self.variabledict['setpoint']):
+        for time, value in sorted(self.variabledict['setpoint'].items()):
             timelist.append(time)
             valuelist.append(value)
         setpointchanges = len(timelist) - 1
@@ -121,7 +121,9 @@ class PIDControllertester(multiprocessing.Process):
                 u = 0
 
             # generate temp
-            mv = mv + 10
+            mv = mv + 1
+            if mv > 100:
+                mv = 85
 
             # check for manual mode
             if self.variabledict['moutput'] != "auto":
@@ -144,15 +146,16 @@ class PIDControllertester(multiprocessing.Process):
             self.outputdict['SafetyTemp'] = safetytemp
             self.outputdict['SafetyTrigger'] = self.safetytrigger
 
-            # Send output to Manager
+           # Send output to Manager
             self.outputqueue.put(self.outputdict)
 
             # Check terminate variable
             if self.variabledict['terminate'] == 1:
                 break
 
+
             # Wait before running loop again
             time.sleep(self.variabledict['sleeptime'])
 
         # Ensure GPIO is cleaned up before exiting loop
-        print('exiting')
+        print('PID controller exiting')
