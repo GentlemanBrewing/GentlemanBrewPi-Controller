@@ -137,7 +137,7 @@ function opensubTab(evt, subtabName) {
     }
     function onOpen(evt) {
         writeToScreen("CONNECTED");
-        doSend("Hi there!");
+        //doSend("Hi there!");
     }
     function onClose(evt) {
         writeToScreen("DISCONNECTED");
@@ -219,22 +219,50 @@ function opensubTab(evt, subtabName) {
         var dictlist = {% raw dictionarylist %};
         var formvar = document.getElementById(formname).elements;
         var processname = formname.replace('form','');
-        var formdata = processname +  ": {";
-        for (var i = 0; i < formvar.length; i++) {
+        var formdict = {}
+        var keyname = ""
+        var jsondict = ""
+
+        // Create base object and create object as value for every key in dictlist
+        formdict[processname] = {};
+     		for (var i = 0; i < formvar.length; i++) {
             if (formvar[i].type === "text") {
                 if (dictlist.indexOf(formvar[i].name) != -1) {
-                    formdata = formdata + formvar[i].name + ": {" + formvar[i].value + "}"
+                    formdict[processname][formvar[i].name] = {};
+                }else if (dictlist.indexOf(formvar[i].className) != -1) {
+                    //alert(formvar[i].name)
                 }else {
-                    formdata = formdata + formvar[i].name + ": " + formvar[i].value;
-                }
-                if (i + 2 < formvar.length) {
-                    formdata = formdata + ", ";
+                 		formdict[processname][formvar[i].name] = formvar[i].value;
                 }
             }
         }
-        formdata = formdata + "}";
-        alert(formdata);
-        //doSend(formdata);
+
+        // insert keys into objects with "" values
+        for (var i = 0; i < formvar.length; i++) {
+            if (formvar[i].type === "text") {
+                if (dictlist.indexOf(formvar[i].className) != -1) {
+                    if (formvar[i].name === "key") {
+                        formdict[processname][formvar[i].className][formvar[i].value] = "";
+                    }
+                }
+            }
+        }
+
+        // assign values to keys in objects
+        for (var i = 0; i < formvar.length; i++) {
+            if (formvar[i].type === "text") {
+                    if (dictlist.indexOf(formvar[i].className) != -1) {
+                        if (formvar[i].name != "key") {
+                            keyname = document.getElementById(formvar[i].name).value;
+                            formdict[processname][formvar[i].className][keyname] = formvar[i].value;
+                        }
+                    }
+            }
+        }
+
+        jsondict = JSON.stringify(formdict)
+        //alert(jsondict)
+        doSend(jsondict);
     }
 
 </script>
@@ -304,7 +332,7 @@ function opensubTab(evt, subtabName) {
                 {% for variable in sorted(pdict[process].keys()) %}
                     {% if variable in outputlist %}
                         <label for="{{str(process) + str(variable)}}">{{variable}}</label>
-                        <input type="text" id="{{str(process) + str(variable)}}" class="" name="{{str(variable)}}" value="">
+                        <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}">
                         <br>
                     {% end %}
                 {% end %}
@@ -316,16 +344,16 @@ function opensubTab(evt, subtabName) {
                     {% if variable not in outputlist %}
                         {% if variable in dictionarylist %}
                             <label for="{{str(process) + str(variable)}}">{{variable}}</label>
-                            <input type="text" id="{{str(process) + str(variable)}}" class="" name="{{str(variable)}}" value="">
+                            <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}">
                             <br>
                             {% for counter in range(len(pdict[process][variable].keys())) %}
-                                <input type="text" id="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(process) + str(variable)}}" name="{{str(variable)}}" value="">
-                                <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" class="{{str(process) + str(variable)}}" name="{{str(variable)}}" value="">
+                                <input type="text" id="{{str(process) + str(variable) + 'k' + str(counter)}}" name="key" class="{{str(variable)}}">
+                                <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" name="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" >
                                 <br>
                             {% end %}
                         {% else %}
                             <label for="{{str(process) + str(variable)}}">{{variable}}</label>
-                            <input type="text" id="{{str(process) + str(variable)}}" class="" name="{{str(variable)}}" value="">
+                            <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}">
                             <br>
                         {% end %}
                     {% end %}

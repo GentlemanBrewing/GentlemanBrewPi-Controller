@@ -5,7 +5,6 @@ import tornado.web
 import tornado.websocket
 import tornado.httpserver
 import threading
-import multiprocessing
 import time
 import queue
 import json
@@ -21,7 +20,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         print('message received %s' % message)
-        #QueueMonitor.sendtomanager(message)
+        QueueMonitor.updatequeues(message)
         #self.write_message(QueueMonitor.processdictionary)
 
     def on_close(self):
@@ -35,6 +34,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
                 print('msg sent to waiters')
             except:
                 print("Error sending message")
+
+
 
 class IndexHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
@@ -60,9 +61,11 @@ class QueueMonitor(threading.Thread):
 
     processdictionary = {}
     processJSON = ""
+    runninginstances = set()
 
     def __init__(self, inputqueue, outputqueue):
         threading.Thread.__init__(self)
+        QueueMonitor.runninginstances.add(self)
         self.inputqueue = inputqueue
         self.outputqueue = outputqueue
         self.newinput = {}
@@ -71,9 +74,15 @@ class QueueMonitor(threading.Thread):
         self.inputdifference = {}
         self.jsoninputdifference = ""
 
-    def sendtomanager(self, data):
+    def sendtomanager(self,data):
         self.newoutput = json.loads(data)
+        print(data)
         self.outputqueue.put(self.newoutput)
+
+    @classmethod
+    def updatequeues(cls, data):
+        for instance in cls.runninginstances:
+            instance.sendtomanager(data)
 
     def run(self):
 
