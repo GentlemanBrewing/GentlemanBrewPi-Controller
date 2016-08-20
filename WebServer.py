@@ -8,6 +8,7 @@ import threading
 import multiprocessing
 import time
 import queue
+import json
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     waiters = set()
@@ -15,12 +16,13 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.set_nodelay(True)
         print('new connection')
-        self.write_message("Hello World")
         WSHandler.waiters.add(self)
+        self.write_message(QueueMonitor.processJSON)
 
     def on_message(self, message):
         print('message received %s' % message)
-        self.write_message(QueueMonitor.processdictionary)
+        QueueMonitor.sendtomanager(message)
+        #self.write_message(QueueMonitor.processdictionary)
 
     def on_close(self):
       print('connection closed')
@@ -69,28 +71,11 @@ class QueueMonitor(threading.Thread):
         self.newoutput = {}
         self.processdata = {}
         self.inputdifference = {}
+        self.jsoninputdifference = ""
 
-    def converttojson(self,dict):
-        jsonstr = "{"
-        for process in dict.keys():
-            jsonstr += str(process) + ": "
-            if hasattr(dict[process], 'items') is True:
-                jsonstr += "{"
-                for variable in dict[process].keys():
-                    jsonstr += str(variable) + ": "
-                    if hasattr(dict[process][variable], 'items') is True:
-                        for k, v in dict[process][variable].items():
-                            jsonstr += str(k) + ": " + str(v) + ", "
-                jsonstr += "}"
-            else:
-                jsonstr += str(dict[process]) + ", "
-        jsonstr += "}"
-
-
-
-
-
-
+    def sendtomanager(self, data):
+        self.newoutput = json.loads(data)
+        self.outputqueue.put(self.newoutput)
 
     def run(self):
 
@@ -112,12 +97,14 @@ class QueueMonitor(threading.Thread):
                                 if self.processdata[process][key] != variable:
                                     self.processdata[process][key] = variable
                                     self.inputdifference[process][key] = variable
-
+                    self.jsoninputdifference = json.dumps(self.inputdifference, sort_keys=True)
                     WSHandler.send_updates(self.inputdifference)
                     QueueMonitor.processdictionary = self.processdata
+                    QueueMonitor.processJSON = json.dumps(self.processdata,sort_keys=True)
                     self.inputdifference = {}
                 except queue.Empty:
                     break
+
 
             # sleep
             time.sleep(1)

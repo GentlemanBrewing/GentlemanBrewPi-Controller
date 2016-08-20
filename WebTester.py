@@ -44,6 +44,14 @@ class WebTest(multiprocessing.Process):
         webserv.start()
         print('web server started')
         while True:
+            # Read from queue
+            try:
+                output = self.outputqueue.get_nowait()
+
+            except queue.Empty:
+                break
+
+        while True:
             # Generate data for webserver
             for process, variables in self.processes.items():
                 variables['Temperature'] += 1
