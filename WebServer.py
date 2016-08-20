@@ -21,7 +21,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 
     def on_message(self, message):
         print('message received %s' % message)
-        QueueMonitor.sendtomanager(message)
+        #QueueMonitor.sendtomanager(message)
         #self.write_message(QueueMonitor.processdictionary)
 
     def on_close(self):
@@ -39,7 +39,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
 class IndexHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     def get(self):
-        #self.write("This is your response")
+        # Variables needed for web page generation
         processdict = QueueMonitor.processdictionary
         outputlist = ['Temperature', 'Setpoint']
         dictionarylist = ["setpoint", "relayduty", "relaypin"]
@@ -50,8 +50,6 @@ class IndexHandler(tornado.web.RequestHandler):
         list = ["Item1", "Item2", "Item4"]
         self.render("newindex.html", items=list, pdict=processdict, newdict=newdict, strvar=strvar, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter )
         print("new web page opened")
-        #we don't need self.finish() because self.render() is fallowed by self.finish() inside tornado
-        #self.finish()
 
 
 application = tornado.web.Application([
@@ -80,7 +78,7 @@ class QueueMonitor(threading.Thread):
     def run(self):
 
         print('queuemonitor started')
-        # Check for new data from main process every second
+        # Check for new data from main process
         while True:
             while True:
                 try:
@@ -98,15 +96,13 @@ class QueueMonitor(threading.Thread):
                                     self.processdata[process][key] = variable
                                     self.inputdifference[process][key] = variable
                     self.jsoninputdifference = json.dumps(self.inputdifference, sort_keys=True)
-                    WSHandler.send_updates(self.inputdifference)
+                    WSHandler.send_updates(self.jsoninputdifference)
                     QueueMonitor.processdictionary = self.processdata
                     QueueMonitor.processJSON = json.dumps(self.processdata,sort_keys=True)
                     self.inputdifference = {}
                 except queue.Empty:
                     break
 
-
-            # sleep
             time.sleep(1)
 
 def main(inputqueue, outputqueue):
