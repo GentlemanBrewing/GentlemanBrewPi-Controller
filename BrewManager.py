@@ -65,14 +65,13 @@ class BrewManager(multiprocessing.Process):
 
     def __init__(self):
         multiprocessing.Process.__init__(self)
-        #self.conn = sqlite3.connect('NewLog.db')
-        #self.cur = self.conn.cursor()
         self.counter = 0
         self.processinformation = self.loadconfig('Config.yaml')
         self.processdata = {}
         self.controllerdata = {}
         self.process_output = self.processinformation
         self.webdata = {}
+        self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger',]
 
     # Function for loading config file
     def loadconfig(self, filename):
@@ -101,7 +100,6 @@ class BrewManager(multiprocessing.Process):
         conn = sqlite3.connect('Log.db')
         try:
             with conn:
-                print(self.controllerdata)
                 conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
                                   'SafetyTemp, SafetyTrigger) VALUES (:DateTime, :ProcessName,'
                                   ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger)', self.controllerdata)
@@ -129,7 +127,6 @@ class BrewManager(multiprocessing.Process):
 
         # Main loop
         while True:
-            print('point1')
             # Start new processes not already running
             for process, pvariables in self.processinformation.items():
                 if pvariables['terminate'] == 0 and process not in self.processdata.keys():
@@ -141,48 +138,34 @@ class BrewManager(multiprocessing.Process):
                                              self.processdata[process]['outputqueue']).start()
                     self.buzzer(2000, 1)
 
-            print('point2')
             # Update the dictionary for the web output
             self.process_output = self.processinformation
             # Get output from process and record in database
-            print('point2.1')
             for process in self.processdata.keys():
                 # Do not collect web server output here, buzzer never produces output
-                print('point2.2')
                 if process != 'WebServ':
-                    print('point2.3')
                     while True:
                         try:
-                            print('point2.4')
                             self.controllerdata = self.processdata[process]['outputqueue'].get_nowait()
                             # Check for Safetytrigger from process and sound buzzer if present
-                            print('point2.4.1')
                             if self.controllerdata['SafetyTrigger'] == True:
                                 self.buzzer(3500, 3)
-                            print('point2.4.2')
                             # Add process name to the collected variables
-                            print('point2.4.3')
                             self.controllerdata['ProcessName'] = process
                             # Record the output variables in process_output for web server
-                            print('point2.4.4')
                             for outputvar in self.controllerdata.keys():
-                                self.process_output[process][outputvar] = self.controllerdata[outputvar]
+                                if outputvar != 'ProcessName':
+                                    self.process_output[process][outputvar] = self.controllerdata[outputvar]
                             # log to database
-                            print('point2.4.5')
-                            print(self.controllerdata)
                             self.write_to_database()
-                            print('point2.4.6')
                         except queue.Empty:
-                            print('point2.5')
                             break
 
-            print('point3')
             # Send updated process_output to web server
             self.processdata['WebServ']['inputqueue'].put(self.process_output)
             print('sent output to webserver')
             print(self.process_output)
 
-            print('point4')
             # Get information from webserver
             while True:
                 try:
@@ -191,13 +174,15 @@ class BrewManager(multiprocessing.Process):
                         # Check if process is in current process list, create if not
                         if process not in self.processinformation.keys():
                             self.processinformation[process] = {}
-                        # Update variables for the process from the webdata
+                        # Update variables for the process from the webdata, excluding the output variables
                         for pvar in self.webdata[process].keys():
-                            self.processinformation[process][pvar] = self.webdata[process][pvar]
+                            if pvar not in self.outputlist:
+                                self.processinformation[process][pvar] = self.webdata[process][pvar]
+                    self.counter = 0
+                    self.writeconfig(self.processinformation)
                 except queue.Empty:
                     break
 
-            print('point5')
             # Put new variables from webserver in process queues if process is running
             for processname, variables in self.webdata.items():
                 if processname in self.processdata.keys():
@@ -205,7 +190,6 @@ class BrewManager(multiprocessing.Process):
                     if variables['terminate'] == 1:
                         del self.processdata[processname]
 
-            print('point6')
             # Put new variable from newvar.yaml in correct queue
             try:
                 f = open('newvar.yaml')
@@ -217,7 +201,6 @@ class BrewManager(multiprocessing.Process):
             except FileNotFoundError:
                 pass
 
-            print('point7')
             # Write to config.yaml every 3600 iterations
             if self.counter < 3600:
                 self.counter += 1
@@ -225,7 +208,6 @@ class BrewManager(multiprocessing.Process):
                 self.counter = 0
                 self.writeconfig(self.processinformation)
 
-            print('point8')
             time.sleep(5)
             print('Brewmanager done sleeping')
 

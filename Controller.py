@@ -110,6 +110,7 @@ class PIDController(multiprocessing.Process):
         max_relay_output = 0
         relaystate = {}
         relayduty = self.variabledict['relayduty']
+
         for relay in relayduty.keys():
             relaystate[relay] = 0
         relayoutput = 0

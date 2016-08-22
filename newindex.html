@@ -337,10 +337,11 @@ function opensubTab(evt, subtabName) {
 
     // Function for adding a new line
 
+
     function addtoform(parentname) {
-
+        var par = document.createElement("P");
+        var l1 = document.createElement("L");
     }
-
 </script>
 <body>
 
@@ -439,9 +440,9 @@ function opensubTab(evt, subtabName) {
                             <p class="form">
                                 <label></label>
                                 <label for="{{str(process)+str(variable)+'add'}}"></label>
-                                <input type="button" id="{{str(process)+str(variable)+'add'}}" class="{{str(variable)}}" value="Add Row">
+                                <input type="button" id="{{str(process)+str(variable)+'add'}}" class="{{str(variable)}}" value="Add Row" onclick="addtoform('{{str(process) + str(variable + 'div')}}')">
                                 <label for="{{str(process)+str(variable)+'remove'}}"> </label>
-                                <input type="button" id="{{str(process)+str(variable)+'remove'}}" class="{{str(variable)}}" value="Remove Row">
+                                <input type="button" id="{{str(process)+str(variable)+'remove'}}" class="{{str(variable)}}" value="Remove Row" onclick="removefromform('{{str(process) + str(variable + 'div')}}')">
                             </p>
                         {% else %}
                             <p class="form">

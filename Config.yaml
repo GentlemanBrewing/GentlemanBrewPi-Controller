@@ -37,8 +37,6 @@ Steam Boiler:
   terminate: 0
   umax: 100
   umin: 0
-  Temperature: 90
-  Setpoint: 92
 
 Buzzer:
   frequency: 2000
