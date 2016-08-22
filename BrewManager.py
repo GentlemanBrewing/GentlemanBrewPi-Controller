@@ -109,7 +109,6 @@ class BrewManager(multiprocessing.Process):
 
     # Main running function
     def run(self):
-        print(self.processinformation)
         # Start the buzzer process
         self.processdata['Buzzer'] = {}
         self.processdata['Buzzer']['inputqueue'] = multiprocessing.Queue()
@@ -166,8 +165,6 @@ class BrewManager(multiprocessing.Process):
             # Send updated process_output to web server
             self.processdata['WebServ']['inputqueue'].put(self.process_output)
 
-            print('1')
-            print(self.processinformation)
             # Get information from webserver
             while True:
                 try:
@@ -177,16 +174,9 @@ class BrewManager(multiprocessing.Process):
                         if process not in self.processinformation.keys():
                             self.processinformation[process] = {}
                         # Update variables for the process from the webdata, excluding the output variables
-                        print('2')
-                        print(self.processinformation)
                         for pvar in self.webdata[process].keys():
-                            if pvar in self.outputlist:
-                                print('3')
-                                print(pvar)
                             if pvar not in self.outputlist:
                                 self.processinformation[process][pvar] = self.webdata[process][pvar]
-                        print('4')
-                        print(self.processinformation)
                     self.counter = 0
                     self.writeconfig(self.processinformation)
                 except queue.Empty:
