@@ -116,7 +116,7 @@ class PIDControllertester(multiprocessing.Process):
             self.setpoint_interpolate()
 
             # generate output
-            u = self.output + 10
+            u = self.output + 9
             if u > 100:
                 u = 0
 
@@ -139,7 +139,7 @@ class PIDControllertester(multiprocessing.Process):
             duty = u / self.variabledict['umax'] * 100
 
             # Update output dictionary
-            self.outputdict['DateTime'] = datetime.datetime.now().isoformat()
+            self.outputdict['DateTime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             self.outputdict['Temperature'] = mv
             self.outputdict['Duty'] = duty
             self.outputdict['Setpoint'] = self.setpoint

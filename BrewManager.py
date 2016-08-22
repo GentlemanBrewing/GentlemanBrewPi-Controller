@@ -65,8 +65,8 @@ class BrewManager(multiprocessing.Process):
 
     def __init__(self):
         multiprocessing.Process.__init__(self)
-        self.conn = sqlite3.connect('Log.db')
-        self.cur = self.conn.cursor()
+        #self.conn = sqlite3.connect('NewLog.db')
+        #self.cur = self.conn.cursor()
         self.counter = 0
         self.processinformation = self.loadconfig('Config.yaml')
         self.processdata = {}
@@ -94,11 +94,16 @@ class BrewManager(multiprocessing.Process):
         }
         self.processdata['Buzzer']['inputqueue'].put(buzzervariables)
 
+
+
     # Function for writing to database
     def write_to_database(self):
+        conn = sqlite3.connect('Log.db')
         try:
-            with self.conn:
-                self.conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint, SafetyTemp, SafetyTrigger) VALUES (:DateTime, :ProcessName,'
+            with conn:
+                print(self.controllerdata)
+                conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
+                                  'SafetyTemp, SafetyTrigger) VALUES (:DateTime, :ProcessName,'
                                   ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger)', self.controllerdata)
         except sqlite3.IntegrityError:
             self.buzzer(2000, 1)
@@ -165,7 +170,7 @@ class BrewManager(multiprocessing.Process):
                             # log to database
                             print('point2.4.5')
                             print(self.controllerdata)
-                            #self.write_to_database()
+                            self.write_to_database()
                             print('point2.4.6')
                         except queue.Empty:
                             print('point2.5')

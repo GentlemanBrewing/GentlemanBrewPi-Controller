@@ -5,6 +5,26 @@
 <style>
 body {font-family: "Lato", sans-serif;}
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 100%;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+h2 {
+    font-size: 1.875em;
+}
+
+p {
+    font-size: 0.875em;
+}
+
 ul.tab {
     list-style-type: none;
     margin: 0;
@@ -87,6 +107,53 @@ ul.subtab li a:focus, .active {
     border: 1px solid #ccc;
     border-top: none;
 }
+
+/* Style fieldsets as css table */
+fieldset  {
+    display: table;
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+p.form     {
+display: table-row;
+}
+
+label {
+    display: table-cell;
+}
+
+input[type=text] {
+    padding: 4px;
+    display: table-cell;
+    margin: 4px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type=button] {
+    padding: 4px;
+    display: table-cell;
+    margin: 4px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type=button]:hover {
+    background-color: #ccc;
+}
+
+
+/* Hide the input with dictionary value */
+input.dictionary {visibility: hidden}
+
+/* Footer */
+div.Footer {
+    text-align: center;
+    width: 100%;
+}
+
 
 </style>
 <script id="Tabs" language="javascript" type="text/javascript" >
@@ -266,6 +333,15 @@ function opensubTab(evt, subtabName) {
     }
 
 </script>
+<script id="Formredesign" language="JavaScript" type="text/javascript">
+
+    // Function for adding a new line
+
+    function addtoform(parentname) {
+
+    }
+
+</script>
 <body>
 
 <h1>BrewManager</h1>
@@ -331,9 +407,10 @@ function opensubTab(evt, subtabName) {
                 <legend>Output Variables</legend>
                 {% for variable in sorted(pdict[process].keys()) %}
                     {% if variable in outputlist %}
-                        <label for="{{str(process) + str(variable)}}">{{variable}}</label>
-                        <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}">
-                        <br>
+                        <p class="form">
+                            <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                            <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}" readonly>
+                        </p>
                     {% end %}
                 {% end %}
             </fieldset>
@@ -343,24 +420,40 @@ function opensubTab(evt, subtabName) {
                 {% for variable in sorted(pdict[process].keys()) %}
                     {% if variable not in outputlist %}
                         {% if variable in dictionarylist %}
-                            <label for="{{str(process) + str(variable)}}">{{variable}}</label>
-                            <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}">
-                            <br>
-                            {% for counter in range(len(pdict[process][variable].keys())) %}
-                                <input type="text" id="{{str(process) + str(variable) + 'k' + str(counter)}}" name="key" class="{{str(variable)}}">
-                                <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" name="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" >
-                                <br>
-                            {% end %}
+                            <div id="{{str(process) + str(variable + 'div')}}">
+                                <p class="form">
+                                    <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                                    <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}"class="dictionary">
+                                    <label></label>
+                                </p>
+                                {% for counter in range(len(pdict[process][variable].keys())) %}
+                                    <p class="form">
+                                        <label></label>
+                                        <label for="{{str(process) + str(variable) + 'k' + str(counter)}}"></label>
+                                        <input type="text" id="{{str(process) + str(variable) + 'k' + str(counter)}}" name="key" class="{{str(variable)}}" required>
+                                        <label for="{{str(process) + str(variable) + 'v' + str(counter)}}">:</label>
+                                        <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" name="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" required>
+                                    </p>
+                                {% end %}
+                            </div>
+                            <p class="form">
+                                <label></label>
+                                <label for="{{str(process)+str(variable)+'add'}}"></label>
+                                <input type="button" id="{{str(process)+str(variable)+'add'}}" class="{{str(variable)}}" value="Add Row">
+                                <label for="{{str(process)+str(variable)+'remove'}}"> </label>
+                                <input type="button" id="{{str(process)+str(variable)+'remove'}}" class="{{str(variable)}}" value="Remove Row">
+                            </p>
                         {% else %}
-                            <label for="{{str(process) + str(variable)}}">{{variable}}</label>
-                            <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}">
-                            <br>
+                            <p class="form">
+                                <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                                <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}">
+                            </p>
                         {% end %}
                     {% end %}
                 {% end %}
             </fieldset>
             <br>
-            <input type="button" value="Update Data" onclick="formparse('{{str(process)+'form'}}')">
+            <input type="button" id="{{str(process) + 'submit'}}" value="Update Data" onclick="formparse('{{str(process)+'form'}}')">
         </form>
         <div>
 
@@ -368,6 +461,12 @@ function opensubTab(evt, subtabName) {
 
     </div>
 {% end %}
+
+<div id="Footer" class="Header Footer">
+    <br>
+    <p>This Web Page has been designed by Nelis Volschenk.</p>
+    <br>
+</div>
 
 <!--
 <div id="Paris" class="tabcontent">

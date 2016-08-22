@@ -254,7 +254,7 @@ class PIDController(multiprocessing.Process):
                     GPIO.output(self.variabledict['ssrpin'], 0)
 
             # Update output dictionary
-            self.outputdict['DateTime'] = datetime.datetime.now()
+            self.outputdict['DateTime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             self.outputdict['Temperature'] = mv
             self.outputdict['Duty'] = duty
             self.outputdict['Setpoint'] = self.setpoint
