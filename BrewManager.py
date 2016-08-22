@@ -10,6 +10,7 @@ import yaml
 import Controllertester
 import os
 import WebServer
+import copy
 
 
 # Buzzer class
@@ -69,7 +70,7 @@ class BrewManager(multiprocessing.Process):
         self.processinformation = self.loadconfig('Config.yaml')
         self.processdata = {}
         self.controllerdata = {}
-        self.process_output = self.processinformation
+        self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}
         self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger',]
 
@@ -108,6 +109,7 @@ class BrewManager(multiprocessing.Process):
 
     # Main running function
     def run(self):
+        print(self.processinformation)
         # Start the buzzer process
         self.processdata['Buzzer'] = {}
         self.processdata['Buzzer']['inputqueue'] = multiprocessing.Queue()
@@ -139,7 +141,7 @@ class BrewManager(multiprocessing.Process):
                     self.buzzer(2000, 1)
 
             # Update the dictionary for the web output
-            self.process_output = self.processinformation
+            self.process_output = copy.deepcopy(self.processinformation)
             # Get output from process and record in database
             for process in self.processdata.keys():
                 # Do not collect web server output here, buzzer never produces output
@@ -163,9 +165,9 @@ class BrewManager(multiprocessing.Process):
 
             # Send updated process_output to web server
             self.processdata['WebServ']['inputqueue'].put(self.process_output)
-            print('sent output to webserver')
-            print(self.process_output)
 
+            print('1')
+            print(self.processinformation)
             # Get information from webserver
             while True:
                 try:
@@ -175,9 +177,16 @@ class BrewManager(multiprocessing.Process):
                         if process not in self.processinformation.keys():
                             self.processinformation[process] = {}
                         # Update variables for the process from the webdata, excluding the output variables
+                        print('2')
+                        print(self.processinformation)
                         for pvar in self.webdata[process].keys():
+                            if pvar in self.outputlist:
+                                print('3')
+                                print(pvar)
                             if pvar not in self.outputlist:
                                 self.processinformation[process][pvar] = self.webdata[process][pvar]
+                        print('4')
+                        print(self.processinformation)
                     self.counter = 0
                     self.writeconfig(self.processinformation)
                 except queue.Empty:
@@ -209,7 +218,6 @@ class BrewManager(multiprocessing.Process):
                 self.writeconfig(self.processinformation)
 
             time.sleep(5)
-            print('Brewmanager done sleeping')
 
         print('BrewManager exiting')
 

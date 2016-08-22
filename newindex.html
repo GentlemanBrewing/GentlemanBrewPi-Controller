@@ -421,22 +421,20 @@ function opensubTab(evt, subtabName) {
                 {% for variable in sorted(pdict[process].keys()) %}
                     {% if variable not in outputlist %}
                         {% if variable in dictionarylist %}
-                            <div id="{{str(process) + str(variable + 'div')}}">
+                            <p class="form">
+                                <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                                <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}"class="dictionary">
+                                <label></label>
+                            </p>
+                            {% for counter in range(len(pdict[process][variable].keys())) %}
                                 <p class="form">
-                                    <label for="{{str(process) + str(variable)}}">{{variable}}</label>
-                                    <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}"class="dictionary">
                                     <label></label>
+                                    <label for="{{str(process) + str(variable) + 'k' + str(counter)}}"></label>
+                                    <input type="text" id="{{str(process) + str(variable) + 'k' + str(counter)}}" name="key" class="{{str(variable)}}" required>
+                                    <label for="{{str(process) + str(variable) + 'v' + str(counter)}}">:</label>
+                                    <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" name="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" required>
                                 </p>
-                                {% for counter in range(len(pdict[process][variable].keys())) %}
-                                    <p class="form">
-                                        <label></label>
-                                        <label for="{{str(process) + str(variable) + 'k' + str(counter)}}"></label>
-                                        <input type="text" id="{{str(process) + str(variable) + 'k' + str(counter)}}" name="key" class="{{str(variable)}}" required>
-                                        <label for="{{str(process) + str(variable) + 'v' + str(counter)}}">:</label>
-                                        <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" name="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" required>
-                                    </p>
-                                {% end %}
-                            </div>
+                            {% end %}
                             <p class="form">
                                 <label></label>
                                 <label for="{{str(process)+str(variable)+'add'}}"></label>

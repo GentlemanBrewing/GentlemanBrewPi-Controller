@@ -31,7 +31,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         for waiter in cls.waiters:
             try:
                 waiter.write_message(index)
-                print('msg sent to waiters')
             except:
                 print("Error sending message")
 
@@ -76,7 +75,6 @@ class QueueMonitor(threading.Thread):
 
     def sendtomanager(self,data):
         self.newoutput = json.loads(data)
-        print(data)
         self.outputqueue.put(self.newoutput)
 
     @classmethod
