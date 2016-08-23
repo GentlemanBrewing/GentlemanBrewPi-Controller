@@ -24,7 +24,8 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         #self.write_message(QueueMonitor.processdictionary)
 
     def on_close(self):
-      print('connection closed')
+        WSHandler.waiters.remove(self)
+        print('connection closed')
 
     @classmethod
     def send_updates(cls, index):
