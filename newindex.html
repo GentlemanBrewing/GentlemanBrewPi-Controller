@@ -194,7 +194,7 @@ function opensubTab(evt, subtabName) {
     var loc = window.location;
     var wsUri = "ws:";
     wsUri += "//" + loc.host;
-    wsUri += loc.pathname + "ws";
+    wsUri += "/ws";
 
     var websocket = new WebSocket(wsUri);
     var output;
