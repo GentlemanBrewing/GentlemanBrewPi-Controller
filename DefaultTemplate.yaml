@@ -1,0 +1,43 @@
+control_channel: 1
+control_k1: 885
+control_k2: 2790
+control_k3: 0
+kd: 0
+ki: 0
+kp: 10
+moutput: auto
+pwm_frequency: 1
+relayduty:
+  Relay1: 0
+  Relay2: 0
+  Relay3: 0
+  Relay4: 0
+  Relay5: 0
+relaypin:
+  Relay1: 0
+  Relay2: 0
+  Relay3: 0
+  Relay4: 0
+  Relay5: 0
+safety_channel: 2
+safety_k1: 885
+safety_k2: 2790
+safety_k3: 0
+safety_mode: 'off'
+safety_value: 0
+setpoint:
+  '2016-08-12 09:00:00': 20
+  '2016-08-13 09:00:00': 20
+  '2016-08-14 09:00:00': 20
+  '2016-08-15 09:00:00': 20
+  '2016-08-16 09:00:00': 20
+  '2016-08-17 09:00:00': 20
+  '2016-08-18 09:00:00': 20
+  '2016-08-19 09:00:00': 20
+sleeptime: 2
+ssrduty: 4
+ssrmode: pwm
+ssrpin: 22
+terminate: 0
+umax: 100
+umin: 0

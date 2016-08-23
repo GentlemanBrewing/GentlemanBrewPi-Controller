@@ -8,6 +8,7 @@ import threading
 import time
 import queue
 import json
+import yaml
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     waiters = set()
@@ -60,12 +61,14 @@ application = tornado.web.Application([
 class QueueMonitor(threading.Thread):
 
     processdictionary = {}
+    processtemplate = {}
     processJSON = ""
     runninginstances = set()
 
     def __init__(self, inputqueue, outputqueue):
         threading.Thread.__init__(self)
         QueueMonitor.runninginstances.add(self)
+        QueueMonitor.processtemplate = self.loadconfig('Template.yaml')
         self.inputqueue = inputqueue
         self.outputqueue = outputqueue
         self.newinput = {}
@@ -74,9 +77,21 @@ class QueueMonitor(threading.Thread):
         self.inputdifference = {}
         self.jsoninputdifference = ""
 
+    # Function for loading config file
+    def loadconfig(self, filename):
+        try:
+            f = open(filename)
+        except FileNotFoundError:
+            defaultfilename = "Default" + filename
+            f = open(defaultfilename)
+        datamap = yaml.safe_load(f)
+        f.close()
+        return datamap
+
     def sendtomanager(self,data):
         self.newoutput = json.loads(data)
         self.outputqueue.put(self.newoutput)
+
 
     @classmethod
     def updatequeues(cls, data):

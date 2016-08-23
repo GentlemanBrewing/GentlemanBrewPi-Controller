@@ -68,6 +68,7 @@ class BrewManager(multiprocessing.Process):
         multiprocessing.Process.__init__(self)
         self.counter = 0
         self.processinformation = self.loadconfig('Config.yaml')
+
         self.processdata = {}
         self.controllerdata = {}
         self.process_output = copy.deepcopy(self.processinformation)
@@ -76,10 +77,16 @@ class BrewManager(multiprocessing.Process):
 
     # Function for loading config file
     def loadconfig(self, filename):
-        f = open(filename)
+        try:
+            f = open(filename)
+        except FileNotFoundError:
+            defaultfilename = "Default" + filename
+            f = open(defaultfilename)
         datamap = yaml.safe_load(f)
         f.close()
         return datamap
+
+
   
     # Function for updating config file
     def writeconfig(self, data):

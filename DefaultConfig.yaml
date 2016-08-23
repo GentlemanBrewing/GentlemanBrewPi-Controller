@@ -6,7 +6,7 @@ Steam Boiler:
   kd: 0
   ki: 0
   kp: 10
-  moutput: 0
+  moutput: 'auto'
   pwm_frequency: 1
   relayduty:
     Relay1: 0
@@ -15,30 +15,33 @@ Steam Boiler:
     Relay4: 0
     Relay5: 0
   relaypin:
-    Relay1: 0
-    Relay2: 0
-    Relay3: 0
-    Relay4: 0
-    Relay5: 0
-  safety_channel: 2
+    Relay1: 'off'
+    Relay2: 'off'
+    Relay3: 'off'
+    Relay4: 'off'
+    Relay5: 'off'
+  safety_channel: 1
   safety_k1: 885
   safety_k2: 2790
   safety_k3: 0
   safety_mode: 'off'
   safety_value: 0
   setpoint:
-    '2016-08-12 09:00:00': 30
-    '2016-08-13 09:00:00': 35
-    '2016-08-14 09:00:00': 40
-  sleeptime: 5
+    '2016-08-12 09:00:00': 20
+    '2016-08-13 09:00:00': 20
+    '2016-08-14 09:00:00': 20
+    '2016-08-15 09:00:00': 20
+    '2016-08-16 09:00:00': 20
+    '2016-08-17 09:00:00': 20
+    '2016-08-18 09:00:00': 20
+    '2016-08-19 09:00:00': 20
+  sleeptime: 2
   ssrduty: 4
-  ssrmode: pwm
+  ssrmode: 'pwm'
   ssrpin: 22
   terminate: 0
   umax: 100
   umin: 0
-  Temperature: 20
-  Setpoint: 20
 
 Buzzer:
   frequency: 2000
@@ -46,4 +49,49 @@ Buzzer:
   duration: 0
   pin: 27
   Temperature: 0
+
+Fermenter1:
+  control_channel: 2
+  control_k1: 885
+  control_k2: 2790
+  control_k3: 0
+  kd: 0
+  ki: 0
+  kp: 10
+  moutput: 'auto'
+  pwm_frequency: 0.1
+  relayduty:
+    Relay1: 0
+    Relay2: 0
+    Relay3: 0
+    Relay4: 0
+    Relay5: 0
+  relaypin:
+    Relay1: 'off'
+    Relay2: 'off'
+    Relay3: 'off'
+    Relay4: 'off'
+    Relay5: 'off'
+  safety_channel: 2
+  safety_k1: 885
+  safety_k2: 2790
+  safety_k3: 0
+  safety_mode: 'off'
+  safety_value: 0
+  setpoint:
+    '2016-08-12 09:00:00': 20
+    '2016-08-13 09:00:00': 20
+    '2016-08-14 09:00:00': 20
+    '2016-08-15 09:00:00': 20
+    '2016-08-16 09:00:00': 20
+    '2016-08-17 09:00:00': 20
+    '2016-08-18 09:00:00': 20
+    '2016-08-19 09:00:00': 20
+  sleeptime: 10
+  ssrduty: 4
+  ssrmode: 'pwm'
+  ssrpin: 22
+  terminate: 0
+  umax: 100
+  umin: 0
 
