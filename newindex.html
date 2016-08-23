@@ -191,7 +191,11 @@ function opensubTab(evt, subtabName) {
 
     // Script for controlling websockets
 
-    var wsUri = "ws://localhost:8000/ws";
+    var loc = window.location;
+    var wsUri = "ws:";
+    wsUri += "//" + loc.host;
+    wsUri += loc.pathname + "/ws";
+
     var websocket = new WebSocket(wsUri);
     var output;
     function init() {
