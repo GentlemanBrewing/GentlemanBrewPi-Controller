@@ -109,7 +109,6 @@ class QueueMonitor(threading.Thread):
                     QueueMonitor.processdictionary = self.processdata
                     QueueMonitor.processJSON = json.dumps(self.processdata,sort_keys=True)
                     self.inputdifference = {}
-                    print(self.jsoninputdifference)
                 except queue.Empty:
                     break
 
