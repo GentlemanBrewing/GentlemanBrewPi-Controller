@@ -424,7 +424,6 @@ function opensubTab(evt, subtabName) {
                             <p class="form">
                                 <label for="{{str(process) + str(variable)}}">{{variable}}</label>
                                 <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}"class="dictionary">
-                                <label></label>
                             </p>
                             {% for counter in range(len(pdict[process][variable].keys())) %}
                                 <p class="form">
@@ -435,6 +434,7 @@ function opensubTab(evt, subtabName) {
                                     <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" name="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" required>
                                 </p>
                             {% end %}
+                            <!--
                             <p class="form">
                                 <label></label>
                                 <label for="{{str(process)+str(variable)+'add'}}"></label>
@@ -442,6 +442,7 @@ function opensubTab(evt, subtabName) {
                                 <label for="{{str(process)+str(variable)+'remove'}}"> </label>
                                 <input type="button" id="{{str(process)+str(variable)+'remove'}}" class="{{str(variable)}}" value="Remove Row" onclick="removefromform('{{str(process) + str(variable + 'div')}}')">
                             </p>
+                            -->
                         {% else %}
                             <p class="form">
                                 <label for="{{str(process) + str(variable)}}">{{variable}}</label>

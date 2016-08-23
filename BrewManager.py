@@ -115,6 +115,7 @@ class BrewManager(multiprocessing.Process):
         self.processdata['Buzzer']['outputqueue'] = multiprocessing.Queue()
         self.processdata['Buzzer']['inputqueue'].put(self.processinformation['Buzzer'])
         Buzzer(self.processdata['Buzzer']['inputqueue']).start()
+        print('Buzzer started - BrewMan')
 
         # Start the web server process
         self.processdata['WebServ'] = {}
@@ -137,6 +138,7 @@ class BrewManager(multiprocessing.Process):
                     self.processdata[process]['inputqueue'].put(pvariables)
                     Controllertester.PIDControllertester(self.processdata[process]['inputqueue'],
                                              self.processdata[process]['outputqueue']).start()
+                    print('%s started - BrewMan' % process)
                     self.buzzer(2000, 1)
 
             # Update the dictionary for the web output
