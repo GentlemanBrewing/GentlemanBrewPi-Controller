@@ -248,9 +248,6 @@ class BrewManager(multiprocessing.Process):
 
         print('BrewManager exiting')
 
-
-
-
   
 if __name__ == "__main__":
     man = BrewManager()
