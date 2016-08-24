@@ -52,6 +52,7 @@ class Buzzer(multiprocessing.Process):
 
             time.sleep(1)
 
+# todo Create Autotuner class
 
 # Main Manager class
 class BrewManager(multiprocessing.Process):
