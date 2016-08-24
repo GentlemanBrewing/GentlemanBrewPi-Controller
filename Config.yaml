@@ -1,67 +1,31 @@
+Buzzer: {Temperature: 0, duration: 0, duty: 50, frequency: 2000, pin: 27, terminate: 0}
+Fermenter1: {Setpoint: 17, Temperature: 17, terminate: 'True'}
+Fermenter2: {Setpoint: 18, Temperature: 120, terminate: 'True'}
+Fermenter3: {terminate: 'True'}
+Pumps: {pump1pin: 17, pump2pin: 22, terminate: 0}
 Steam Boiler:
-  control_channel: 1
-  control_k1: 885
-  control_k2: 2790
-  control_k3: 0
-  kd: 0
-  ki: 0
-  kp: 10
+  control_channel: 1.0
+  control_k1: 885.0
+  control_k2: 2790.0
+  control_k3: 0.0
+  kd: 0.0
+  ki: 0.0
+  kp: 10.0
   moutput: auto
-  pwm_frequency: 1
-  relayduty:
-    Relay1: 0
-    Relay2: 0
-    Relay3: 0
-    Relay4: 0
-    Relay5: 0
-  relaypin:
-    Relay1: 0
-    Relay2: 0
-    Relay3: 0
-    Relay4: 0
-    Relay5: 0
-  safety_channel: 2
-  safety_k1: 885
-  safety_k2: 2790
-  safety_k3: 0
+  pwm_frequency: 1.0
+  relayduty: {Relay1: 0.0, Relay2: 0.0, Relay3: 0.0, Relay4: 0.0, Relay5: 0.0}
+  relaypin: {Relay1: 'off', Relay2: 'off', Relay3: 'off', Relay4: 'off', Relay5: 'off'}
+  safety_channel: 2.0
+  safety_k1: 885.0
+  safety_k2: 2790.0
+  safety_k3: 0.0
   safety_mode: 'off'
-  safety_value: 0
-  setpoint:
-    '2016-08-12 09:00:00': 30
-    '2016-08-13 09:00:00': 35
-    '2016-08-14 09:00:00': 40
-  sleeptime: 2
-  ssrduty: 4
+  safety_value: 0.0
+  setpoint: {'2016-08-12 09:00:00': 30.0, '2016-08-13 09:00:00': 35.0, '2016-08-14 09:00:00': 40.0}
+  sleeptime: 2.0
+  ssrduty: 4.0
   ssrmode: pwm
-  ssrpin: 22
-  terminate: 0
-  umax: 100
-  umin: 0
-
-Buzzer:
-  frequency: 2000
-  duty: 50
-  duration: 0
-  pin: 27
-  Temperature: 0
-  terminate: 0
-
-Fermenter1:
-  Temperature: 17
-  Setpoint: 17
-  terminate: 0
-
-Fermenter2:
-  Temperature: 120
-  Setpoint: 18
-  terminate: 0
-
-Fermenter3:
-  Temperature: 18
-  Setpoint: 19
-  terminate: 0
-
-Pumps:
-  pump1pin: 17
-  pump2pin: 22
-  terminate: 0
+  ssrpin: 22.0
+  terminate: 'False'
+  umax: 100.0
+  umin: 0.0

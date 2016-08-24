@@ -266,7 +266,7 @@ class PIDController(multiprocessing.Process):
             self.outputqueue.put(self.outputdict)
 
             # Check terminate variable
-            if self.variabledict['terminate'] == 1:
+            if self.variabledict['terminate'] == 'True':
                 break
 
             # Wait before running loop again

@@ -20,9 +20,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.write_message(QueueMonitor.processJSON)
 
     def on_message(self, message):
-        print('message received %s' % message)
         QueueMonitor.updatequeues(message)
-        #self.write_message(QueueMonitor.processdictionary)
 
     def on_close(self):
         WSHandler.waiters.remove(self)
@@ -47,10 +45,8 @@ class IndexHandler(tornado.web.RequestHandler):
         dictionarylist = ["setpoint", "relayduty", "relaypin"]
         counter = 0
 
-        strvar = ""
-        newdict = {"Steam Boiler": 100, "Fermenter1": 10, "Fermenter2": 12, "Fermenter3": 30}
         list = ["Item1", "Item2", "Item4"]
-        self.render("newindex.html", items=list, pdict=processdict, newdict=newdict, strvar=strvar, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter )
+        self.render("newindex.html", items=list, pdict=processdict, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter )
         print("new web page opened")
 
 
@@ -91,6 +87,7 @@ class QueueMonitor(threading.Thread):
     def sendtomanager(self,data):
         self.newoutput = json.loads(data)
         self.outputqueue.put(self.newoutput)
+        print('data in outputqueue - QueueManager')
 
 
     @classmethod

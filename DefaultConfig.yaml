@@ -39,7 +39,7 @@ Steam Boiler:
   ssrduty: 4
   ssrmode: 'pwm'
   ssrpin: 22
-  terminate: 0
+  terminate: 'False'
   umax: 100
   umin: 0
 
@@ -91,7 +91,7 @@ Fermenter1:
   ssrduty: 4
   ssrmode: 'pwm'
   ssrpin: 22
-  terminate: 0
+  terminate: 'False'
   umax: 100
   umin: 0
 

@@ -94,6 +94,7 @@ class PIDControllertester(multiprocessing.Process):
                 updated_variables = self.inputqueue.get_nowait()
                 for variable, value in updated_variables.items():
                     self.variabledict[variable] = value
+                print('initial variables collected - Controller')
         except queue.Empty:
             pass
 
@@ -107,8 +108,12 @@ class PIDControllertester(multiprocessing.Process):
             try:
                 while True:
                     updated_variables = self.inputqueue.get_nowait()
+                    print('Collected data from inputqueue - Controller')
                     for variable, value in updated_variables.items():
+                        print('new variable at: %s' % variable)
                         self.variabledict[variable] = value
+                        # print('new variables collected')
+                        # print(self.variabledict)
             except queue.Empty:
                 pass
 
@@ -150,7 +155,8 @@ class PIDControllertester(multiprocessing.Process):
             self.outputqueue.put(self.outputdict)
 
             # Check terminate variable
-            if self.variabledict['terminate'] == 1:
+            #print('controller terminate: %s' % self.variabledict['terminate'])
+            if self.variabledict['terminate'] == 'True':
                 break
 
 
