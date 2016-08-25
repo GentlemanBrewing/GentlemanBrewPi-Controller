@@ -254,8 +254,10 @@ class BrewManager(multiprocessing.Process):
                 self.counter = 0
                 self.writeconfig(self.processinformation)
 
-            if time.time() < self.lastsleeptime + 5:
-                sleeptime = 5 -time.time() + self.lastsleeptime
+            looptime = 2
+
+            if time.time() < self.lastsleeptime + looptime:
+                sleeptime = looptime -time.time() + self.lastsleeptime
             else:
                 sleeptime = 0
             print('Sleeping for %s' % sleeptime)
