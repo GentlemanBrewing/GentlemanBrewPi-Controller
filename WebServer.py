@@ -17,7 +17,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.set_nodelay(True)
         print('new connection')
         WSHandler.waiters.add(self)
-        time.sleep(1)
         self.write_message(QueueMonitor.processJSON)
         self.write_message(QueueMonitor.processtemplateJSON)
 
@@ -110,11 +109,14 @@ class QueueMonitor(threading.Thread):
         while True:
             while True:
                 try:
+                    deletelist = []
                     self.newinput = self.inputqueue.get_nowait()
                     # Delete processes no longer running
                     for process in self.processdata.keys():
                         if process not in self.newinput:
-                            del self.processdata[process]
+                            deletelist.append(process)
+                    for process in deletelist:
+                        del self.processdata[process]
 
                     for process in self.newinput.keys():
                         # If process is not in dictionary create process add whole process to difference dictionary
