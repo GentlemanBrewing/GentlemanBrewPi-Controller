@@ -78,6 +78,7 @@ class WriteToDatabase(multiprocessing.Process):
                                  self.databaselist)
         except sqlite3.Error:
             pass
+        self.databaselist = []
 
     def run(self):
 
