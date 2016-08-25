@@ -93,19 +93,10 @@ class WriteToDatabase(multiprocessing.Process):
                 pass
 
             # Check length of list to write
-            if len(self.databaselist) > 20:
+            if len(self.databaselist) > 50:
                 self.write_to_database()
-                #print('writing to db')
 
-            looptime = 2
-
-            if time.time() < self.lastsleeptime + looptime:
-                sleeptime = looptime -time.time() + self.lastsleeptime
-            else:
-                sleeptime = 0
-            #print('DBServ Sleeping for %s' % sleeptime)
-            time.sleep(sleeptime)
-            self.lastsleeptime = time.time()
+            time.sleep(2)
 
 
 
@@ -319,15 +310,16 @@ class BrewManager(multiprocessing.Process):
                 self.counter = 0
                 self.writeconfig(self.processinformation)
 
-            looptime = 2
-
-            if time.time() < self.lastsleeptime + looptime:
-                sleeptime = looptime -time.time() + self.lastsleeptime
-            else:
-                sleeptime = 0
-            print('BrewMan Sleeping for %s' % sleeptime)
-            time.sleep(sleeptime)
-            self.lastsleeptime = time.time()
+            # looptime = 2
+            #
+            # if time.time() < self.lastsleeptime + looptime:
+            #     sleeptime = looptime -time.time() + self.lastsleeptime
+            # else:
+            #     sleeptime = 0
+            # print('BrewMan Sleeping for %s' % sleeptime)
+            # time.sleep(sleeptime)
+            # self.lastsleeptime = time.time()
+            time.sleep(0.5)
 
         print('BrewManager exiting')
 
