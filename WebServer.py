@@ -48,7 +48,7 @@ class IndexHandler(tornado.web.RequestHandler):
         counter = 0
 
         list = ["Item1", "Item2", "Item4"]
-        self.render("newindex.html", items=list, pdict=processdict, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter, ptemp=processtemplate )
+        self.render("index.html", items=list, pdict=processdict, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter, ptemp=processtemplate )
         print("new web page opened")
 
 
