@@ -43,10 +43,11 @@ class IndexHandler(tornado.web.RequestHandler):
         processdict = QueueMonitor.processdictionary
         outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
         dictionarylist = ["setpoint", "relayduty", "relaypin"]
+        processtemplate = QueueMonitor.processtemplate
         counter = 0
 
         list = ["Item1", "Item2", "Item4"]
-        self.render("newindex.html", items=list, pdict=processdict, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter )
+        self.render("newindex.html", items=list, pdict=processdict, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter, ptemp=processtemplate )
         print("new web page opened")
 
 
