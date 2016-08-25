@@ -110,8 +110,8 @@ class BrewManager(multiprocessing.Process):
         try:
             with conn:
                 conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
-                                  'SafetyTemp, SafetyTrigger) VALUES (:DateTime, :ProcessName,'
-                                  ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger)', self.controllerdata)
+                                  'SafetyTemp, SafetyTrigger, Status) VALUES (:DateTime, :ProcessName,'
+                                  ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger, :Status)', self.controllerdata)
         except sqlite3.IntegrityError:
             self.buzzer(2000, 1)
 
@@ -151,8 +151,9 @@ class BrewManager(multiprocessing.Process):
                     self.buzzer(2000, 1)
 
             #print('2')
-            # Update the dictionary for the web output
+            # Update the process variable dictionary for the web output
             self.process_output = copy.deepcopy(self.processinformation)
+
             # Get output from process and record in database
             for process in self.processdata.keys():
                 # Do not collect web server output here, buzzer never produces output

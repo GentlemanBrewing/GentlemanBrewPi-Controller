@@ -100,6 +100,7 @@ class PIDControllertester(multiprocessing.Process):
 
         mv = 0
         safetytemp = 0
+        newumax = 90
 
         # Main control loop
         while True:
@@ -130,6 +131,11 @@ class PIDControllertester(multiprocessing.Process):
             if mv > 100:
                 mv = 85
 
+            # generate umax
+            newumax += 3
+            if newumax > 100:
+                newumax -= 10
+
             # check for manual mode
             if self.variabledict['moutput'] != "auto":
                 u = self.variabledict['moutput']
@@ -150,6 +156,8 @@ class PIDControllertester(multiprocessing.Process):
             self.outputdict['Setpoint'] = self.setpoint
             self.outputdict['SafetyTemp'] = safetytemp
             self.outputdict['SafetyTrigger'] = self.safetytrigger
+            self.outputdict['Status'] = 'Produceing variables'
+            self.outputdict['umax'] = newumax
 
            # Send output to Manager
             self.outputqueue.put(self.outputdict)
