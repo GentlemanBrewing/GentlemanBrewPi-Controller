@@ -131,11 +131,10 @@ class PIDController(multiprocessing.Process):
         # Read New Measured Variable
         mvchannel = self.variabledict['control_channel']
         v = self.adc.read_voltage(mvchannel)
-        mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict[
-            'control_k3']
+        mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
         # Do assymetric relay output
-        if self.variabledict['autotune_gainsign'] > 0:
+        if self.variabledict['autotune_gainsign'] >= 0:
             if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 0:
                 self.variabledict['moutput'] = 100
                 self.variabledict['autotune_iterations'] += 1
