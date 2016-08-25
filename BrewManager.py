@@ -113,7 +113,7 @@ class BrewManager(multiprocessing.Process):
                 conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
                                   'SafetyTemp, SafetyTrigger, Status) VALUES (:DateTime, :ProcessName,'
                                   ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger, :Status)', self.controllerdata)
-        except sqlite3.IntegrityError:
+        except sqlite3.Error:
             self.buzzer(2000, 1)
 
     # Main running function
