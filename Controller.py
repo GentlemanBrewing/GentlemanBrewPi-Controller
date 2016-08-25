@@ -136,16 +136,20 @@ class PIDController(multiprocessing.Process):
         # Do assymetric relay output
         if self.variabledict['autotune_gainsign'] >= 0:
             if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 0:
+                print('relay on')
                 self.variabledict['moutput'] = 100
                 self.variabledict['autotune_iterations'] += 1
             elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 100:
+                print('relay off')
                 self.variabledict['moutput'] = 0
                 self.variabledict['autotune_iterations'] += 1
         else:
             if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 100:
+                print('relay off')
                 self.variabledict['moutput'] = 0
                 self.variabledict['autotune_iterations'] += 1
             elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 0:
+                print('relay on')
                 self.variabledict['moutput'] = 100
                 self.variabledict['autotune_iterations'] += 1
 
