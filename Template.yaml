@@ -1,13 +1,20 @@
 New Process:
-  control_channel: 1
-  control_k1: 885
-  control_k2: 2790
-  control_k3: 0
-  kd: 0
-  ki: 0
-  kp: 10
+  Delete_This_Process: 'False'
+  autotune_convergence: 0.01
+  autotune_hysteresis: 1.0
+  autotune_maxiterations: 20.0
+  autotune_on: 'False'
+  autotune_sleeptime: 0.1
+  autotune_temp: 102.0
+  control_channel: 1.0
+  control_k1: 885.0
+  control_k2: 2790.0
+  control_k3: 0.0
+  kd: 0.0
+  ki: 0.0
+  kp: 10.0
   moutput: auto
-  pwm_frequency: 1
+  pwm_frequency: 1.0
   relayduty:
     Relay1: 0
     Relay2: 0
@@ -15,17 +22,17 @@ New Process:
     Relay4: 0
     Relay5: 0
   relaypin:
-    Relay1: 0
-    Relay2: 0
-    Relay3: 0
-    Relay4: 0
-    Relay5: 0
-  safety_channel: 2
-  safety_k1: 885
-  safety_k2: 2790
-  safety_k3: 0
+    Relay1: 'off'
+    Relay2: 'off'
+    Relay3: 'off'
+    Relay4: 'off'
+    Relay5: 'off'
+  safety_channel: 2.0
+  safety_k1: 885.0
+  safety_k2: 2790.0
+  safety_k3: 0.0
   safety_mode: 'off'
-  safety_value: 0
+  safety_value: 0.0
   setpoint:
     '2016-08-12 09:00:00': 20
     '2016-08-13 09:00:00': 20
@@ -37,20 +44,10 @@ New Process:
     '2016-08-19 09:00:00': 20
     '2016-08-20 09:00:00': 20
     '2016-08-21 09:00:00': 20
-  sleeptime: 2
-  ssrduty: 4
+  sleeptime: 2.0
+  ssrduty: 4.0
   ssrmode: pwm
-  ssrpin: 22
-  terminate: 'False'
-  umax: 100
-  umin: 0
-  autotune_temp: 102
-  autotune_hysteresis: 1
-  autotune_kp: 0
-  autotune_ki: 0
-  autotune_kd: 0
-  autotune_on: 'False'
-  autotune_sleeptime: 0.1
-  autotune_maxiterations: 20
-  autotune_iterations: 0
-  autotune_convergence: 0.01
+  ssrpin: 22.0
+  terminate: 'True'
+  umax: 100.0
+  umin: 0.0

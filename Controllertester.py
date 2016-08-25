@@ -118,6 +118,10 @@ class PIDControllertester(multiprocessing.Process):
             except queue.Empty:
                 pass
 
+            # Check terminate variable
+            if self.variabledict['terminate'] == 'True':
+                break
+
             # Get new setpoint based on current date and time
             self.setpoint_interpolate()
 
@@ -160,12 +164,6 @@ class PIDControllertester(multiprocessing.Process):
 
            # Send output to Manager
             self.outputqueue.put(self.outputdict)
-
-            # Check terminate variable
-            #print('controller terminate: %s' % self.variabledict['terminate'])
-            if self.variabledict['terminate'] == 'True':
-                break
-
 
             # Wait before running loop again
             time.sleep(self.variabledict['sleeptime'])

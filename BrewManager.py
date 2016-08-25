@@ -80,6 +80,7 @@ class BrewManager(multiprocessing.Process):
         try:
             f = open(filename)
         except FileNotFoundError:
+            print('%s not found loading Default' % filename)
             defaultfilename = "Default" + filename
             f = open(defaultfilename)
         datamap = yaml.safe_load(f)
@@ -192,24 +193,27 @@ class BrewManager(multiprocessing.Process):
                         if self.webdata[process]['Delete_This_Process'] == 'True':
                             del self.processinformation[process]
                             self.webdata[process]['terminate'] = 'True'
-                        # Update variables for the process from the webdata while excluding the output variables
-                        for pvar in self.webdata[process].keys():
-                            if pvar not in self.outputlist:
-                                if type(self.webdata[process][pvar]) == dict:
-                                    if pvar not in self.processinformation[process].keys():
-                                        self.processinformation[process][pvar] = {}
-                                    for key in self.webdata[process][pvar].keys():
-                                        if pvar in self.textlist:
-                                            self.processinformation[process][pvar][key] = str(self.webdata[process][pvar][key])
-                                        else:
-                                            self.processinformation[process][pvar][key] = float(self.webdata[process][pvar][key])
-                                            self.webdata[process][pvar][key] = self.processinformation[process][pvar][key]
-                                else:
-                                    if pvar in self.textlist:
-                                        self.processinformation[process][pvar] = str(self.webdata[process][pvar])
+                            print('delete process initiated')
+                        else:
+                            # Update variables for the process from the webdata while excluding the output variables
+                            for pvar in self.webdata[process].keys():
+                                if pvar not in self.outputlist:
+                                    if type(self.webdata[process][pvar]) == dict:
+                                        if pvar not in self.processinformation[process].keys():
+                                            self.processinformation[process][pvar] = {}
+                                        for key in self.webdata[process][pvar].keys():
+                                            if pvar in self.textlist:
+                                                self.processinformation[process][pvar][key] = str(self.webdata[process][pvar][key])
+                                            else:
+                                                self.processinformation[process][pvar][key] = float(self.webdata[process][pvar][key])
+                                                self.webdata[process][pvar][key] = self.processinformation[process][pvar][key]
                                     else:
-                                        self.processinformation[process][pvar] = float(self.webdata[process][pvar])
-                                        self.webdata[process][pvar] = self.processinformation[process][pvar]
+                                        if pvar in self.textlist:
+                                            self.processinformation[process][pvar] = str(self.webdata[process][pvar])
+                                        else:
+                                            self.processinformation[process][pvar] = float(self.webdata[process][pvar])
+                                            self.webdata[process][pvar] = self.processinformation[process][pvar]
+                    print('Updating config file')
                     # Update the config file
                     self.counter = 0
                     self.writeconfig(self.processinformation)

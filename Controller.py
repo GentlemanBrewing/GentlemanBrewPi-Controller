@@ -264,6 +264,10 @@ class PIDController(multiprocessing.Process):
             except queue.Empty:
                 pass
 
+            # Check terminate variable
+            if self.variabledict['terminate'] == 'True':
+                break
+
             # Update Variables
             relayduty = self.variabledict['relayduty']
             ssrduty = self.variabledict['ssrduty']
@@ -391,10 +395,6 @@ class PIDController(multiprocessing.Process):
 
             # Send output to Manager
             self.outputqueue.put(self.outputdict)
-
-            # Check terminate variable
-            if self.variabledict['terminate'] == 'True':
-                break
 
             # Wait before running loop again
             time.sleep(self.variabledict['sleeptime'])

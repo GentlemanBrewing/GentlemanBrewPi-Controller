@@ -135,6 +135,7 @@ class QueueMonitor(threading.Thread):
             if self.iterations > 60:
                 QueueMonitor.processtemplate = self.loadconfig('Template.yaml')
                 QueueMonitor.processtemplateJSON = json.dumps(QueueMonitor.processtemplate, sort_keys=True)
+                self.iterations = 0
             self.iterations += 1
 
             time.sleep(1)
