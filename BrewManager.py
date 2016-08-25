@@ -171,7 +171,7 @@ class BrewManager(multiprocessing.Process):
                                 if outputvar != 'ProcessName':
                                     self.process_output[process][outputvar] = self.controllerdata[outputvar]
                             # log to database
-                            self.write_to_database()
+                            #self.write_to_database()
                         except queue.Empty:
                             break
 
