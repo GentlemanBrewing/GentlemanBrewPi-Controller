@@ -181,7 +181,6 @@ class BrewManager(multiprocessing.Process):
             #Commit to db
             self.write_to_database()
 
-            #print('3')
             # Send updated process_output to web server
             self.processdata['WebServ']['inputqueue'].put(self.process_output)
 
