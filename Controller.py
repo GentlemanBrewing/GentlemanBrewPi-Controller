@@ -125,6 +125,7 @@ class PIDController(multiprocessing.Process):
         self.variabledict['sleeptime'] = self.variabledict['autotune_sleeptime']
         self.variabledict['umin'] = 0
         self.variabledict['umax'] = 100
+        self.variabledict['moutput'] = 0
 
         # Read New Measured Variable
         mvchannel = self.variabledict['control_channel']
@@ -133,10 +134,10 @@ class PIDController(multiprocessing.Process):
             'control_k3']
 
         # Do assymetric relay output
-        if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis']:
+        if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 0:
             self.variabledict['moutput'] = 100
             self.variabledict['autotune_iterations'] += 1
-        elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis']:
+        elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 100:
             self.variabledict['moutput'] = 0
             self.variabledict['autotune_iterations'] += 1
 
