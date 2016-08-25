@@ -228,6 +228,7 @@ class PIDController(multiprocessing.Process):
         if self.variabledict['autotune_iterations'] >= self.variabledict['autotune_maxiterations']:
             self.variabledict['autotune_on'] = 'False'
             self.outputdict['Status']= 'Autotuner failed to converge - Terminating'
+            self.outputdict['autotune_on'] = 'False'
             self.outputdict['terminate'] = 'True'
             self.variabledict['terminate'] = 'True'
 
