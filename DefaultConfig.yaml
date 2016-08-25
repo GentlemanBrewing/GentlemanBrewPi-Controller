@@ -2,6 +2,7 @@ Buzzer: {duration: 0, duty: 50, frequency: 2000, pin: 27, terminate: 0}
 Steam Boiler:
   Delete_This_Process: 'False'
   autotune_convergence: 0.01
+  autotune_gainsign: 1
   autotune_hysteresis: 1.0
   autotune_maxiterations: 20.0
   autotune_on: 'False'

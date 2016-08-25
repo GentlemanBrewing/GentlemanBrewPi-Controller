@@ -68,6 +68,7 @@ class PIDController(multiprocessing.Process):
             'autotune_maxiterations': 20,
             'autotune_iterations': 0,
             'autotune_convergence': 0.01,
+            'autotune_gainsign': 1,
             'autotune_dict': {
                 'time': [],
                 'temp': [],
@@ -134,12 +135,20 @@ class PIDController(multiprocessing.Process):
             'control_k3']
 
         # Do assymetric relay output
-        if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 0:
-            self.variabledict['moutput'] = 100
-            self.variabledict['autotune_iterations'] += 1
-        elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 100:
-            self.variabledict['moutput'] = 0
-            self.variabledict['autotune_iterations'] += 1
+        if self.variabledict['autotune_gainsign'] > 0:
+            if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 0:
+                self.variabledict['moutput'] = 100
+                self.variabledict['autotune_iterations'] += 1
+            elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 100:
+                self.variabledict['moutput'] = 0
+                self.variabledict['autotune_iterations'] += 1
+        else:
+            if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 100:
+                self.variabledict['moutput'] = 0
+                self.variabledict['autotune_iterations'] += 1
+            elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 0:
+                self.variabledict['moutput'] = 100
+                self.variabledict['autotune_iterations'] += 1
 
         # Update autotunedict
         self.variabledict['autotune_dict']['time'].append(time.time())
