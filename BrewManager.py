@@ -68,7 +68,7 @@ class BrewManager(multiprocessing.Process):
         multiprocessing.Process.__init__(self)
         self.counter = 0
         self.processinformation = self.loadconfig('Config.yaml')
-        self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate', 'autotune_on']
+        self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate', 'autotune_on', 'Delete_This_Process']
         self.processdata = {}
         self.controllerdata = {}
         self.process_output = copy.deepcopy(self.processinformation)
