@@ -3,10 +3,10 @@
 import multiprocessing
 import queue
 import time
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import sqlite3
 import yaml
-#import Controller
+import Controller
 import Controllertester
 import os
 import WebServer
@@ -145,7 +145,7 @@ class BrewManager(multiprocessing.Process):
                     self.processdata[process]['inputqueue'] = multiprocessing.Queue()
                     self.processdata[process]['outputqueue'] = multiprocessing.Queue()
                     self.processdata[process]['inputqueue'].put(pvariables)
-                    Controllertester.PIDControllertester(self.processdata[process]['inputqueue'],
+                    Controller.PIDController(self.processdata[process]['inputqueue'],
                                              self.processdata[process]['outputqueue']).start()
                     print('%s started - BrewMan' % process)
                     self.buzzer(2000, 1)
