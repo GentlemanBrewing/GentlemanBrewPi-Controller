@@ -297,7 +297,7 @@ function opensubTab(evt, subtabName) {
         var jsondict = ""
 
         // Generate the correct process name
-        if (document.getElementById(formname).className) === "NewProcess" {
+        if (document.getElementById(formname).className === "NewProcess") {
             processname = document.getElementById("New ProcessName").value;
         }
 
@@ -395,24 +395,25 @@ function opensubTab(evt, subtabName) {
         <p>Create a new PID controller process here</p>
         <strong>The process name cannot be changed afterwards</strong>
         <br>
+
         <form id="New ProcessForm" class="NewProcess">
             <fieldset>
                 <legend>Process name</legend>
                 <p class="form">
-                    <label for="New ProcessName">{{variable}}</label>
+                    <label for="New ProcessName">Process Name</label>
                     <input type="text" id="New ProcessName" name="Name">
                 </p>
             </fieldset>
             <br>
             <fieldset>
                 <legend>Process Variables</legend>
-                {% for variable in sorted(ptemp.keys()) %}
+                {% for variable in sorted(ptemp['New Process'].keys()) %}
                     {% if variable in dictionarylist %}
                         <p class="form">
                             <label for="{{'New Process' + str(variable)}}">{{variable}}</label>
                             <input type="text" id="{{'New Process' + str(variable)}}" name="{{str(variable)}}"class="dictionary">
                         </p>
-                        {% for counter in range(len(ptemp[variable].keys())) %}
+                        {% for counter in range(len(ptemp['New Process'][variable].keys())) %}
                             <p class="form">
                                 <label></label>
                                 <label for="{{'New Process' + str(variable) + 'k' + str(counter)}}"></label>
@@ -430,8 +431,9 @@ function opensubTab(evt, subtabName) {
                 {% end %}
             </fieldset>
             <br>
-            <input type="button" id="{{'New Processsubmit'}}" value="Create New Process" onclick="formparse('{{str(process)+'form'}}')">
+            <input type="button" id="{{'New Processsubmit'}}" value="Create New Process" onclick="formparse('New ProcessForm')">
         </form>
+
     </div>
 
 
