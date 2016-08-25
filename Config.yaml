@@ -29,3 +29,13 @@ Steam Boiler:
   terminate: 'False'
   umax: 100.0
   umin: 0.0
+  autotune_temp: 102
+  autotune_hysteresis: 1
+  autotune_kp: 0
+  autotune_ki: 0
+  autotune_kd: 0
+  autotune_on: 'False'
+  autotune_sleeptime: 0.1
+  autotune_maxiterations: 20
+  autotune_iterations: 0
+  autotune_convergence: 0.01
