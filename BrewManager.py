@@ -104,7 +104,7 @@ class BrewManager(multiprocessing.Process):
         self.processdata['Buzzer']['inputqueue'].put(buzzervariables)
 
 
-
+    #todo Change function for writing to db to multiprocesing class
     # Function for writing to database
     def write_to_database(self):
         conn = sqlite3.connect('Log.db')
