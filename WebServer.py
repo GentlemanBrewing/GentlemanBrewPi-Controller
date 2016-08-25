@@ -83,7 +83,7 @@ class QueueMonitor(threading.Thread):
         try:
             f = open(filename)
         except FileNotFoundError:
-            print('%s not found loading Default%s' % filename)
+            print('%s not found loading Default' % filename)
             defaultfilename = "Default" + filename
             f = open(defaultfilename)
         datamap = yaml.safe_load(f)
