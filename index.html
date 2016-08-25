@@ -1,11 +1,203 @@
 <!DOCTYPE html>
 <html>
 <meta charset="utf-8" />
-<title>WebSocket Test</title>
-<script language="javascript" type="text/javascript">
+<title>BrewManager</title>
+<style>
+body {font-family: "Lato", sans-serif;}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-size: 100%;
+}
+
+h1 {
+    font-size: 2.5em;
+}
+
+h2 {
+    font-size: 1.875em;
+}
+
+p {
+    font-size: 0.875em;
+}
+
+ul.tab {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Float the list items side by side */
+ul.tab li {float: left;}
+
+/* Style the links inside the list items */
+ul.tab li a {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of links on hover */
+ul.tab li a:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+ul.tab li a:focus, .active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+/* Style the subtabs */
+
+ul.subtab {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Float the list items side by side */
+ul.subtab li {float: left;}
+
+/* Style the links inside the list items */
+ul.subtab li a {
+    display: inline-block;
+    color: black;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of links on hover */
+ul.subtab li a:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current subtablink class */
+ul.subtab li a:focus, .active {
+    background-color: #ccc;
+}
+
+/* Style the subtab content */
+.subtabcontent {
+    display: none;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-top: none;
+}
+
+/* Style fieldsets as css table */
+fieldset  {
+    display: table;
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+
+p.form     {
+display: table-row;
+}
+
+label {
+    display: table-cell;
+}
+
+input[type=text] {
+    padding: 4px;
+    display: table-cell;
+    margin: 4px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type=button] {
+    padding: 4px;
+    display: table-cell;
+    margin: 4px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+input[type=button]:hover {
+    background-color: #ccc;
+}
 
 
-    var wsUri = "ws://localhost:8000/ws";
+/* Hide the input with dictionary value */
+input.dictionary {visibility: hidden}
+
+/* Footer */
+div.Footer {
+    text-align: center;
+    width: 100%;
+}
+
+
+</style>
+
+<script id="Tabs" language="javascript" type="text/javascript" >
+
+// Function for controlling tabs
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+
+// Function for controlling Subtabs
+function opensubTab(evt, subtabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("subtabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("subtablinks");
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(subtabName).style.display = "block";
+    evt.currentTarget.className += " active";
+}
+</script>
+<script id="Websocket" language="javascript" type="text/javascript">
+
+    // Script for controlling websockets
+
+    var loc = window.location;
+    var wsUri = "ws:";
+    wsUri += "//" + loc.host;
+    wsUri += "/ws";
+
     var websocket = new WebSocket(wsUri);
     var output;
     function init() {
@@ -14,17 +206,18 @@
             writeToScreen('<span style="color: red;">ERROR: Update your browser to one that supports websockets. A list can be found <a href="http://caniuse.com/websockets">here</a></span>');
         } else {
             testWebSocket();
+            openTab(event, 'Main');
+            opensubTab(event, 'Overview');
         }
     }
     function onOpen(evt) {
-        writeToScreen("CONNECTED");
-        doSend("Hi there!");
+        writeToScreen("Websocket Connected");
     }
     function onClose(evt) {
-        writeToScreen("DISCONNECTED");
+        writeToScreen('<span style="color: red;">Websocket Disconnected</span> ' + '');
     }
     function onMessage(evt) {
-        writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
+        //writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
         writeToInput(evt.data);
     }
     function onError(evt) {
@@ -40,52 +233,259 @@
         pre.innerHTML = message;
         output.appendChild(pre);
     }
+
     function writeToInput(data) {
         var dict = JSON.parse(data);
-        for (var key in dict) {
-            document.getElementById("demo").innerHTML = "running";
-            if (dict.hasOwnProperty(key)) {
-                document.getElementById(key).value = dict[key];
+        var concatname
+        var dictlist = {% raw dictionarylist %};
+        var strdict = ""
+        var counter
+        var keyid = ""
+        var valueid = ""
+        for (var process in dict) {
+            if (dict.hasOwnProperty(process)) {
+                for (var pvariable in dict[process]) {
+                    if (dict[process].hasOwnProperty(pvariable)) {
+                        concatname = process + pvariable;
+                        if (dictlist.indexOf(pvariable) != -1) {
+                            counter = 0;
+                            for (var key in dict[process][pvariable]) {
+                                if (dict[process][pvariable].hasOwnProperty(key)) {
+                                    keyid = concatname + 'k' + counter;
+                                    valueid = concatname + 'v' + counter;
+                                    document.getElementById(keyid).value = key;
+                                    document.getElementById(valueid).value = dict[process][pvariable][key];
+                                    counter = counter + 1;
+                                }
+                            }
+                            //strdict = dict[process][pvariable].toSource()
+                            //alert(strdict)
+                            //document.getElementById(concatname).value = strdict;
+                        }else {
+                            document.getElementById(concatname).value = dict[process][pvariable];
+                        }
+                    }
+                }
             }
         }
-        //var key = "Steam Boiler"
-        //var chngeID = "demo";
-        //document.getElementById(key).value = dict[key];
     }
+
     function testWebSocket() {
         websocket.onopen = function(evt) { onOpen(evt) };
         websocket.onclose = function(evt) { onClose(evt) };
         websocket.onmessage = function(evt) { onMessage(evt) };
         websocket.onerror = function(evt) { onError(evt) };
-        document.getElementById("send").onclick = function () {
-            doSend(document.getElementById("inputTxt").value);
-            console.log("click registered.");
-        };
-
     }
     window.addEventListener("load", init, false);
 </script>
+<script id="Formcollection" language="JavaScript" type="text/javascript">
 
-<h2>WebSocket Test</h2>
+    // Function for collecting form data and sending to websocket
 
-<div id="inputDiv">
-    <input id="inputTxt" value="Initial" type="text"/>
-    <button id="send" onclick=>send</button>
-    <p id="demo">Click the button to change the text in this paragraph.</p>
+
+    function formparse(formname) {
+        alert("Form Submitted" + formname);
+        var dictlist = {% raw dictionarylist %};
+        var formvar = document.getElementById(formname).elements;
+        var processname = formname.replace('form','');
+        var formdict = {}
+        var keyname = ""
+        var jsondict = ""
+
+        // Generate the correct process name
+        if (document.getElementById(formname).className === "NewProcess") {
+            processname = document.getElementById("New ProcessName").value;
+        }
+
+        // Create base object and create object as value for every key in dictlist
+        formdict[processname] = {};
+        for (var i = 0; i < formvar.length; i++) {
+            if (formvar[i].type === "text") {
+                if (dictlist.indexOf(formvar[i].name) != -1) {
+                    formdict[processname][formvar[i].name] = {};
+                }else if (dictlist.indexOf(formvar[i].className) != -1) {
+                    //alert(formvar[i].name)
+                }else {
+                 		formdict[processname][formvar[i].name] = formvar[i].value;
+                }
+            }
+        }
+
+        // insert keys into objects with "" values
+        for (var i = 0; i < formvar.length; i++) {
+            if (formvar[i].type === "text") {
+                if (dictlist.indexOf(formvar[i].className) != -1) {
+                    if (formvar[i].name === "key") {
+                        formdict[processname][formvar[i].className][formvar[i].value] = "";
+                    }
+                }
+            }
+        }
+
+        // assign values to keys in objects
+        for (var i = 0; i < formvar.length; i++) {
+            if (formvar[i].type === "text") {
+                    if (dictlist.indexOf(formvar[i].className) != -1) {
+                        if (formvar[i].name != "key") {
+                            keyname = document.getElementById(formvar[i].name).value;
+                            formdict[processname][formvar[i].className][keyname] = formvar[i].value;
+                        }
+                    }
+            }
+        }
+
+        jsondict = JSON.stringify(formdict)
+        doSend(jsondict);
+    }
+
+</script>
+
+<body>
+
+<h1>BrewManager</h1>
+<p>Welcome to the BrewManager control page</p>
+
+<ul class="tab">
+
+    <li><a href="#" class="tablinks" onclick="openTab(event, 'Main')">Main</a></li>
+    {% for process in sorted(pdict.keys()) %}
+        <li><a href="#" class="tablinks" onclick="openTab(event, '{{process}}')">{{process}}</a></li>
+    {% end %}
+</ul>
+
+<div id="Main" class="tabcontent">
+    <h3>Controller Setup</h3>
+
+    <ul class="subtab">
+      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'Overview')">Overview</a></li>
+      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'New Controller')">New Controller</a></li>
+      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'Controller')">Controller</a></li>
+    </ul>
+
+    <div id="Overview" class="subtabcontent">
+        <h2>Overview of the system </h2>
+        <div id="outputDiv">
+        </div>
+    </div>
+
+    <div id="New Controller" class="subtabcontent">
+        <h3>New PID Controller</h3>
+        <p>Create a new PID controller process here</p>
+        <strong>The process name cannot be changed afterwards</strong>
+        <br>
+
+        <form>
+            <fieldset>
+                <legend>Process name</legend>
+                <p class="form">
+                    <label for="New ProcessName">Process Name</label>
+                    <input type="text" id="New ProcessName" name="Name" required>
+                </p>
+            </fieldset>
+        </form>
+            <br>
+        <form id="New ProcessForm" class="NewProcess">
+            <fieldset>
+                <legend>Process Variables</legend>
+                {% for variable in sorted(ptemp['New Process'].keys()) %}
+                    {% if variable in dictionarylist %}
+                        <p class="form">
+                            <label for="{{'New Process' + str(variable)}}">{{variable}}</label>
+                            <input type="text" id="{{'New Process' + str(variable)}}" name="{{str(variable)}}"class="dictionary">
+                        </p>
+                        {% for counter in range(len(ptemp['New Process'][variable].keys())) %}
+                            <p class="form">
+                                <label></label>
+                                <label for="{{'New Process' + str(variable) + 'k' + str(counter)}}"></label>
+                                <input type="text" id="{{'New Process' + str(variable) + 'k' + str(counter)}}" name="key" class="{{str(variable)}}" required>
+                                <label for="{{'New Process' + str(variable) + 'v' + str(counter)}}">:</label>
+                                <input type="text" id="{{'New Process' + str(variable) + 'v' + str(counter)}}" name="{{'New Process' + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" required>
+                            </p>
+                        {% end %}
+                    {% else %}
+                        <p class="form">
+                            <label for="{{'New Process' + str(variable)}}">{{variable}}</label>
+                            <input type="text" id="{{'New Process' + str(variable)}}" name="{{str(variable)}}">
+                        </p>
+                    {% end %}
+                {% end %}
+            </fieldset>
+            <br>
+            <input type="button" id="{{'New Processsubmit'}}" value="Create New Process" onclick="formparse('New ProcessForm')">
+        </form>
+
+    </div>
+
+
+    <div id="Controller" class="subtabcontent">
+        <h3>Page under construction</h3>
+        <!--todo Create tab for managing the BrewManager
+        -->
+    </div>
+
 </div>
 
-<div id="staticDiv">
-    {% for item in items %}
-         <input id={{ item }} type="text"/><br>
-    {% end %}
+{% for process in sorted(pdict.keys()) %}
+    <div id="{{process}}" class="tabcontent">
+        <!--<h3></h3>-->
+        <p>Update the variables here, setting autotune_on to True will initiate an autotune cycle</p>
+
+        <form id="{{str(process)+'form'}}">
+            <fieldset>
+                <legend>Output Variables</legend>
+                {% for variable in sorted(pdict[process].keys()) %}
+                    {% if variable in outputlist %}
+                        <p class="form">
+                            <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                            <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}" readonly>
+                        </p>
+                    {% end %}
+                {% end %}
+            </fieldset>
+            <br>
+            <fieldset>
+                <legend>Input Variables</legend>
+                {% for variable in sorted(pdict[process].keys()) %}
+                    {% if variable not in outputlist %}
+                        {% if variable in dictionarylist %}
+                            <p class="form">
+                                <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                                <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}"class="dictionary">
+                            </p>
+                            {% for counter in range(len(pdict[process][variable].keys())) %}
+                                <p class="form">
+                                    <label></label>
+                                    <label for="{{str(process) + str(variable) + 'k' + str(counter)}}"></label>
+                                    <input type="text" id="{{str(process) + str(variable) + 'k' + str(counter)}}" name="key" class="{{str(variable)}}" required>
+                                    <label for="{{str(process) + str(variable) + 'v' + str(counter)}}">:</label>
+                                    <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" name="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" required>
+                                </p>
+                            {% end %}
+                        {% else %}
+                            <p class="form">
+                                <label for="{{str(process) + str(variable)}}">{{variable}}</label>
+                                <input type="text" id="{{str(process) + str(variable)}}" name="{{str(variable)}}">
+                            </p>
+                        {% end %}
+                    {% end %}
+                {% end %}
+            </fieldset>
+            <br>
+            <input type="button" id="{{str(process) + 'submit'}}" value="Update Data" onclick="formparse('{{str(process)+'form'}}')">
+        </form>
+        <div>
+
+        </div>
+
+    </div>
+{% end %}
+
+<div id="Footer" class="Header Footer">
     <br>
-    {% for name, value in sorted(pdict.items()) %}
-        {{ escape(name) }}
-         <input id="{{ name }}" value="{{ value }}" type="text"/><br>
-    {% end %}
+    <p>This Web Page has been designed by Nelis Volschenk.</p>
+    <br>
 </div>
 
-<div id="outputDiv">
-</div>
+</body>
 
 </html>
