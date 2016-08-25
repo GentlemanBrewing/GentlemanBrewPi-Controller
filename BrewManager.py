@@ -71,6 +71,7 @@ class BrewManager(multiprocessing.Process):
         self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate', 'autotune_on', 'Delete_This_Process']
         self.processdata = {}
         self.controllerdata = {}
+        self.controllerdatalist = []
         self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}
         self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
@@ -110,7 +111,7 @@ class BrewManager(multiprocessing.Process):
         conn = sqlite3.connect('Log.db')
         try:
             with conn:
-                conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
+                conn.executemany('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
                                   'SafetyTemp, SafetyTrigger, Status) VALUES (:DateTime, :ProcessName,'
                                   ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger, :Status)', self.controllerdata)
         except sqlite3.Error:
@@ -155,6 +156,7 @@ class BrewManager(multiprocessing.Process):
             # Update the process variable dictionary for the web output
             self.process_output = copy.deepcopy(self.processinformation)
 
+            self.controllerdatalist= []
             # Get output from process and record in database
             for process in self.processdata.keys():
                 # Do not collect web server output here, buzzer never produces output
@@ -172,9 +174,12 @@ class BrewManager(multiprocessing.Process):
                                 if outputvar != 'ProcessName':
                                     self.process_output[process][outputvar] = self.controllerdata[outputvar]
                             # log to database
-                            self.write_to_database()
+                            self.controllerdatalist.append(self.controllerdata)
                         except queue.Empty:
                             break
+
+            #Commit to db
+            self.write_to_database()
 
             #print('3')
             # Send updated process_output to web server
