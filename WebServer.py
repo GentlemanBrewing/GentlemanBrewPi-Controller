@@ -18,6 +18,7 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         print('new connection')
         WSHandler.waiters.add(self)
         self.write_message(QueueMonitor.processJSON)
+        self.write_message(QueueMonitor.processtemplateJSON)
 
     def on_message(self, message):
         QueueMonitor.updatequeues(message)
@@ -43,10 +44,11 @@ class IndexHandler(tornado.web.RequestHandler):
         processdict = QueueMonitor.processdictionary
         outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
         dictionarylist = ["setpoint", "relayduty", "relaypin"]
+        processtemplate = QueueMonitor.processtemplate
         counter = 0
 
         list = ["Item1", "Item2", "Item4"]
-        self.render("newindex.html", items=list, pdict=processdict, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter )
+        self.render("newindex.html", items=list, pdict=processdict, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter, ptemp=processtemplate )
         print("new web page opened")
 
 
@@ -58,6 +60,7 @@ class QueueMonitor(threading.Thread):
 
     processdictionary = {}
     processtemplate = {}
+    processtemplateJSON = ""
     processJSON = ""
     runninginstances = set()
 
@@ -65,6 +68,7 @@ class QueueMonitor(threading.Thread):
         threading.Thread.__init__(self)
         QueueMonitor.runninginstances.add(self)
         QueueMonitor.processtemplate = self.loadconfig('Template.yaml')
+        QueueMonitor.processtemplateJSON = json.dumps(QueueMonitor.processtemplate, sort_keys=True)
         self.inputqueue = inputqueue
         self.outputqueue = outputqueue
         self.newinput = {}
@@ -72,12 +76,14 @@ class QueueMonitor(threading.Thread):
         self.processdata = {}
         self.inputdifference = {}
         self.jsoninputdifference = ""
+        self.iterations = 0
 
     # Function for loading config file
     def loadconfig(self, filename):
         try:
             f = open(filename)
         except FileNotFoundError:
+            print('%s not found loading Default' % filename)
             defaultfilename = "Default" + filename
             f = open(defaultfilename)
         datamap = yaml.safe_load(f)
@@ -88,6 +94,7 @@ class QueueMonitor(threading.Thread):
         self.newoutput = json.loads(data)
         self.outputqueue.put(self.newoutput)
         print('data in outputqueue - QueueManager')
+        print(self.newoutput)
 
 
     @classmethod
@@ -124,6 +131,12 @@ class QueueMonitor(threading.Thread):
                     self.inputdifference = {}
                 except queue.Empty:
                     break
+
+            if self.iterations > 60:
+                QueueMonitor.processtemplate = self.loadconfig('Template.yaml')
+                QueueMonitor.processtemplateJSON = json.dumps(QueueMonitor.processtemplate, sort_keys=True)
+                self.iterations = 0
+            self.iterations += 1
 
             time.sleep(1)
 

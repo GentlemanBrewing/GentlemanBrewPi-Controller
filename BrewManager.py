@@ -52,7 +52,6 @@ class Buzzer(multiprocessing.Process):
 
             time.sleep(1)
 
-# todo Create Autotuner class
 
 # Main Manager class
 class BrewManager(multiprocessing.Process):
@@ -69,18 +68,19 @@ class BrewManager(multiprocessing.Process):
         multiprocessing.Process.__init__(self)
         self.counter = 0
         self.processinformation = self.loadconfig('Config.yaml')
-        self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate']
+        self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate', 'autotune_on', 'Delete_This_Process']
         self.processdata = {}
         self.controllerdata = {}
         self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}
-        self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger',]
+        self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
 
     # Function for loading config file
     def loadconfig(self, filename):
         try:
             f = open(filename)
         except FileNotFoundError:
+            print('%s not found loading Default' % filename)
             defaultfilename = "Default" + filename
             f = open(defaultfilename)
         datamap = yaml.safe_load(f)
@@ -189,24 +189,31 @@ class BrewManager(multiprocessing.Process):
                         # Check if process is in current process list, create if not
                         if process not in self.processinformation.keys():
                             self.processinformation[process] = {}
-                        # Update variables for the process from the webdata while excluding the output variables
-                        for pvar in self.webdata[process].keys():
-                            if pvar not in self.outputlist:
-                                if type(self.webdata[process][pvar]) == dict:
-                                    if pvar not in self.processinformation[process].keys():
-                                        self.processinformation[process][pvar] = {}
-                                    for key in self.webdata[process][pvar].keys():
-                                        if pvar in self.textlist:
-                                            self.processinformation[process][pvar][key] = str(self.webdata[process][pvar][key])
-                                        else:
-                                            self.processinformation[process][pvar][key] = float(self.webdata[process][pvar][key])
-                                            self.webdata[process][pvar][key] = self.processinformation[process][pvar][key]
-                                else:
-                                    if pvar in self.textlist:
-                                        self.processinformation[process][pvar] = str(self.webdata[process][pvar])
+                        # Check for the delete process flag
+                        if self.webdata[process]['Delete_This_Process'] == 'True':
+                            del self.processinformation[process]
+                            self.webdata[process]['terminate'] = 'True'
+                            print('delete process initiated')
+                        else:
+                            # Update variables for the process from the webdata while excluding the output variables
+                            for pvar in self.webdata[process].keys():
+                                if pvar not in self.outputlist:
+                                    if type(self.webdata[process][pvar]) == dict:
+                                        if pvar not in self.processinformation[process].keys():
+                                            self.processinformation[process][pvar] = {}
+                                        for key in self.webdata[process][pvar].keys():
+                                            if pvar in self.textlist:
+                                                self.processinformation[process][pvar][key] = str(self.webdata[process][pvar][key])
+                                            else:
+                                                self.processinformation[process][pvar][key] = float(self.webdata[process][pvar][key])
+                                                self.webdata[process][pvar][key] = self.processinformation[process][pvar][key]
                                     else:
-                                        self.processinformation[process][pvar] = float(self.webdata[process][pvar])
-                                        self.webdata[process][pvar] = self.processinformation[process][pvar]
+                                        if pvar in self.textlist:
+                                            self.processinformation[process][pvar] = str(self.webdata[process][pvar])
+                                        else:
+                                            self.processinformation[process][pvar] = float(self.webdata[process][pvar])
+                                            self.webdata[process][pvar] = self.processinformation[process][pvar]
+                    print('Updating config file')
                     # Update the config file
                     self.counter = 0
                     self.writeconfig(self.processinformation)

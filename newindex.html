@@ -296,9 +296,14 @@ function opensubTab(evt, subtabName) {
         var keyname = ""
         var jsondict = ""
 
+        // Generate the correct process name
+        if (document.getElementById(formname).className === "NewProcess") {
+            processname = document.getElementById("New ProcessName").value;
+        }
+
         // Create base object and create object as value for every key in dictlist
         formdict[processname] = {};
-     		for (var i = 0; i < formvar.length; i++) {
+        for (var i = 0; i < formvar.length; i++) {
             if (formvar[i].type === "text") {
                 if (dictlist.indexOf(formvar[i].name) != -1) {
                     formdict[processname][formvar[i].name] = {};
@@ -386,6 +391,51 @@ function opensubTab(evt, subtabName) {
     <div id="New Brew" class="subtabcontent">
         <!--todo Create tab for creating a new process
         -->
+        <h3>New PID Controller</h3>
+        <p>Create a new PID controller process here</p>
+        <strong>The process name cannot be changed afterwards</strong>
+        <br>
+
+        <form>
+            <fieldset>
+                <legend>Process name</legend>
+                <p class="form">
+                    <label for="New ProcessName">Process Name</label>
+                    <input type="text" id="New ProcessName" name="Name" required>
+                </p>
+            </fieldset>
+        </form>
+            <br>
+        <form id="New ProcessForm" class="NewProcess">
+            <fieldset>
+                <legend>Process Variables</legend>
+                {% for variable in sorted(ptemp['New Process'].keys()) %}
+                    {% if variable in dictionarylist %}
+                        <p class="form">
+                            <label for="{{'New Process' + str(variable)}}">{{variable}}</label>
+                            <input type="text" id="{{'New Process' + str(variable)}}" name="{{str(variable)}}"class="dictionary">
+                        </p>
+                        {% for counter in range(len(ptemp['New Process'][variable].keys())) %}
+                            <p class="form">
+                                <label></label>
+                                <label for="{{'New Process' + str(variable) + 'k' + str(counter)}}"></label>
+                                <input type="text" id="{{'New Process' + str(variable) + 'k' + str(counter)}}" name="key" class="{{str(variable)}}" required>
+                                <label for="{{'New Process' + str(variable) + 'v' + str(counter)}}">:</label>
+                                <input type="text" id="{{'New Process' + str(variable) + 'v' + str(counter)}}" name="{{'New Process' + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" required>
+                            </p>
+                        {% end %}
+                    {% else %}
+                        <p class="form">
+                            <label for="{{'New Process' + str(variable)}}">{{variable}}</label>
+                            <input type="text" id="{{'New Process' + str(variable)}}" name="{{str(variable)}}">
+                        </p>
+                    {% end %}
+                {% end %}
+            </fieldset>
+            <br>
+            <input type="button" id="{{'New Processsubmit'}}" value="Create New Process" onclick="formparse('New ProcessForm')">
+        </form>
+
     </div>
 
 

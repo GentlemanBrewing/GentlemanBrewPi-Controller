@@ -200,7 +200,7 @@ class PIDController(multiprocessing.Process):
                                                  ' (:Time, :Temp, :Output)', dboutput)
                             except sqlite3.IntegrityError:
                                 pass
-
+                        # todo Create Autotuner class - Complete the autotune procedure
                         # d1 = ((self.variabledict['autotune_dict']['time'][-1] - self.variabledict['autotune_dict']['relayofftime']) / newlength) * self.maxoutput
                         # d2 = self.maxoutput - d1
                         # self.outputdict['kp'] = ""
@@ -263,6 +263,10 @@ class PIDController(multiprocessing.Process):
                         self.variabledict[variable] = value
             except queue.Empty:
                 pass
+
+            # Check terminate variable
+            if self.variabledict['terminate'] == 'True':
+                break
 
             # Update Variables
             relayduty = self.variabledict['relayduty']
@@ -391,10 +395,6 @@ class PIDController(multiprocessing.Process):
 
             # Send output to Manager
             self.outputqueue.put(self.outputdict)
-
-            # Check terminate variable
-            if self.variabledict['terminate'] == 'True':
-                break
 
             # Wait before running loop again
             time.sleep(self.variabledict['sleeptime'])
