@@ -123,10 +123,11 @@ class PIDController(multiprocessing.Process):
 
     # Autotune function
     def autotune(self):
-        self.variabledict['sleeptime'] = self.variabledict['autotune_sleeptime']
-        self.variabledict['umin'] = 0
-        self.variabledict['umax'] = 100
-        self.variabledict['moutput'] = 0
+        if self.variabledict['autotune_iterations'] == 0:
+            self.variabledict['sleeptime'] = self.variabledict['autotune_sleeptime']
+            self.variabledict['umin'] = 0
+            self.variabledict['umax'] = 100
+            self.variabledict['moutput'] = 0
 
         # Read New Measured Variable
         mvchannel = self.variabledict['control_channel']
