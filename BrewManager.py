@@ -53,7 +53,7 @@ class Buzzer(multiprocessing.Process):
 
             time.sleep(1)
 
-# todo Change function for writing to db to multiprocesing class
+
 # Class for writing to Database
 class WriteToDatabase(multiprocessing.Process):
 
@@ -151,17 +151,6 @@ class BrewManager(multiprocessing.Process):
         }
         self.processdata['Buzzer']['inputqueue'].put(buzzervariables)
 
-    # Function for writing to database
-    def write_to_database(self):
-        conn = sqlite3.connect('Log.db')
-        try:
-            with conn:
-                conn.executemany('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
-                                  'SafetyTemp, SafetyTrigger, Status) VALUES (:DateTime, :ProcessName,'
-                                  ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger, :Status)', self.controllerdatalist)
-        except sqlite3.Error:
-            self.buzzer(2000, 1)
-
     # Main running function
     def run(self):
         # Start the buzzer process
@@ -226,12 +215,8 @@ class BrewManager(multiprocessing.Process):
                                     self.process_output[process][outputvar] = self.controllerdata[outputvar]
                             # log to database
                             self.processdata['DBServ']['inputqueue'].put(self.controllerdata)
-                            #self.controllerdatalist.append(self.controllerdata)
                         except queue.Empty:
                             break
-
-            #Commit to db
-            #self.write_to_database()
 
             # Send updated process_output to web server
             self.processdata['WebServ']['inputqueue'].put(self.process_output)
