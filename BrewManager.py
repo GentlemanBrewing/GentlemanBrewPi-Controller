@@ -74,6 +74,7 @@ class BrewManager(multiprocessing.Process):
         self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}
         self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
+        self.lastsleeptime = 0
 
     # Function for loading config file
     def loadconfig(self, filename):
@@ -253,7 +254,13 @@ class BrewManager(multiprocessing.Process):
                 self.counter = 0
                 self.writeconfig(self.processinformation)
 
-            time.sleep(5)
+            if time.time() < self.lastsleeptime + 5:
+                sleeptime = 5 -time.time() + self.lastsleeptime
+            else:
+                sleeptime = 0
+            self.lastsleeptime = time.time()
+
+            time.sleep(sleeptime)
 
         print('BrewManager exiting')
 
