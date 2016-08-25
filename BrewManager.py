@@ -53,6 +53,33 @@ class Buzzer(multiprocessing.Process):
             time.sleep(1)
 
 # todo Create Autotuner class
+# Autotuner class
+class Autotuner(multiprocessing.Process):
+
+    def __init__(self, inputqueue, outputqueue):
+        multiprocessing.Process.__init__(self)
+
+        # Use correct communication queues
+        self.inputqueue = inputqueue
+        self.outputqueu = outputqueue
+
+        self.variabledict = {
+            'processname': 'Steam Boiler',
+            'tunetemp': 101,
+            'hysteresis': 1
+        }
+
+    def run(self):
+        while True:
+            x = 1
+
+
+        # Only sleep very shortly to have good response time
+        time.sleep(0.1)
+
+
+
+
 
 # Main Manager class
 class BrewManager(multiprocessing.Process):
@@ -110,8 +137,8 @@ class BrewManager(multiprocessing.Process):
         try:
             with conn:
                 conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
-                                  'SafetyTemp, SafetyTrigger) VALUES (:DateTime, :ProcessName,'
-                                  ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger)', self.controllerdata)
+                                  'SafetyTemp, SafetyTrigger, Status) VALUES (:DateTime, :ProcessName,'
+                                  ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger, :Status)', self.controllerdata)
         except sqlite3.IntegrityError:
             self.buzzer(2000, 1)
 
@@ -151,8 +178,9 @@ class BrewManager(multiprocessing.Process):
                     self.buzzer(2000, 1)
 
             #print('2')
-            # Update the dictionary for the web output
+            # Update the process variable dictionary for the web output
             self.process_output = copy.deepcopy(self.processinformation)
+
             # Get output from process and record in database
             for process in self.processdata.keys():
                 # Do not collect web server output here, buzzer never produces output

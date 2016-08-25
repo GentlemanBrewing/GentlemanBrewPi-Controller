@@ -7,6 +7,8 @@ import time
 from ABE_ADCPi import ADCPi
 from ABE_Helpers import ABEHelpers
 import RPi.GPIO as GPIO
+import copy
+import sqlite3
 
 
 # PID Controller class
@@ -55,14 +57,40 @@ class PIDController(multiprocessing.Process):
             'pwm_frequency': 1,
             'relayduty': {'Relay1': 0, 'Relay2': 0, 'Relay3': 0, 'Relay4': 0, 'Relay5': 0},
             'relaypin': {'Relay1': "off", 'Relay2': "off", 'Relay3': "off", 'Relay4': "off", 'Relay5': "off"},
-            'terminate': 0
+            'terminate': 0,
+            'autotune_temp': 102,
+            'autotune_hysteresis': 1,
+            'autotune_kp': 0,
+            'autotune_ki': 0,
+            'autotune_kd': 0,
+            'autotune_on': 'False',
+            'autotune_sleeptime': 0.1,
+            'autotune_maxiterations': 20,
+            'autotune_iterations': 0,
+            'autotune_convergence': 0.01,
+            'autotune_dict': {
+                'time': [],
+                'temp': [],
+                'output': [],
+                'timeperiod': [],
+                'peaktype': 'max',
+                'startrange': 0,
+                'timeperiodstart': 0,
+                'relayofftime': 0
+            },
+            'autotune_peaks': {
+                'max': {},
+                'min': {}
+            }
         }
 
         # Initialize required variables
         self.setpoint = 0
         self.setpointchanges = 2
         self.output = 0
+        self.maxoutput = 0
         self.outputdict = {}
+        self.outputdict['Status'] = 'PID Controller Started'
 
     # Function for interpolating setpoint
     def setpoint_interpolate(self):
@@ -91,6 +119,102 @@ class PIDController(multiprocessing.Process):
                     value2 = valuelist[x+1]
                     self.setpoint = ((timenow - time1) / (time2 - time1)) * (value2 - value1)  + value1
                     break
+
+    # Autotune function
+    def autotune(self):
+        self.variabledict['sleeptime'] = self.variabledict['autotune_sleeptime']
+        self.variabledict['umin'] = 0
+        self.variabledict['umax'] = 100
+
+        # Read New Measured Variable
+        mvchannel = self.variabledict['control_channel']
+        v = self.adc.read_voltage(mvchannel)
+        mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict[
+            'control_k3']
+
+        # Do assymetric relay output
+        if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis']:
+            self.variabledict['moutput'] = 100
+            self.variabledict['autotune_iterations'] += 1
+        elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis']:
+            self.variabledict['moutput'] = 0
+            self.variabledict['autotune_iterations'] += 1
+
+        # Update autotunedict
+        self.variabledict['autotune_dict']['time'].append(time.time())
+        self.variabledict['autotune_dict']['temp'].append(mv)
+        self.variabledict['autotune_dict']['output'].append(self.variabledict['moutput'])
+
+
+        if len(self.variabledict['autotune_dict']['output']) == 1:
+            if self.variabledict['autotune_dict']['output'][0] == 100:
+                self.variabledict['autotune_dict']['peaktype'] = 'min'
+                self.variabledict['autotune_dict']['startrange'] = 0
+                self.variabledict['autotune_dict']['timeperiodstart'] = self.variabledict['autotune_dict']['time'][0]
+        else:
+            if self.variabledict['autotune_dict']['output'][-1] != self.variabledict['autotune_dict']['output'][-2]:
+                endrange = len(self.variabledict['autotune_dict']['output'])
+                startrange = self.variabledict['autotune_dict']['startrange']
+                # Determine Peak type
+                if self.variabledict['autotune_dict']['output'][-1] == 100:
+                    self.variabledict['autotune_dict']['peaktype'] = 'max'
+                    peaktemp = max(self.variabledict['autotune_dict']['temp'][startrange:endrange])
+                    peaktempslot = self.variabledict['autotune_dict']['temp'].index(peaktemp)
+                    peaktime = self.variabledict['autotune_dict']['time'][peaktempslot]
+                    self.variabledict['autotune_peaks']['max'][peaktime] = peaktemp
+                    # prepare variables for convergence test
+                    periodstart = self.variabledict['autotune_dict']['timeperiodstart']
+                    periodend = self.variabledict['autotune_dict']['time'][-1]
+                    periodlength = periodend - periodstart
+                    self.variabledict['autotune_dict']['timeperiod'].append(periodlength)
+                    self.variabledict['autotune_dict']['timeperiodstart'] = self.variabledict['autotune_dict']['time'][-1]
+                else:
+                    self.variabledict['autotune_dict']['peaktype'] = 'min'
+                    peaktemp = min(self.variabledict['autotune_dict']['temp'][startrange:endrange])
+                    peaktempslot = self.variabledict['autotune_dict']['temp'].index(peaktemp)
+                    peaktime = self.variabledict['autotune_dict']['time'][peaktempslot]
+                    self.variabledict['autotune_peaks']['min'][peaktime] = peaktemp
+                    self.variabledict['autotune_dict']['relayofftime'] = self.variabledict['autotune_dict']['time'][-1]
+
+
+                # Check for convergence
+                if len(self.variabledict['autotune_dict']['timeperiod']) > 1:
+                    newlength = self.variabledict['autotune_dict']['timeperiod'][-1]
+                    oldlength = self.variabledict['autotune_dict']['timeperiod'][-2]
+                    conv = abs((newlength - oldlength) / oldlength)
+                    if conv < self.variabledict['autotune_convergence']:
+                        # Converged
+                        self.variabledict['autotune_on'] = 'False'
+                        self.outputdict['Status'] = 'Autotuner converged - Terminating'
+                        self.variabledict['terminate'] = 'True'
+                        # Write the data to database
+                        conn = sqlite3.connect('Autotune.db')
+                        dboutput = {}
+                        for i in range(len(self.variabledict['autotune_dict']['time'])):
+                            dboutput['Time'] = self.variabledict['autotune_dict']['time'][i]
+                            dboutput['Temp'] = self.variabledict['autotune_dict']['temp'][i]
+                            dboutput['Output'] = self.variabledict['autotune_dict']['output'][i]
+                            try:
+                                with conn:
+                                    conn.execute('INSERT INTO autotune(Time, Temp, Output) VALUES'
+                                                 ' (:Time, :Temp, :Output)', dboutput)
+                            except sqlite3.IntegrityError:
+                                pass
+
+                        # d1 = ((self.variabledict['autotune_dict']['time'][-1] - self.variabledict['autotune_dict']['relayofftime']) / newlength) * self.maxoutput
+                        # d2 = self.maxoutput - d1
+                        # self.outputdict['kp'] = ""
+                        # self.outputdict['ki'] = ""
+                        # self.outputdict['kd'] = ""
+
+
+        if self.variabledict['autotune_iterations'] >= self.variabledict['autotune_maxiterations']:
+            self.variabledict['autotune_on'] = 'False'
+            self.outputdict['Status']= 'Autotuner failed to converge - Terminating'
+            self.variabledict['terminate'] = 'True'
+
+
+
 
     # Main looping function of the PID Controller
     def run(self):
@@ -142,16 +266,19 @@ class PIDController(multiprocessing.Process):
 
             # Update Variables
             relayduty = self.variabledict['relayduty']
-            relaypin = self.variabledict['relaypin']
             ssrduty = self.variabledict['ssrduty']
 
             # Determine maximum output
             for relay in sorted(relayduty.keys()):
                 max_relay_output += relayduty[relay]
-            max_output = self.variabledict['ssrduty'] * .99 + max_relay_output
+            self.maxoutput = self.variabledict['ssrduty'] * .99 + max_relay_output
 
             # Get new setpoint based on current date and time
             self.setpoint_interpolate()
+
+            # Check for autotune
+            if self.variabledict['autotune_on'] == 'True':
+                self.autotune()
 
             # Update control parameters
             k1 = self.variabledict['kp'] + self.variabledict['ki'] + self.variabledict['kd']
@@ -210,7 +337,7 @@ class PIDController(multiprocessing.Process):
                 relayoutput += relaystate[relay] * relayduty[relay]
 
             # Determine Required Output
-            output = duty /100 * max_output
+            output = duty /100 * self.maxoutput
 
             # Check which relays should be switched on or off
             # If at max duty all should be on
@@ -275,4 +402,3 @@ class PIDController(multiprocessing.Process):
         # Ensure GPIO is cleaned up before exiting loop
         GPIO.cleanup()
         print('exiting')
-        print(self.variabledict['name'])
