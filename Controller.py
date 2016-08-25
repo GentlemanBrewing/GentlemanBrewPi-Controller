@@ -201,6 +201,7 @@ class PIDController(multiprocessing.Process):
                             except sqlite3.IntegrityError:
                                 pass
                         # todo Create Autotuner class - Complete the autotune procedure
+
                         # d1 = ((self.variabledict['autotune_dict']['time'][-1] - self.variabledict['autotune_dict']['relayofftime']) / newlength) * self.maxoutput
                         # d2 = self.maxoutput - d1
                         # self.outputdict['kp'] = ""
