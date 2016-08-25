@@ -206,6 +206,8 @@ function opensubTab(evt, subtabName) {
             writeToScreen('<span style="color: red;">ERROR: Update your browser to one that supports websockets. A list can be found <a href="http://caniuse.com/websockets">here</a></span>');
         } else {
             testWebSocket();
+            openTab(event, 'Main');
+            opensubTab(event, 'Overview');
         }
     }
     function onOpen(evt) {
