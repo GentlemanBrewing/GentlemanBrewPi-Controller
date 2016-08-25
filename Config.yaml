@@ -1,9 +1,58 @@
+Ale Ferment:
+  autotune_convergence: 0.01
+  autotune_hysteresis: 1.0
+  autotune_iterations: 0.0
+  autotune_kd: 0.0
+  autotune_ki: 0.0
+  autotune_kp: 0.0
+  autotune_maxiterations: 20.0
+  autotune_on: 'False'
+  autotune_sleeptime: 0.1
+  autotune_temp: 102.0
+  control_channel: 1.0
+  control_k1: 885.0
+  control_k2: 2790.0
+  control_k3: 0.0
+  kd: 0.0
+  ki: 0.0
+  kp: 10.0
+  moutput: auto
+  pwm_frequency: 1.0
+  relayduty: {Relay1: 0.0, Relay2: 0.0, Relay3: 0.0, Relay4: 0.0, Relay5: 0.0}
+  relaypin: {Relay1: '0', Relay2: '0', Relay3: '0', Relay4: '0', Relay5: '0'}
+  safety_channel: 2.0
+  safety_k1: 885.0
+  safety_k2: 2790.0
+  safety_k3: 0.0
+  safety_mode: 'off'
+  safety_value: 0.0
+  setpoint: {'2016-08-12 09:00:00': 20.0, '2016-08-13 09:00:00': 20.0, '2016-08-14 09:00:00': 20.0,
+    '2016-08-15 09:00:00': 20.0, '2016-08-16 09:00:00': 20.0, '2016-08-17 09:00:00': 20.0,
+    '2016-08-18 09:00:00': 20.0, '2016-08-19 09:00:00': 20.0, '2016-08-20 09:00:00': 20.0,
+    '2016-08-21 09:00:00': 20.0}
+  sleeptime: 2.0
+  ssrduty: 4.0
+  ssrmode: pwm
+  ssrpin: 22.0
+  terminate: 'False'
+  umax: 100.0
+  umin: 0.0
 Buzzer: {Temperature: 0, duration: 0, duty: 50, frequency: 2000, pin: 27, terminate: 0}
 Fermenter1: {Setpoint: 17, Temperature: 17, terminate: 'True'}
 Fermenter2: {Setpoint: 18, Temperature: 120, terminate: 'True'}
 Fermenter3: {terminate: 'True'}
 Pumps: {pump1pin: 17, pump2pin: 22, terminate: 0}
 Steam Boiler:
+  autotune_convergence: 0.01
+  autotune_hysteresis: 1.0
+  autotune_iterations: 0.0
+  autotune_kd: 0.0
+  autotune_ki: 0.0
+  autotune_kp: 0.0
+  autotune_maxiterations: 20.0
+  autotune_on: 'False'
+  autotune_sleeptime: 0.1
+  autotune_temp: 102.0
   control_channel: 1.0
   control_k1: 885.0
   control_k2: 2790.0
@@ -27,15 +76,5 @@ Steam Boiler:
   ssrmode: pwm
   ssrpin: 22.0
   terminate: 'False'
-  umax: 100.0
-  umin: 0.0
-  autotune_temp: 102
-  autotune_hysteresis: 1
-  autotune_kp: 0
-  autotune_ki: 0
-  autotune_kd: 0
-  autotune_on: 'False'
-  autotune_sleeptime: 0.1
-  autotune_maxiterations: 20
-  autotune_iterations: 0
-  autotune_convergence: 0.01
+  umax: 95.0
+  umin: 5.0

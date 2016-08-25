@@ -68,12 +68,12 @@ class BrewManager(multiprocessing.Process):
         multiprocessing.Process.__init__(self)
         self.counter = 0
         self.processinformation = self.loadconfig('Config.yaml')
-        self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate']
+        self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate', 'autotune_on']
         self.processdata = {}
         self.controllerdata = {}
         self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}
-        self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger',]
+        self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
 
     # Function for loading config file
     def loadconfig(self, filename):

@@ -396,15 +396,17 @@ function opensubTab(evt, subtabName) {
         <strong>The process name cannot be changed afterwards</strong>
         <br>
 
-        <form id="New ProcessForm" class="NewProcess">
+        <form>
             <fieldset>
                 <legend>Process name</legend>
                 <p class="form">
                     <label for="New ProcessName">Process Name</label>
-                    <input type="text" id="New ProcessName" name="Name">
+                    <input type="text" id="New ProcessName" name="Name" required>
                 </p>
             </fieldset>
+        </form>
             <br>
+        <form id="New ProcessForm" class="NewProcess">
             <fieldset>
                 <legend>Process Variables</legend>
                 {% for variable in sorted(ptemp['New Process'].keys()) %}
@@ -499,7 +501,7 @@ function opensubTab(evt, subtabName) {
                 {% end %}
             </fieldset>
             <br>
-            <input type="button" id="{{str(process) + 'submit'}}" value="Update Data" onclick="formparse('{{'New Process'+'form'}}')">
+            <input type="button" id="{{str(process) + 'submit'}}" value="Update Data" onclick="formparse('{{str(process)+'form'}}')">
         </form>
         <div>
 

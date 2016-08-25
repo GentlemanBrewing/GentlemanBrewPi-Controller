@@ -94,6 +94,7 @@ class QueueMonitor(threading.Thread):
         self.newoutput = json.loads(data)
         self.outputqueue.put(self.newoutput)
         print('data in outputqueue - QueueManager')
+        print(self.newoutput)
 
 
     @classmethod
