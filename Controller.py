@@ -68,6 +68,7 @@ class PIDController(multiprocessing.Process):
             'autotune_maxiterations': 20,
             'autotune_iterations': 0,
             'autotune_convergence': 0.01,
+            'autotune_gainsign': 1,
             'autotune_dict': {
                 'time': [],
                 'temp': [],
@@ -122,24 +123,39 @@ class PIDController(multiprocessing.Process):
 
     # Autotune function
     def autotune(self):
-        self.variabledict['sleeptime'] = self.variabledict['autotune_sleeptime']
-        self.variabledict['umin'] = 0
-        self.variabledict['umax'] = 100
+        if self.variabledict['autotune_iterations'] == 0:
+            self.variabledict['sleeptime'] = self.variabledict['autotune_sleeptime']
+            self.variabledict['umin'] = 0
+            self.variabledict['umax'] = 100
+            self.variabledict['moutput'] = 0
+            self.outputdict['Status'] = 'Autotune started'
 
         # Read New Measured Variable
         mvchannel = self.variabledict['control_channel']
         v = self.adc.read_voltage(mvchannel)
-        mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict[
-            'control_k3']
+        mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
         # Do assymetric relay output
-        if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis']:
-            self.variabledict['moutput'] = 100
-            self.variabledict['autotune_iterations'] += 1
-        elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis']:
-            self.variabledict['moutput'] = 0
-            self.variabledict['autotune_iterations'] += 1
+        if self.variabledict['autotune_gainsign'] >= 0:
+            if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 0:
+                print('relay on')
+                self.variabledict['moutput'] = 100
+                self.variabledict['autotune_iterations'] += 1
+            elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 100:
+                print('relay off')
+                self.variabledict['moutput'] = 0
+                self.variabledict['autotune_iterations'] += 1
+        else:
+            if mv <= self.variabledict['autotune_temp'] - self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 100:
+                print('relay off')
+                self.variabledict['moutput'] = 0
+                self.variabledict['autotune_iterations'] += 1
+            elif mv >= self.variabledict['autotune_temp'] + self.variabledict['autotune_hysteresis'] and self.variabledict['moutput'] == 0:
+                print('relay on')
+                self.variabledict['moutput'] = 100
+                self.variabledict['autotune_iterations'] += 1
 
+        self.outputdict['Status'] = 'Autotune in progress - %s of %s' % (self.variabledict['autotune_iterations'], self.variabledict['autotune_maxiterations'])
         # Update autotunedict
         self.variabledict['autotune_dict']['time'].append(time.time())
         self.variabledict['autotune_dict']['temp'].append(mv)
@@ -201,6 +217,7 @@ class PIDController(multiprocessing.Process):
                             except sqlite3.IntegrityError:
                                 pass
                         # todo Create Autotuner class - Complete the autotune procedure
+
                         # d1 = ((self.variabledict['autotune_dict']['time'][-1] - self.variabledict['autotune_dict']['relayofftime']) / newlength) * self.maxoutput
                         # d2 = self.maxoutput - d1
                         # self.outputdict['kp'] = ""
@@ -211,6 +228,8 @@ class PIDController(multiprocessing.Process):
         if self.variabledict['autotune_iterations'] >= self.variabledict['autotune_maxiterations']:
             self.variabledict['autotune_on'] = 'False'
             self.outputdict['Status']= 'Autotuner failed to converge - Terminating'
+            self.outputdict['autotune_on'] = 'False'
+            self.outputdict['terminate'] = 'True'
             self.variabledict['terminate'] = 'True'
 
 
@@ -242,15 +261,15 @@ class PIDController(multiprocessing.Process):
         relaypin = self.variabledict['relaypin']
 
         # setup GPIO
-        GPIO.setup(self.variabledict['ssrpin'], GPIO.OUT)
+        GPIO.setup(int(self.variabledict['ssrpin']), GPIO.OUT)
         if self.variabledict['ssrmode'] == 'pwm':
-            pwm = GPIO.PWM(self.variabledict['ssrpin'], 1)
+            pwm = GPIO.PWM(int(self.variabledict['ssrpin']), 1)
             pwm.start(0)
 
         # Set GPIO pins as outputs
         for relay in sorted(relaypin.keys()):
             if relaypin[relay] != "off":
-                GPIO.setup(relaypin[relay], GPIO.OUT)
+                GPIO.setup(int(relaypin[relay]), GPIO.OUT)
 
         # Main control loop
         while True:
@@ -292,7 +311,7 @@ class PIDController(multiprocessing.Process):
             u = self.output
 
             # Read New Measured Variable
-            mvchannel = self.variabledict['control_channel']
+            mvchannel = int(self.variabledict['control_channel'])
             v = self.adc.read_voltage(mvchannel)
             mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
@@ -320,7 +339,7 @@ class PIDController(multiprocessing.Process):
 
             # Check safety variable
             if self.variabledict['safety_mode'] != "off":
-                svchannel = self.variabledict['safety_channel']
+                svchannel = int(self.variabledict['safety_channel'])
                 sv = self.adc.read_voltage(svchannel)
                 safetytemp = self.variabledict['safety_k1'] * sv * sv + self.variabledict['safety_k2'] * sv + self.variabledict['safety_k3']
 
@@ -373,7 +392,7 @@ class PIDController(multiprocessing.Process):
             # Activate pins to switch relays
             for relay in sorted(relaypin.keys()):
                 if relaypin[relay] != "off":
-                    GPIO.output(relaypin[relay], relaystate[relay])
+                    GPIO.output(int(relaypin[relay]), relaystate[relay])
 
             # Change ssr PWM
             if self.variabledict['ssrmode'] == 'pwm':
@@ -381,9 +400,9 @@ class PIDController(multiprocessing.Process):
                 pwm.ChangeDutyCycle(ssr_pwmduty)
             elif self.variabledict['ssrmode'] == 'relay':
                 if ssr_pwmduty > 50:
-                    GPIO.output(self.variabledict['ssrpin'], 1)
+                    GPIO.output(int(self.variabledict['ssrpin']), 1)
                 else:
-                    GPIO.output(self.variabledict['ssrpin'], 0)
+                    GPIO.output(int(self.variabledict['ssrpin']), 0)
 
             # Update output dictionary
             self.outputdict['DateTime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -401,4 +420,4 @@ class PIDController(multiprocessing.Process):
 
         # Ensure GPIO is cleaned up before exiting loop
         GPIO.cleanup()
-        print('exiting')
+        print('PID Controller exiting')

@@ -94,7 +94,7 @@ class QueueMonitor(threading.Thread):
         self.newoutput = json.loads(data)
         self.outputqueue.put(self.newoutput)
         print('data in outputqueue - QueueManager')
-        print(self.newoutput)
+        #print(self.newoutput)
 
 
     @classmethod
@@ -111,9 +111,8 @@ class QueueMonitor(threading.Thread):
                 try:
                     self.newinput = self.inputqueue.get_nowait()
                     for process in self.newinput.keys():
-                        # If process is not in dictionary create it and add whole process to difference dictionary
+                        # If process is not in dictionary add whole process to difference dictionary
                         if process not in self.processdata:
-                            self.processdata[process] = self.newinput[process]
                             self.inputdifference[process] = self.newinput[process]
                         # If process variables are not the same as the new variables update the required variables
                         elif self.processdata[process] != self.newinput[process]:
@@ -122,10 +121,10 @@ class QueueMonitor(threading.Thread):
                                 if variable not in self.processdata[process]:
                                     self.processdata[process][variable] = ""
                                 if self.processdata[process][variable] != self.newinput[process][variable]:
-                                    self.processdata[process][variable] = self.newinput[process][variable]
                                     self.inputdifference[process][variable] = self.newinput[process][variable]
                     self.jsoninputdifference = json.dumps(self.inputdifference, sort_keys=True)
                     WSHandler.send_updates(self.jsoninputdifference)
+                    self.processdata = self.newinput
                     QueueMonitor.processdictionary = self.processdata
                     QueueMonitor.processJSON = json.dumps(self.processdata,sort_keys=True)
                     self.inputdifference = {}

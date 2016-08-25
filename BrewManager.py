@@ -3,10 +3,10 @@
 import multiprocessing
 import queue
 import time
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 import sqlite3
 import yaml
-#import Controller
+import Controller
 import Controllertester
 import os
 import WebServer
@@ -74,6 +74,7 @@ class BrewManager(multiprocessing.Process):
         self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}
         self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
+        self.lastsleeptime = 0
 
     # Function for loading config file
     def loadconfig(self, filename):
@@ -112,7 +113,7 @@ class BrewManager(multiprocessing.Process):
                 conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
                                   'SafetyTemp, SafetyTrigger, Status) VALUES (:DateTime, :ProcessName,'
                                   ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger, :Status)', self.controllerdata)
-        except sqlite3.IntegrityError:
+        except sqlite3.Error:
             self.buzzer(2000, 1)
 
     # Main running function
@@ -145,7 +146,7 @@ class BrewManager(multiprocessing.Process):
                     self.processdata[process]['inputqueue'] = multiprocessing.Queue()
                     self.processdata[process]['outputqueue'] = multiprocessing.Queue()
                     self.processdata[process]['inputqueue'].put(pvariables)
-                    Controllertester.PIDControllertester(self.processdata[process]['inputqueue'],
+                    Controller.PIDController(self.processdata[process]['inputqueue'],
                                              self.processdata[process]['outputqueue']).start()
                     print('%s started - BrewMan' % process)
                     self.buzzer(2000, 1)
@@ -253,7 +254,15 @@ class BrewManager(multiprocessing.Process):
                 self.counter = 0
                 self.writeconfig(self.processinformation)
 
-            time.sleep(5)
+            looptime = 2
+
+            if time.time() < self.lastsleeptime + looptime:
+                sleeptime = looptime -time.time() + self.lastsleeptime
+            else:
+                sleeptime = 0
+            print('Sleeping for %s' % sleeptime)
+            time.sleep(sleeptime)
+            self.lastsleeptime = time.time()
 
         print('BrewManager exiting')
 
