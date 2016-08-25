@@ -224,7 +224,7 @@ function opensubTab(evt, subtabName) {
         writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
     }
     function doSend(message) {
-        writeToScreen("SENT: " + message);
+        //writeToScreen("SENT: " + message);
         websocket.send(message);
     }
     function writeToScreen(message) {
