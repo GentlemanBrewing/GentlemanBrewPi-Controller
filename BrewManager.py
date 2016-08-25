@@ -118,7 +118,6 @@ class BrewManager(multiprocessing.Process):
         self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate', 'autotune_on', 'Delete_This_Process']
         self.processdata = {}
         self.controllerdata = {}
-        self.controllerdatalist = []
         self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}
         self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
@@ -196,7 +195,6 @@ class BrewManager(multiprocessing.Process):
             # Update the process variable dictionary for the web output
             self.process_output = copy.deepcopy(self.processinformation)
 
-            self.controllerdatalist= []
             # Get output from process and record in database
             for process in self.processdata.keys():
                 # Do not collect web server output here, buzzer never produces output
