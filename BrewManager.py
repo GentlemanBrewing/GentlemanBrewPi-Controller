@@ -15,6 +15,7 @@ import copy
 
 # Buzzer class
 class Buzzer(multiprocessing.Process):
+
     def __init__(self, inputqueue):
         multiprocessing.Process.__init__(self)
         self.inputqueue = inputqueue
@@ -51,6 +52,52 @@ class Buzzer(multiprocessing.Process):
                 #GPIO.cleanup()
 
             time.sleep(1)
+
+
+# Class for writing to Database
+class WriteToDatabase(multiprocessing.Process):
+
+    def __init__(self, inputqueue, outputqueue):
+        multiprocessing.Process.__init__(self)
+
+        # Use correct communication queues
+        self.inputqueue = inputqueue
+        self.outputqueue = outputqueue
+
+        #initialize variables
+        self.databaselist = []
+        self.lastsleeptime = 0
+
+    def write_to_database(self):
+        conn = sqlite3.connect('Log.db')
+        try:
+            with conn:
+                conn.executemany('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
+                                 'SafetyTemp, SafetyTrigger, Status) VALUES (:DateTime, :ProcessName,'
+                                 ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger, :Status)',
+                                 self.databaselist)
+        except sqlite3.Error:
+            pass
+        self.databaselist = []
+
+    def run(self):
+
+        while True:
+
+            # Get updated variables from queue
+            try:
+                while True:
+                    updated_variables = self.inputqueue.get_nowait()
+                    self.databaselist.append(updated_variables)
+            except queue.Empty:
+                pass
+
+            # Check length of list to write
+            if len(self.databaselist) > 50:
+                self.write_to_database()
+
+            time.sleep(2)
+
 
 
 # Main Manager class
@@ -104,19 +151,6 @@ class BrewManager(multiprocessing.Process):
         }
         self.processdata['Buzzer']['inputqueue'].put(buzzervariables)
 
-
-    #todo Change function for writing to db to multiprocesing class
-    # Function for writing to database
-    def write_to_database(self):
-        conn = sqlite3.connect('Log.db')
-        try:
-            with conn:
-                conn.executemany('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
-                                  'SafetyTemp, SafetyTrigger, Status) VALUES (:DateTime, :ProcessName,'
-                                  ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger, :Status)', self.controllerdatalist)
-        except sqlite3.Error:
-            self.buzzer(2000, 1)
-
     # Main running function
     def run(self):
         # Start the buzzer process
@@ -134,8 +168,14 @@ class BrewManager(multiprocessing.Process):
         self.processdata['WebServ']['inputqueue'].put(self.process_output)
         webserv = multiprocessing.Process(target=WebServer.main, args=(self.processdata['WebServ']['inputqueue'], self.processdata['WebServ']['outputqueue']))
         webserv.start()
-        print('webserver started - BrewMan')
+        print('Webserver started - BrewMan')
 
+        # Start the Database manager
+        self.processdata['DBServ'] = {}
+        self.processdata['DBServ']['inputqueue'] = multiprocessing.Queue()
+        self.processdata['DBServ']['outputqueue'] = multiprocessing.Queue()
+        WriteToDatabase(self.processdata['DBServ']['inputqueue'], self.processdata['DBServ']['outputqueue']).start()
+        print('DB Server started - BrewMan')
 
         # Main loop
         while True:
@@ -174,12 +214,9 @@ class BrewManager(multiprocessing.Process):
                                 if outputvar != 'ProcessName':
                                     self.process_output[process][outputvar] = self.controllerdata[outputvar]
                             # log to database
-                            self.controllerdatalist.append(self.controllerdata)
+                            self.processdata['DBServ']['inputqueue'].put(self.controllerdata)
                         except queue.Empty:
                             break
-
-            #Commit to db
-            self.write_to_database()
 
             # Send updated process_output to web server
             self.processdata['WebServ']['inputqueue'].put(self.process_output)
@@ -258,15 +295,16 @@ class BrewManager(multiprocessing.Process):
                 self.counter = 0
                 self.writeconfig(self.processinformation)
 
-            looptime = 2
-
-            if time.time() < self.lastsleeptime + looptime:
-                sleeptime = looptime -time.time() + self.lastsleeptime
-            else:
-                sleeptime = 0
-            print('Sleeping for %s' % sleeptime)
-            time.sleep(sleeptime)
-            self.lastsleeptime = time.time()
+            # looptime = 2
+            #
+            # if time.time() < self.lastsleeptime + looptime:
+            #     sleeptime = looptime -time.time() + self.lastsleeptime
+            # else:
+            #     sleeptime = 0
+            # print('BrewMan Sleeping for %s' % sleeptime)
+            # time.sleep(sleeptime)
+            # self.lastsleeptime = time.time()
+            time.sleep(0.5)
 
         print('BrewManager exiting')
 
