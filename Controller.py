@@ -402,4 +402,4 @@ class PIDController(multiprocessing.Process):
 
         # Ensure GPIO is cleaned up before exiting loop
         GPIO.cleanup()
-        print('exiting')
+        print('PID Controller exiting')
