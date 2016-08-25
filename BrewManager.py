@@ -53,32 +53,6 @@ class Buzzer(multiprocessing.Process):
             time.sleep(1)
 
 # todo Create Autotuner class
-# Autotuner class
-class Autotuner(multiprocessing.Process):
-
-    def __init__(self, inputqueue, outputqueue):
-        multiprocessing.Process.__init__(self)
-
-        # Use correct communication queues
-        self.inputqueue = inputqueue
-        self.outputqueu = outputqueue
-
-        self.variabledict = {
-            'processname': 'Steam Boiler',
-            'tunetemp': 101,
-            'hysteresis': 1
-        }
-
-    def run(self):
-        while True:
-            x = 1
-
-
-        # Only sleep very shortly to have good response time
-        time.sleep(0.1)
-
-
-
 
 
 # Main Manager class
