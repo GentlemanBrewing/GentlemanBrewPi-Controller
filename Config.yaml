@@ -1,15 +1,8 @@
 Buzzer: {Temperature: 0, duration: 0, duty: 50, frequency: 2000, pin: 27, terminate: 0}
-Fermenter1: {Setpoint: 17, Temperature: 17, terminate: 'True'}
-Fermenter2: {Setpoint: 18, Temperature: 120, terminate: 'True'}
-Fermenter3: {terminate: 'True'}
-Pumps: {pump1pin: 17, pump2pin: 22, terminate: 0}
 Steam Boiler:
+  Delete_This_Process: 'False'
   autotune_convergence: 0.01
   autotune_hysteresis: 1.0
-  autotune_iterations: 0.0
-  autotune_kd: 0.0
-  autotune_ki: 0.0
-  autotune_kp: 0.0
   autotune_maxiterations: 20.0
   autotune_on: 'False'
   autotune_sleeptime: 0.1
@@ -37,6 +30,5 @@ Steam Boiler:
   ssrmode: pwm
   ssrpin: 22.0
   terminate: 'False'
-  umax: 95.0
-  umin: 5.0
-  Delete_This_Process: 'False'
+  umax: 100.0
+  umin: 0.0

@@ -188,6 +188,10 @@ class BrewManager(multiprocessing.Process):
                         # Check if process is in current process list, create if not
                         if process not in self.processinformation.keys():
                             self.processinformation[process] = {}
+                        # Check for the delete process flag
+                        if self.webdata[process]['Delete_This_Process'] == 'True':
+                            del self.processinformation[process]
+                            self.webdata[process]['terminate'] = 'True'
                         # Update variables for the process from the webdata while excluding the output variables
                         for pvar in self.webdata[process].keys():
                             if pvar not in self.outputlist:

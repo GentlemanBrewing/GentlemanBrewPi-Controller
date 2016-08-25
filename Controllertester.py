@@ -157,7 +157,6 @@ class PIDControllertester(multiprocessing.Process):
             self.outputdict['SafetyTemp'] = safetytemp
             self.outputdict['SafetyTrigger'] = self.safetytrigger
             self.outputdict['Status'] = 'Producing variables'
-            self.outputdict['umax'] = newumax
 
            # Send output to Manager
             self.outputqueue.put(self.outputdict)
