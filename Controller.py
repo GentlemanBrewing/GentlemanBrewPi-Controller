@@ -128,6 +128,7 @@ class PIDController(multiprocessing.Process):
             self.variabledict['umin'] = 0
             self.variabledict['umax'] = 100
             self.variabledict['moutput'] = 0
+            self.outputdict['Status'] = 'Autotune started'
 
         # Read New Measured Variable
         mvchannel = self.variabledict['control_channel']
@@ -154,6 +155,7 @@ class PIDController(multiprocessing.Process):
                 self.variabledict['moutput'] = 100
                 self.variabledict['autotune_iterations'] += 1
 
+        self.outputdict['Status'] = 'Autotune in progress - %s of %s' % (self.variabledict['autotune_iterations'], self.variabledict['autotune_maxiterations'])
         # Update autotunedict
         self.variabledict['autotune_dict']['time'].append(time.time())
         self.variabledict['autotune_dict']['temp'].append(mv)
