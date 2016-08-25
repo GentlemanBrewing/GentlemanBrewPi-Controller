@@ -258,9 +258,9 @@ class BrewManager(multiprocessing.Process):
                 sleeptime = 5 -time.time() + self.lastsleeptime
             else:
                 sleeptime = 0
-            self.lastsleeptime = time.time()
             print('Sleeping for %s' % sleeptime)
             time.sleep(sleeptime)
+            self.lastsleeptime = time.time()
 
         print('BrewManager exiting')
 
