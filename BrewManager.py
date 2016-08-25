@@ -94,6 +94,7 @@ class WriteToDatabase(multiprocessing.Process):
             # Check length of list to write
             if len(self.databaselist) > 20:
                 self.write_to_database()
+                print('writing to db')
 
             looptime = 2
 
