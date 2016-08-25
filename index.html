@@ -209,14 +209,13 @@ function opensubTab(evt, subtabName) {
         }
     }
     function onOpen(evt) {
-        writeToScreen("CONNECTED");
-        //doSend("Hi there!");
+        writeToScreen("Websocket Connected");
     }
     function onClose(evt) {
-        writeToScreen("DISCONNECTED");
+        writeToScreen('<span style="color: red;">Websocket Disconnected</span> ' + '');
     }
     function onMessage(evt) {
-        writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
+        //writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
         writeToInput(evt.data);
     }
     function onError(evt) {
@@ -274,11 +273,6 @@ function opensubTab(evt, subtabName) {
         websocket.onclose = function(evt) { onClose(evt) };
         websocket.onmessage = function(evt) { onMessage(evt) };
         websocket.onerror = function(evt) { onError(evt) };
-        document.getElementById("send").onclick = function () {
-            doSend(document.getElementById("inputTxt").value);
-            console.log("click registered.");
-        };
-
     }
     window.addEventListener("load", init, false);
 </script>
@@ -359,30 +353,15 @@ function opensubTab(evt, subtabName) {
 
 <div id="Main" class="tabcontent">
     <h3>Controller Setup</h3>
-    <p>London is the capital city of England.</p>
 
     <ul class="subtab">
-      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'Main Setup')">Main Setup</a></li>
-      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'New Brew')">New Brew</a></li>
+      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'Overview')">Overview</a></li>
+      <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'New Controller')">New Controller</a></li>
       <li><a href="#" class="subtablinks" onclick="opensubTab(event, 'Controller')">Controller</a></li>
     </ul>
 
-    <div id="Main Setup" class="subtabcontent">
-        <h2>WebSocket Test</h2>
-
-        <div id="inputDiv">
-            <input id="inputTxt" value="Initial" type="text"/>
-            <button id="send" onclick=>send</button>
-            <p id="demo">Click the button to change the text in this paragraph.</p>
-        </div>
-
-        <div id="staticDiv">
-            {% for item in items %}
-                 <input id={{ item }} type="text"/><br>
-            {% end %}
-            <br>
-        </div>
-
+    <div id="Overview" class="subtabcontent">
+        <h2>Overview of the system </h2>
         <div id="outputDiv">
         </div>
     </div>
@@ -437,6 +416,7 @@ function opensubTab(evt, subtabName) {
 
 
     <div id="Controller" class="subtabcontent">
+        <h3>Page under construction</h3>
         <!--todo Create tab for managing the BrewManager
         -->
     </div>
@@ -445,8 +425,8 @@ function opensubTab(evt, subtabName) {
 
 {% for process in sorted(pdict.keys()) %}
     <div id="{{process}}" class="tabcontent">
-        <h3>Paris</h3>
-        <p>Paris is the capital of France.</p>
+        <!--<h3></h3>-->
+        <p>Update the variables here, setting autotune_on to True will initiate an autotune cycle</p>
 
         <form id="{{str(process)+'form'}}">
             <fieldset>
@@ -479,15 +459,6 @@ function opensubTab(evt, subtabName) {
                                     <input type="text" id="{{str(process) + str(variable) + 'v' + str(counter)}}" name="{{str(process) + str(variable) + 'k' + str(counter)}}" class="{{str(variable)}}" required>
                                 </p>
                             {% end %}
-                            <!--
-                            <p class="form">
-                                <label></label>
-                                <label for="{{str(process)+str(variable)+'add'}}"></label>
-                                <input type="button" id="{{str(process)+str(variable)+'add'}}" class="{{str(variable)}}" value="Add Row" onclick="addtoform('{{str(process) + str(variable + 'div')}}')">
-                                <label for="{{str(process)+str(variable)+'remove'}}"> </label>
-                                <input type="button" id="{{str(process)+str(variable)+'remove'}}" class="{{str(variable)}}" value="Remove Row" onclick="removefromform('{{str(process) + str(variable + 'div')}}')">
-                            </p>
-                            -->
                         {% else %}
                             <p class="form">
                                 <label for="{{str(process) + str(variable)}}">{{variable}}</label>
@@ -513,17 +484,6 @@ function opensubTab(evt, subtabName) {
     <br>
 </div>
 
-<!--
-<div id="Paris" class="tabcontent">
-      <h3>Paris</h3>
-      <p>Paris is the capital of France.</p>
-</div>
-
-<div id="Tokyo" class="tabcontent">
-      <h3>Tokyo</h3>
-      <p>Tokyo is the capital of Japan.</p>
-</div>
--->
 </body>
 
 </html>
