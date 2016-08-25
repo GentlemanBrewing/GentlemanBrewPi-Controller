@@ -243,15 +243,15 @@ class PIDController(multiprocessing.Process):
         relaypin = self.variabledict['relaypin']
 
         # setup GPIO
-        GPIO.setup(self.variabledict['ssrpin'], GPIO.OUT)
+        GPIO.setup(int(self.variabledict['ssrpin']), GPIO.OUT)
         if self.variabledict['ssrmode'] == 'pwm':
-            pwm = GPIO.PWM(self.variabledict['ssrpin'], 1)
+            pwm = GPIO.PWM(int(self.variabledict['ssrpin']), 1)
             pwm.start(0)
 
         # Set GPIO pins as outputs
         for relay in sorted(relaypin.keys()):
             if relaypin[relay] != "off":
-                GPIO.setup(relaypin[relay], GPIO.OUT)
+                GPIO.setup(int(relaypin[relay]), GPIO.OUT)
 
         # Main control loop
         while True:
@@ -293,7 +293,7 @@ class PIDController(multiprocessing.Process):
             u = self.output
 
             # Read New Measured Variable
-            mvchannel = self.variabledict['control_channel']
+            mvchannel = int(self.variabledict['control_channel'])
             v = self.adc.read_voltage(mvchannel)
             mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
@@ -321,7 +321,7 @@ class PIDController(multiprocessing.Process):
 
             # Check safety variable
             if self.variabledict['safety_mode'] != "off":
-                svchannel = self.variabledict['safety_channel']
+                svchannel = int(self.variabledict['safety_channel'])
                 sv = self.adc.read_voltage(svchannel)
                 safetytemp = self.variabledict['safety_k1'] * sv * sv + self.variabledict['safety_k2'] * sv + self.variabledict['safety_k3']
 
@@ -374,7 +374,7 @@ class PIDController(multiprocessing.Process):
             # Activate pins to switch relays
             for relay in sorted(relaypin.keys()):
                 if relaypin[relay] != "off":
-                    GPIO.output(relaypin[relay], relaystate[relay])
+                    GPIO.output(int(relaypin[relay]), relaystate[relay])
 
             # Change ssr PWM
             if self.variabledict['ssrmode'] == 'pwm':
@@ -382,9 +382,9 @@ class PIDController(multiprocessing.Process):
                 pwm.ChangeDutyCycle(ssr_pwmduty)
             elif self.variabledict['ssrmode'] == 'relay':
                 if ssr_pwmduty > 50:
-                    GPIO.output(self.variabledict['ssrpin'], 1)
+                    GPIO.output(int(self.variabledict['ssrpin']), 1)
                 else:
-                    GPIO.output(self.variabledict['ssrpin'], 0)
+                    GPIO.output(int(self.variabledict['ssrpin']), 0)
 
             # Update output dictionary
             self.outputdict['DateTime'] = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
