@@ -111,9 +111,15 @@ class QueueMonitor(threading.Thread):
             while True:
                 try:
                     self.newinput = self.inputqueue.get_nowait()
+                    # Delete processes no longer running
+                    for process in self.processdata.keys():
+                        if process not in self.newinput:
+                            del self.processdata[process]
+
                     for process in self.newinput.keys():
-                        # If process is not in dictionary add whole process to difference dictionary
+                        # If process is not in dictionary create process add whole process to difference dictionary
                         if process not in self.processdata:
+                            self.processdata[process] = self.newinput[process]
                             self.inputdifference[process] = self.newinput[process]
                         # If process variables are not the same as the new variables update the required variables
                         elif self.processdata[process] != self.newinput[process]:
@@ -122,10 +128,11 @@ class QueueMonitor(threading.Thread):
                                 if variable not in self.processdata[process]:
                                     self.processdata[process][variable] = ""
                                 if self.processdata[process][variable] != self.newinput[process][variable]:
+                                    self.processdata[process][variable] = self.newinput[process][variable]
                                     self.inputdifference[process][variable] = self.newinput[process][variable]
                     self.jsoninputdifference = json.dumps(self.inputdifference, sort_keys=True)
                     WSHandler.send_updates(self.jsoninputdifference)
-                    self.processdata = self.newinput
+                    #self.processdata = self.newinput
                     QueueMonitor.processdictionary = self.processdata
                     QueueMonitor.processJSON = json.dumps(self.processdata,sort_keys=True)
                     self.inputdifference = {}
