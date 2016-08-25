@@ -41,7 +41,7 @@ class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         # Variables needed for web page generation
         processdict = QueueMonitor.processdictionary
-        outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger']
+        outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
         dictionarylist = ["setpoint", "relayduty", "relaypin"]
         counter = 0
 

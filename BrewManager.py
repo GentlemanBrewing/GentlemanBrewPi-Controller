@@ -54,7 +54,6 @@ class Buzzer(multiprocessing.Process):
 
 # todo Create Autotuner class
 
-
 # Main Manager class
 class BrewManager(multiprocessing.Process):
 
@@ -113,6 +112,7 @@ class BrewManager(multiprocessing.Process):
                 conn.execute('INSERT INTO PIDOutput(DateTime, ProcessName, Temperature, Duty, Setpoint,'
                                   'SafetyTemp, SafetyTrigger, Status) VALUES (:DateTime, :ProcessName,'
                                   ':Temperature, :Duty, :Setpoint, :SafetyTemp, :SafetyTrigger, :Status)', self.controllerdata)
+                print('wrote to db')
         except sqlite3.IntegrityError:
             self.buzzer(2000, 1)
 
