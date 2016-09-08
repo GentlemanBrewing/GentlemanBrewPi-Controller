@@ -6,6 +6,8 @@ import time
 import RPi.GPIO as GPIO
 import sqlite3
 import yaml
+from ABE_ADCPi import ADCPi
+from ABE_Helpers import ABEHelpers
 import Controller
 import Controllertester
 import os
@@ -55,6 +57,49 @@ class Buzzer(multiprocessing.Process):
 
 
 # todo class for reading channel data
+class ADCReader(multiprocessing.Process):
+
+    def __init__(self, inputqueue, outputqueue):
+        multiprocessing.Process.__init__(self)
+
+        # Use correct communication queues
+        self.inputqueue = inputqueue
+        self.outputqueue = outputqueue
+
+        # Declare variables
+        self.adcdict = {}
+        self.sleeptime = 1
+        self.bitrate = 18
+        self.addr1 = 0x68
+        self.addr2 = 0x69
+
+        # Configure ADC correctly
+        self.i2c_helper = ABEHelpers()
+        self.bus = self.i2c_helper.get_smbus()
+        self.adc = ADCPi(self.bus, self.addr1, self.addr2, self.bitrate)
+        self.adc.set_pga(8)
+
+
+    def run(self):
+        while True:
+
+            # Ensure proper wait time between queries
+            if self.bitrate == 18:
+                self.sleeptime = 1 / 3
+            elif self.bitrate == 16:
+                self.sleeptime = 1 / 14
+            elif self.bitrate == 14:
+                self.sleeptime = 1 / 50
+            elif self.bitrate == 12:
+                self.sleeptime = 1 / 200
+
+            for x in range(1,4):
+                self.adcdict[x] = self.adc.read_voltage(x)
+                self.adcdict[x+4] = self.adc.read_voltage(x+4)
+                self.outputqueue.put(self.adcdict)
+                time.sleep(self.sleeptime)
+
+
 
 
 # Class for writing to Database
@@ -121,9 +166,11 @@ class BrewManager(multiprocessing.Process):
         self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate', 'autotune_on', 'Delete_This_Process']
         self.processdata = {}
         self.controllerdata = {}
+        self.adcdata = {'adcvoltage': {}}
         self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}
         self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
+        self.nonpidlist = ['Buzzer', 'WebServ', 'DBServ', 'ADCReader']
         self.lastsleeptime = 0
 
     # Function for loading config file
@@ -179,6 +226,14 @@ class BrewManager(multiprocessing.Process):
         WriteToDatabase(self.processdata['DBServ']['inputqueue'], self.processdata['DBServ']['outputqueue']).start()
         print('DB Server started - BrewMan')
 
+        # Start the ADC Reader
+        self.processdata['ADCReader'] = {}
+        self.processdata['ADCReader']['inputqueue'] = multiprocessing.Queue()
+        self.processdata['ADCReader']['outputqueue'] = multiprocessing.Queue()
+        ADCReader(self.processdata['ADCReader']['inputqueue'], self.processdata['ADCReader']['outputqueue']).start()
+        print('DB Server started - BrewMan')
+
+
         # Main loop
         while True:
             #print('1')
@@ -206,18 +261,26 @@ class BrewManager(multiprocessing.Process):
                         try:
                             self.controllerdata = self.processdata[process]['outputqueue'].get_nowait()
                             # Check for Safetytrigger from process and sound buzzer if present
-                            if self.controllerdata['SafetyTrigger'] == True:
-                                self.buzzer(3500, 3)
-                            # Add process name to the collected variables
-                            self.controllerdata['ProcessName'] = process
-                            # Record the output variables in process_output for web server
-                            for outputvar in self.controllerdata.keys():
-                                if outputvar != 'ProcessName':
-                                    self.process_output[process][outputvar] = self.controllerdata[outputvar]
-                            # log to database
-                            self.processdata['DBServ']['inputqueue'].put(self.controllerdata)
+                            if process == 'ADCReader':
+                                self.adcdata['adcvoltage']= self.controllerdata
+                            else:
+                                if self.controllerdata['SafetyTrigger'] == True:
+                                    self.buzzer(3500, 3)
+                                # Add process name to the collected variables
+                                self.controllerdata['ProcessName'] = process
+                                # Record the output variables in process_output for web server
+                                for outputvar in self.controllerdata.keys():
+                                    if outputvar != 'ProcessName':
+                                        self.process_output[process][outputvar] = self.controllerdata[outputvar]
+                                # log to database
+                                self.processdata['DBServ']['inputqueue'].put(self.controllerdata)
                         except queue.Empty:
                             break
+
+            # Send updated ADC data to processes
+            for process in self.processdata.keys():
+                if process not in self.nonpidlist:
+                    self.processdata[process]['inputqueue'].put(self.adcdata)
 
             # Send updated process_output to web server
             self.processdata['WebServ']['inputqueue'].put(self.process_output)

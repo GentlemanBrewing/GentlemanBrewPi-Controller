@@ -4,8 +4,6 @@ import multiprocessing
 import queue
 import datetime
 import time
-from ABE_ADCPi import ADCPi
-from ABE_Helpers import ABEHelpers
 import RPi.GPIO as GPIO
 import copy
 import sqlite3
@@ -22,12 +20,6 @@ class PIDController(multiprocessing.Process):
         self.inputqueue = inputqueue
         self.outputqueue = outputqueue
 
-        # Configure ADC correctly
-        self.i2c_helper = ABEHelpers()
-        self.bus = self.i2c_helper.get_smbus()
-        self.adc = ADCPi(self.bus, 0x68, 0x69, 16)
-        self.adc.set_pga(8)
-
         # Setup variables dictionary with initial values
         self.variabledict = {
             'sleeptime': 5,
@@ -37,6 +29,16 @@ class PIDController(multiprocessing.Process):
             'setpoint': {
                 '2016-08-12 09:00:00': 20,
                 '2016-08-13 09:00:00': 20
+            },
+            'adcvoltage': {
+                1: 0,
+                2: 0,
+                3: 0,
+                4: 0,
+                5: 0,
+                6: 0,
+                7: 0,
+                8: 0,
             },
             'control_channel': 1,
             'control_k1': 885,
@@ -131,8 +133,8 @@ class PIDController(multiprocessing.Process):
             self.outputdict['Status'] = 'Autotune started'
 
         # Read New Measured Variable
-        mvchannel = self.variabledict['control_channel']
-        v = self.adc.read_voltage(mvchannel)
+        mvchannel = int(self.variabledict['control_channel'])
+        v = self.variabledict['adcvoltage'][mvchannel]
         mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
         # Do assymetric relay output
@@ -312,7 +314,7 @@ class PIDController(multiprocessing.Process):
 
             # Read New Measured Variable
             mvchannel = int(self.variabledict['control_channel'])
-            v = self.adc.read_voltage(mvchannel)
+            v = self.variabledict['adcvoltage'][mvchannel]
             mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
             # Check if setpoint is active and calculate control output if it is
@@ -340,7 +342,7 @@ class PIDController(multiprocessing.Process):
             # Check safety variable
             if self.variabledict['safety_mode'] != "off":
                 svchannel = int(self.variabledict['safety_channel'])
-                sv = self.adc.read_voltage(svchannel)
+                sv = self.variabledict['adcvoltage'][svchannel]
                 safetytemp = self.variabledict['safety_k1'] * sv * sv + self.variabledict['safety_k2'] * sv + self.variabledict['safety_k3']
 
                 if self.variabledict['safety_mode'] == "max" and self.variabledict['safety_value'] > safetytemp:
