@@ -150,9 +150,9 @@ class QueueMonitor(threading.Thread):
             time.sleep(1)
 
 def main(inputqueue, outputqueue):
-    time.sleep(5)
+    #time.sleep(5)
     QueueMonitor(inputqueue, outputqueue).start()
-    time.sleep(5) # Ensure Queuemonitor has time to initialize before starting tornado
+    #time.sleep(5) # Ensure Queuemonitor has time to initialize before starting tornado
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8000)
     tornado.ioloop.IOLoop.instance().start()

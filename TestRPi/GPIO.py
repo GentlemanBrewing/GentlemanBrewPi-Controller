@@ -36,3 +36,9 @@ class PWM():
 
     def stop(self):
         print('pwm stopped')
+
+    def ChangeFrequency(self,frequency):
+        print('Frequency changed to %s' % frequency)
+
+    def ChangeDutyCycle(self,dc):
+        print('Duty Cycle changed to %s' % dc)

@@ -6,12 +6,13 @@ import time
 import TestRPi.GPIO as GPIO
 import sqlite3
 import yaml
-from ABE_ADCPi import ADCPi
-from ABE_Helpers import ABEHelpers
+#from ABE_ADCPi import ADCPi
+#from ABE_Helpers import ABEHelpers
 import Controller
 import os
 import WebServer
 import copy
+import random
 
 
 # Buzzer class
@@ -71,10 +72,14 @@ class ADCReader(multiprocessing.Process):
         self.addr2 = 0x69
 
         # Configure ADC correctly
-        self.i2c_helper = ABEHelpers()
-        self.bus = self.i2c_helper.get_smbus()
-        self.adc = ADCPi(self.bus, self.addr1, self.addr2, self.bitrate)
-        self.adc.set_pga(8)
+        #self.i2c_helper = ABEHelpers()
+        #self.bus = self.i2c_helper.get_smbus()
+        #self.adc = ADCPi(self.bus, self.addr1, self.addr2, self.bitrate)
+        #self.adc.set_pga(8)
+
+    def testvalues(self, input):
+        output = input + random.uniform(-1, 1)
+        return output
 
 
     def run(self):
@@ -91,9 +96,9 @@ class ADCReader(multiprocessing.Process):
                 self.sleeptime = 1 / 200
 
             for x in range(1,5):
-                self.adcdict[x] = self.adc.read_voltage(x)
+                self.adcdict[x] = self.testvalues(x)
                 time.sleep(0.1)
-                self.adcdict[x+4] = self.adc.read_voltage(x+4)
+                self.adcdict[x+4] = self.testvalues(x+4)
                 self.outputqueue.put(self.adcdict)
                 time.sleep(self.sleeptime)
 
