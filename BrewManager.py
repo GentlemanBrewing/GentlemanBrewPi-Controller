@@ -55,7 +55,6 @@ class Buzzer(multiprocessing.Process):
             time.sleep(1)
 
 
-# todo class for reading channel data
 class ADCReader(multiprocessing.Process):
 
     def __init__(self, inputqueue, outputqueue):
