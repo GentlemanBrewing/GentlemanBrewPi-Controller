@@ -3,13 +3,12 @@
 import multiprocessing
 import queue
 import time
-import RPi.GPIO as GPIO
+import TestRPi.GPIO as GPIO
 import sqlite3
 import yaml
 from ABE_ADCPi import ADCPi
 from ABE_Helpers import ABEHelpers
 import Controller
-import Controllertester
 import os
 import WebServer
 import copy

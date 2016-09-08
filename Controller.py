@@ -4,7 +4,7 @@ import multiprocessing
 import queue
 import datetime
 import time
-import RPi.GPIO as GPIO
+import TestRPi.GPIO as GPIO
 import copy
 import sqlite3
 
