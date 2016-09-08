@@ -1,5 +1,4 @@
 Buzzer: {duration: 0, duty: 50, frequency: 2000, pin: 27, terminate: 0}
-
 Steam Boiler:
   Delete_This_Process: 'False'
   autotune_convergence: 0.01
