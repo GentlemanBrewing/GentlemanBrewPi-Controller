@@ -28,7 +28,7 @@ class Buzzer(multiprocessing.Process):
             'pin': 12,
             'terminate': 1
         }
-        #GPIO.setmode(GPIO.BCM)
+        GPIO.setmode(GPIO.BCM)
 
     def run(self):
         while True:
@@ -44,14 +44,13 @@ class Buzzer(multiprocessing.Process):
 
             if self.variabledict['duration'] != 0:
                 print("Buzzing")
-                #GPIO.setmode(GPIO.BCM)
-                #GPIO.setup(self.variabledict['pin'], GPIO.OUT)
-                #p = GPIO.PWM(self.variabledict['pin'], self.variabledict['frequency'])
-                #p.start(self.variabledict['duty'])
+                GPIO.setup(self.variabledict['pin'], GPIO.OUT)
+                p = GPIO.PWM(self.variabledict['pin'], self.variabledict['frequency'])
+                p.start(self.variabledict['duty'])
                 time.sleep(self.variabledict['duration'])
-                #p.stop()
+                p.stop()
                 self.variabledict['duration'] = 0
-                #GPIO.cleanup()
+                GPIO.cleanup()
 
             time.sleep(1)
 
