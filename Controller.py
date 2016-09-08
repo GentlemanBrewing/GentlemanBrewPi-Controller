@@ -329,7 +329,7 @@ class PIDController(multiprocessing.Process):
 
             # check for manual mode
             if self.variabledict['moutput'] != "auto":
-                u = self.variabledict['moutput']
+                u = float(self.variabledict['moutput'])
 
             # clamp output to between min and max values
             if u > self.variabledict['umax']:

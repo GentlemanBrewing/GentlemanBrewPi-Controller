@@ -54,6 +54,9 @@ class Buzzer(multiprocessing.Process):
             time.sleep(1)
 
 
+# todo class for reading channel data
+
+
 # Class for writing to Database
 class WriteToDatabase(multiprocessing.Process):
 
