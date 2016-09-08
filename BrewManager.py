@@ -95,6 +95,7 @@ class ADCReader(multiprocessing.Process):
 
             for x in range(1,4):
                 self.adcdict[x] = self.adc.read_voltage(x)
+                time.sleep(0.1)
                 self.adcdict[x+4] = self.adc.read_voltage(x+4)
                 self.outputqueue.put(self.adcdict)
                 time.sleep(self.sleeptime)
