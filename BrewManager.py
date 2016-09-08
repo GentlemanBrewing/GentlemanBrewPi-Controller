@@ -231,7 +231,7 @@ class BrewManager(multiprocessing.Process):
         self.processdata['ADCReader']['inputqueue'] = multiprocessing.Queue()
         self.processdata['ADCReader']['outputqueue'] = multiprocessing.Queue()
         ADCReader(self.processdata['ADCReader']['inputqueue'], self.processdata['ADCReader']['outputqueue']).start()
-        print('DB Server started - BrewMan')
+        print('ADC Reader started - BrewMan')
 
 
         # Main loop
