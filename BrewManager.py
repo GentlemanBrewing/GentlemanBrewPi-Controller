@@ -167,7 +167,16 @@ class BrewManager(multiprocessing.Process):
         self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate', 'autotune_on', 'Delete_This_Process']
         self.processdata = {}
         self.controllerdata = {}
-        self.adcdata = {'adcvoltage': {}}
+        self.adcdata = {'adcvoltage': {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0,
+            6: 0,
+            7: 0,
+            8: 0,
+        }}
         self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}
         self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
