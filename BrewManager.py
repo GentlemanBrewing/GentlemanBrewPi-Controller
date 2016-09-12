@@ -102,13 +102,15 @@ class ADCReader(multiprocessing.Process):
             elif self.bitrate == 12:
                 self.sleeptime = 1 / 200
 
-            for x in range(1,5):
-                self.adcdict[x] = self.adc.read_voltage(x)
-                time.sleep(0.1)
-                self.adcdict[x+4] = self.adc.read_voltage(x+4)
-                self.outputqueue.put(self.adcdict)
-                time.sleep(self.sleeptime)
-
+            try:
+                for x in range(1,5):
+                    self.adcdict[x] = self.adc.read_voltage(x)
+                    time.sleep(0.1)
+                    self.adcdict[x+4] = self.adc.read_voltage(x+4)
+                    self.outputqueue.put(self.adcdict)
+                    time.sleep(self.sleeptime)
+            except:
+                pass
 
 
 
