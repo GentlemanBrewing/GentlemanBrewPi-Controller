@@ -324,22 +324,26 @@ class BrewManager(multiprocessing.Process):
                         else:
                             # Update variables for the process from the webdata while excluding the output variables
                             for pvar in self.webdata[process].keys():
+                                # Delete setpoints not used
+                                setpointdelete = []
+                                if pvar == 'setpoint':
+                                    for datetime, temp in self.webdata[process][pvar].items():
+                                        if temp == 'delete':
+                                            setpointdelete.append(datetime)
+                                    for timestamp in setpointdelete:
+                                        print('deleting %s' % timestamp)
+                                        del self.webdata[process][pvar][timestamp]
+                                        # Delete from processinformation aswell
+                                        try:
+                                            del self.processinformation[process][pvar][timestamp]
+                                        except:
+                                            pass
                                 if pvar not in self.outputlist:
                                     if type(self.webdata[process][pvar]) == dict:
                                         if pvar not in self.processinformation[process].keys():
                                             self.processinformation[process][pvar] = {}
                                         for key in self.webdata[process][pvar].keys():
-                                            # Delete setpoints not used
-                                            setpointdelete = []
-                                            if pvar == 'setpoint':
-                                                for datetime, temp in self.webdata[process][pvar].items():
-                                                    if temp == 'delete':
-                                                        setpointdelete.append(datetime)
-                                                for timestamp in setpointdelete:
-                                                    print('deleting %s' % timestamp)
-                                                    del self.webdata[process][pvar][timestamp]
                                             # Ensure variables are formatted as str or float
-
                                             if pvar in self.textlist:
                                                 self.processinformation[process][pvar][key] = str(self.webdata[process][pvar][key])
                                             else:
