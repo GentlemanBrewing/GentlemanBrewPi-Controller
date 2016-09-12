@@ -134,8 +134,7 @@ class PIDController(multiprocessing.Process):
 
         # Read New Measured Variable
         mvchannel = int(self.variabledict['control_channel'])
-        v = 0.0001
-        #v = self.variabledict['adcvoltage'][mvchannel]
+        v = float(self.variabledict['adcvoltage'][mvchannel])
         mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
         # Do assymetric relay output
