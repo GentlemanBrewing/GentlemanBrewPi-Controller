@@ -67,7 +67,16 @@ class ADCReader(multiprocessing.Process):
         self.outputqueue = outputqueue
 
         # Declare variables
-        self.adcdict = {}
+        self.adcdict = {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0,
+            5: 0,
+            6: 0,
+            7: 0,
+            8: 0
+        }
         self.sleeptime = 1
         self.bitrate = 18
         self.addr1 = 0x68
@@ -175,7 +184,7 @@ class BrewManager(multiprocessing.Process):
             5: 0,
             6: 0,
             7: 0,
-            8: 0,
+            8: 0
         }}
         self.process_output = copy.deepcopy(self.processinformation)
         self.webdata = {}

@@ -38,7 +38,7 @@ class PIDController(multiprocessing.Process):
                 5: 0,
                 6: 0,
                 7: 0,
-                8: 0,
+                8: 0
             },
             'control_channel': 1,
             'control_k1': 885,
