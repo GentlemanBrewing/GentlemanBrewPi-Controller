@@ -314,8 +314,7 @@ class PIDController(multiprocessing.Process):
 
             # Read New Measured Variable
             mvchannel = int(self.variabledict['control_channel'])
-            v = 0.0001
-            #v = self.variabledict['adcvoltage'][mvchannel]
+            v = float(self.variabledict['adcvoltage'][mvchannel])
             mv = self.variabledict['control_k1'] * v * v + self.variabledict['control_k2'] * v + self.variabledict['control_k3']
 
             # Check if setpoint is active and calculate control output if it is
@@ -343,8 +342,7 @@ class PIDController(multiprocessing.Process):
             # Check safety variable
             if self.variabledict['safety_mode'] != "off":
                 svchannel = int(self.variabledict['safety_channel'])
-                sv = 0.0001
-                #sv = self.variabledict['adcvoltage'][svchannel]
+                sv = float(self.variabledict['adcvoltage'][svchannel])
                 safetytemp = self.variabledict['safety_k1'] * sv * sv + self.variabledict['safety_k2'] * sv + self.variabledict['safety_k3']
 
                 if self.variabledict['safety_mode'] == "max" and self.variabledict['safety_value'] > safetytemp:
