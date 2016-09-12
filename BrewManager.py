@@ -329,6 +329,15 @@ class BrewManager(multiprocessing.Process):
                                         if pvar not in self.processinformation[process].keys():
                                             self.processinformation[process][pvar] = {}
                                         for key in self.webdata[process][pvar].keys():
+                                            # Delete setpoints not used
+                                            setpointdelete = []
+                                            if pvar == 'setpoint':
+                                                for datetime, temp in self.webdata[process][pvar].items():
+                                                    if temp == 'delete':
+                                                        setpointdelete.append(datetime)
+                                                for timestamp in setpointdelete:
+                                                    del self.webdata[process][pvar][timestamp]
+                                            # Ensure variables are formatted as str or float
                                             if pvar in self.textlist:
                                                 self.processinformation[process][pvar][key] = str(self.webdata[process][pvar][key])
                                             else:
