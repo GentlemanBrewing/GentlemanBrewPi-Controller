@@ -326,9 +326,13 @@ class BrewManager(multiprocessing.Process):
                                 self.stop = True
                                 break
                             elif self.webdata[process]['PIDReload'] == 'True':
+                                deletelist = []
                                 for process in self.processdata.keys():
                                     self.webdata[process]={}
                                     self.webdata[process]['terminate'] = 'True'
+                                    deletelist.append(process)
+                                for process in deletelist:
+                                    del self.processdata[process]
                                 break
 
                         else:
