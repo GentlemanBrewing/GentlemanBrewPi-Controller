@@ -193,6 +193,8 @@ class BrewManager(multiprocessing.Process):
         self.outputlist = ['Temperature', 'Setpoint', 'Duty', 'DateTime', 'SafetyTemp', 'SafetyTrigger', 'Status']
         self.nonpidlist = ['Buzzer', 'WebServ', 'DBServ', 'ADCReader']
         self.lastsleeptime = 0
+        self.stop = False
+
 
     # Function for loading config file
     def loadconfig(self, filename):
@@ -313,48 +315,65 @@ class BrewManager(multiprocessing.Process):
                     self.webdata = self.processdata['WebServ']['outputqueue'].get_nowait()
                     print('Data collected from webqueue - BrewManager')
                     for process in self.webdata.keys():
-                        # Check if process is in current process list, create if not
-                        if process not in self.processinformation.keys():
-                            self.processinformation[process] = {}
-                        # Check for the delete process flag
-                        if self.webdata[process]['Delete_This_Process'] == 'True':
-                            del self.processinformation[process]
-                            self.webdata[process]['terminate'] = 'True'
-                            print('delete process initiated')
+                        # Check if message is for BrewManager
+                        if process == BrewManager:
+                            if self.webdata[process]['Restart'] == 'True':
+                                os.system('sudo reboot')
+                            elif self.webdata[process]['Terminate'] == 'True':
+                                for process in self.processdata.keys():
+                                    self.webdata[process]={}
+                                    self.webdata[process]['terminate'] = 'True'
+                                self.stop = True
+                                break
+                            elif self.webdata[process]['PIDReload'] == 'True':
+                                for process in self.processdata.keys():
+                                    self.webdata[process]={}
+                                    self.webdata[process]['terminate'] = 'True'
+                                break
+
                         else:
-                            # Update variables for the process from the webdata while excluding the output variables
-                            for pvar in self.webdata[process].keys():
-                                # Delete setpoints not used
-                                setpointdelete = []
-                                if pvar == 'setpoint':
-                                    for datetime, temp in self.webdata[process][pvar].items():
-                                        if temp == 'delete':
-                                            setpointdelete.append(datetime)
-                                    for timestamp in setpointdelete:
-                                        print('deleting %s' % timestamp)
-                                        del self.webdata[process][pvar][timestamp]
-                                        # Delete from processinformation aswell
-                                        try:
-                                            del self.processinformation[process][pvar][timestamp]
-                                        except:
-                                            pass
-                                if pvar not in self.outputlist:
-                                    if type(self.webdata[process][pvar]) == dict:
-                                        if pvar not in self.processinformation[process].keys():
-                                            self.processinformation[process][pvar] = {}
-                                        for key in self.webdata[process][pvar].keys():
-                                            # Ensure variables are formatted as str or float
-                                            if pvar in self.textlist:
-                                                self.processinformation[process][pvar][key] = str(self.webdata[process][pvar][key])
-                                            else:
-                                                self.processinformation[process][pvar][key] = float(self.webdata[process][pvar][key])
-                                                self.webdata[process][pvar][key] = self.processinformation[process][pvar][key]
-                                    else:
-                                        if pvar in self.textlist:
-                                            self.processinformation[process][pvar] = str(self.webdata[process][pvar])
+                            # Check if process is in current process list, create if not
+                            if process not in self.processinformation.keys():
+                                self.processinformation[process] = {}
+                            # Check for the delete process flag
+                            if self.webdata[process]['Delete_This_Process'] == 'True':
+                                del self.processinformation[process]
+                                self.webdata[process]['terminate'] = 'True'
+                                print('delete process initiated')
+                            else:
+                                # Update variables for the process from the webdata while excluding the output variables
+                                for pvar in self.webdata[process].keys():
+                                    # Delete setpoints not used
+                                    setpointdelete = []
+                                    if pvar == 'setpoint':
+                                        for datetime, temp in self.webdata[process][pvar].items():
+                                            if temp == 'delete':
+                                                setpointdelete.append(datetime)
+                                        for timestamp in setpointdelete:
+                                            print('deleting %s' % timestamp)
+                                            del self.webdata[process][pvar][timestamp]
+                                            # Delete from processinformation aswell
+                                            try:
+                                                del self.processinformation[process][pvar][timestamp]
+                                            except:
+                                                pass
+                                    if pvar not in self.outputlist:
+                                        if type(self.webdata[process][pvar]) == dict:
+                                            if pvar not in self.processinformation[process].keys():
+                                                self.processinformation[process][pvar] = {}
+                                            for key in self.webdata[process][pvar].keys():
+                                                # Ensure variables are formatted as str or float
+                                                if pvar in self.textlist:
+                                                    self.processinformation[process][pvar][key] = str(self.webdata[process][pvar][key])
+                                                else:
+                                                    self.processinformation[process][pvar][key] = float(self.webdata[process][pvar][key])
+                                                    self.webdata[process][pvar][key] = self.processinformation[process][pvar][key]
                                         else:
-                                            self.processinformation[process][pvar] = float(self.webdata[process][pvar])
-                                            self.webdata[process][pvar] = self.processinformation[process][pvar]
+                                            if pvar in self.textlist:
+                                                self.processinformation[process][pvar] = str(self.webdata[process][pvar])
+                                            else:
+                                                self.processinformation[process][pvar] = float(self.webdata[process][pvar])
+                                                self.webdata[process][pvar] = self.processinformation[process][pvar]
                     print('Updating config file')
                     # Update the config file
                     self.counter = 0
@@ -386,6 +405,10 @@ class BrewManager(multiprocessing.Process):
                 os.remove('newvar.yaml')
             except FileNotFoundError:
                 pass
+
+            # Check for stop condition
+            if self.stop == True:
+                break
 
             #print('7')
             # Write to config.yaml every 3600 iterations
