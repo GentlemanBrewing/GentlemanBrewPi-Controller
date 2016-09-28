@@ -12,8 +12,9 @@ import sqlite3
 # PID Controller class
 class PIDController(multiprocessing.Process):
 
-    def __init__(self, inputqueue, outputqueue):
+    def __init__(self, inputqueue, outputqueue, name):
         multiprocessing.Process.__init__(self)
+        print('%s PID Started' % name)
         self.safetytrigger = False
 
         # Use correct communication queues
@@ -88,6 +89,7 @@ class PIDController(multiprocessing.Process):
         }
 
         # Initialize required variables
+        self.name = name
         self.setpoint = 0
         self.setpointchanges = 2
         self.output = 0
@@ -287,6 +289,7 @@ class PIDController(multiprocessing.Process):
 
             # Check terminate variable
             if self.variabledict['terminate'] == 'True':
+                self.outputdict['Status'] = 'PID Controller Terminating'
                 break
 
             # Update Variables
@@ -331,7 +334,10 @@ class PIDController(multiprocessing.Process):
 
             # check for manual mode
             if self.variabledict['moutput'] != "auto":
+                self.outputdict['Status'] = 'Manual Mode Active'
                 u = float(self.variabledict['moutput'])
+            else:
+                self.outputdict['Status'] = 'PID Control Active'
 
             # clamp output to between min and max values
             if u > self.variabledict['umax']:
@@ -422,4 +428,4 @@ class PIDController(multiprocessing.Process):
 
         # Ensure GPIO is cleaned up before exiting loop
         GPIO.cleanup()
-        print('PID Controller exiting')
+        print('%s exiting' % self.name)

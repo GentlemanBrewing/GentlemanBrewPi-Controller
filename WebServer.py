@@ -16,9 +16,10 @@ class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self):
         self.set_nodelay(True)
         print('new connection')
-        WSHandler.waiters.add(self)
         self.write_message(QueueMonitor.processJSON)
         self.write_message(QueueMonitor.processtemplateJSON)
+        time.sleep(2)
+        WSHandler.waiters.add(self)
 
     def on_message(self, message):
         QueueMonitor.updatequeues(message)
@@ -66,6 +67,7 @@ class QueueMonitor(threading.Thread):
 
     def __init__(self, inputqueue, outputqueue):
         threading.Thread.__init__(self)
+        print('Queuemonitor started')
         QueueMonitor.runninginstances.add(self)
         QueueMonitor.processtemplate = self.loadconfig('Template.yaml')
         QueueMonitor.processtemplateJSON = json.dumps(QueueMonitor.processtemplate, sort_keys=True)
@@ -103,8 +105,6 @@ class QueueMonitor(threading.Thread):
             instance.sendtomanager(data)
 
     def run(self):
-
-        print('queuemonitor started')
         # Check for new data from main process
         while True:
             while True:
@@ -155,8 +155,9 @@ def main(inputqueue, outputqueue):
     #time.sleep(10) # Ensure Queuemonitor has time to initialize before starting tornado
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8000)
+    print('Tornado started')
     tornado.ioloop.IOLoop.instance().start()
-    print('webserver started')
+    print('Tornado Exiting')
 
 if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(application)
