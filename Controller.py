@@ -14,7 +14,7 @@ class PIDController(multiprocessing.Process):
 
     def __init__(self, inputqueue, outputqueue, name):
         multiprocessing.Process.__init__(self)
-        print('%s Controller Started' % name)
+        print('%s PID Started' % name)
         self.safetytrigger = False
 
         # Use correct communication queues
