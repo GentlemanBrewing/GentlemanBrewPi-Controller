@@ -336,9 +336,11 @@ class BrewManager(multiprocessing.Process):
                         # Check if message is for BrewManager
                         if process == 'BrewManager':
                             if self.webdata[process]['Restart'] == 'True':
+                                print('Restart System')
                                 os.system('sudo shutdown -r 1')
                                 self.webdata[process]['Terminate'] = 'True'
                             if self.webdata[process]['Terminate'] == 'True':
+                                print('Exit BrewManager')
                                 deletelist = []
                                 for process in self.processdata.keys():
                                     self.webdata[process]={}
@@ -346,12 +348,14 @@ class BrewManager(multiprocessing.Process):
                                     deletelist.append(process)
                                 self.stop = True
                                 break
-                            elif self.webdata[process]['PIDReload'] == 'True':
+                            if self.webdata[process]['PIDReload'] == 'True':
+                                print('Restart PIDs')
                                 deletelist = []
                                 for process in self.processdata.keys():
-                                    self.webdata[process]={}
-                                    self.webdata[process]['terminate'] = 'True'
-                                    deletelist.append(process)
+                                    if process not in self.nonpidlist:
+                                        self.webdata[process]={}
+                                        self.webdata[process]['terminate'] = 'True'
+                                        deletelist.append(process)
                                 for process in deletelist:
                                     del self.processdata[process]
                                 break

@@ -435,8 +435,8 @@ function doManage(command) {
         <!--todo Create tab for managing the BrewManager
         -->
         <button class="BrewManagerButton" onclick="doManage('Restart')">Reboot Pi</button>
-        <button class="BrewManagerButton" onclick="doExit()">Exit BrewManager</button>
-        <button class="BrewManagerButton" onclick="doRestart()">Restart PID Processes</button>
+        <button class="BrewManagerButton" onclick="doManage('Terminate')">Exit BrewManager</button>
+        <button class="BrewManagerButton" onclick="doManage('PIDReload')">Restart PID Processes</button>
     </div>
 
 </div>
