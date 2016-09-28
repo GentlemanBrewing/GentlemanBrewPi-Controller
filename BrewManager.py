@@ -20,13 +20,14 @@ class Buzzer(multiprocessing.Process):
 
     def __init__(self, inputqueue):
         multiprocessing.Process.__init__(self)
+        print('Buzzer Started')
         self.inputqueue = inputqueue
         self.variabledict = {
             'frequency': 2000,
             'duty': 50,
             'duration': 1,
             'pin': 12,
-            'terminate': 1
+            'terminate': False
         }
         #GPIO.setmode(GPIO.BCM)
 
@@ -53,14 +54,20 @@ class Buzzer(multiprocessing.Process):
                 self.variabledict['duration'] = 0
                 #GPIO.cleanup()
 
+            if self.variabledict['terminate'] == True:
+                print('Buzzer Exiting')
+                break
+
             time.sleep(1)
 
+        GPIO.cleanup()
 
 # todo class for reading channel data
 class ADCReader(multiprocessing.Process):
 
     def __init__(self, inputqueue, outputqueue):
         multiprocessing.Process.__init__(self)
+        print('ADC Reader Started')
 
         # Use correct communication queues
         self.inputqueue = inputqueue
@@ -119,6 +126,7 @@ class WriteToDatabase(multiprocessing.Process):
 
     def __init__(self, inputqueue, outputqueue):
         multiprocessing.Process.__init__(self)
+        print('DB Server Started')
 
         # Use correct communication queues
         self.inputqueue = inputqueue
@@ -127,6 +135,7 @@ class WriteToDatabase(multiprocessing.Process):
         #initialize variables
         self.databaselist = []
         self.lastsleeptime = 0
+        self.exit = False
 
     def write_to_database(self):
         conn = sqlite3.connect('Log.db')
@@ -148,13 +157,24 @@ class WriteToDatabase(multiprocessing.Process):
             try:
                 while True:
                     updated_variables = self.inputqueue.get_nowait()
-                    self.databaselist.append(updated_variables)
+                    if 'terminate' in updated_variables:
+                        if updated_variables['terminate'] == 'True':
+                            self.exit = True
+                    else:
+                        self.databaselist.append(updated_variables)
             except queue.Empty:
                 pass
+
 
             # Check length of list to write
             if len(self.databaselist) > 50:
                 self.write_to_database()
+
+            # Check to exit
+            if self.exit == True:
+                self.write_to_database()
+                print('DB Server Exiting')
+                break
 
             time.sleep(2)
 
@@ -173,6 +193,7 @@ class BrewManager(multiprocessing.Process):
 
     def __init__(self):
         multiprocessing.Process.__init__(self)
+        print('BrewManager Started')
         self.counter = 0
         self.processinformation = self.loadconfig('Config.yaml')
         self.textlist = ['safety_mode', 'moutput', 'ssrmode', 'relaypin', 'terminate', 'autotune_on', 'Delete_This_Process']
@@ -208,8 +229,6 @@ class BrewManager(multiprocessing.Process):
         f.close()
         return datamap
 
-
-  
     # Function for updating config file
     def writeconfig(self, data):
         f = open('Config.yaml', "w")
@@ -268,7 +287,7 @@ class BrewManager(multiprocessing.Process):
                     self.processdata[process]['outputqueue'] = multiprocessing.Queue()
                     self.processdata[process]['inputqueue'].put(pvariables)
                     Controller.PIDController(self.processdata[process]['inputqueue'],
-                                             self.processdata[process]['outputqueue']).start()
+                                             self.processdata[process]['outputqueue'], process).start()
                     print('%s started - BrewMan' % process)
                     self.buzzer(2000, 1)
 
@@ -316,13 +335,16 @@ class BrewManager(multiprocessing.Process):
                     print('Data collected from webqueue - BrewManager')
                     for process in self.webdata.keys():
                         # Check if message is for BrewManager
-                        if process == BrewManager:
+                        if process == 'BrewManager':
                             if self.webdata[process]['Restart'] == 'True':
-                                os.system('sudo reboot')
-                            elif self.webdata[process]['Terminate'] == 'True':
+                                os.system('sudo shutdown -r 1')
+                                self.webdata[process]['Terminate'] = 'True'
+                            if self.webdata[process]['Terminate'] == 'True':
+                                deletelist = []
                                 for process in self.processdata.keys():
                                     self.webdata[process]={}
                                     self.webdata[process]['terminate'] = 'True'
+                                    deletelist.append(process)
                                 self.stop = True
                                 break
                             elif self.webdata[process]['PIDReload'] == 'True':
@@ -416,11 +438,11 @@ class BrewManager(multiprocessing.Process):
 
             #print('7')
             # Write to config.yaml every 3600 iterations
-            if self.counter < 3600:
-                self.counter += 1
-            else:
-                self.counter = 0
-                self.writeconfig(self.processinformation)
+            # if self.counter < 3600:
+            #     self.counter += 1
+            # else:
+            #     self.counter = 0
+            #     self.writeconfig(self.processinformation)
 
             # looptime = 2
             #
