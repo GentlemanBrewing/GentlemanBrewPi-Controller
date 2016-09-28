@@ -60,7 +60,6 @@ class Buzzer(multiprocessing.Process):
 
             time.sleep(1)
 
-        GPIO.cleanup()
 
 # todo class for reading channel data
 class ADCReader(multiprocessing.Process):
@@ -434,6 +433,8 @@ class BrewManager(multiprocessing.Process):
 
             # Check for stop condition
             if self.stop == True:
+                # Give 5 seconds for other processes to exit
+                time.sleep(5)
                 break
 
             #print('7')
