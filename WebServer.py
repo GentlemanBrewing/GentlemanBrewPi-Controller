@@ -17,7 +17,6 @@ class WSHandler(tornado.websocket.WebSocketHandler):
         self.set_nodelay(True)
         print('new connection')
         self.write_message(QueueMonitor.processJSON)
-        time.sleep(0.5)
         self.write_message(QueueMonitor.processtemplateJSON)
         time.sleep(2)
         WSHandler.waiters.add(self)
