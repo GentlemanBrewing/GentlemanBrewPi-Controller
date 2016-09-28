@@ -336,11 +336,11 @@ class BrewManager(multiprocessing.Process):
                         # Check if message is for BrewManager
                         if process == 'BrewManager':
                             if self.webdata[process]['Shutdown'] == 'True':
-                                print('Restart System')
+                                print('Shutdown the System')
                                 os.system('sudo shutdown -h 1')
                                 self.webdata[process]['Terminate'] = 'True'
                             if self.webdata[process]['Restart'] == 'True':
-                                print('Restart System')
+                                print('Restart the System')
                                 os.system('sudo shutdown -r 1')
                                 self.webdata[process]['Terminate'] = 'True'
                             if self.webdata[process]['Terminate'] == 'True':

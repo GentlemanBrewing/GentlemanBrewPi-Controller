@@ -155,8 +155,9 @@ def main(inputqueue, outputqueue):
     #time.sleep(10) # Ensure Queuemonitor has time to initialize before starting tornado
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8000)
-    print('Webserver started')
+    print('Tornado started')
     tornado.ioloop.IOLoop.instance().start()
+    print('Tornado Exiting')
 
 if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(application)
