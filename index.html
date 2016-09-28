@@ -344,7 +344,11 @@ function opensubTab(evt, subtabName) {
 // Function for sending BrewManager specific commands
 
 function doReboot() {
-    alert('Hey')
+    rebootdict = {}
+    rebootdict[BrewManager] = {}
+    rebootdict[BrewManager][Restart] = "True"
+    json = JSON.stringify(rebootdict)
+    doSend(json)
 }
 
 </script>
