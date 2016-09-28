@@ -362,6 +362,7 @@ class BrewManager(multiprocessing.Process):
                                         deletelist.append(process)
                                 for process in deletelist:
                                     del self.processdata[process]
+                                time.sleep(5)
                                 break
 
                         else:
