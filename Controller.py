@@ -322,7 +322,6 @@ class PIDController(multiprocessing.Process):
 
             # Check if setpoint is active and calculate control output if it is
             if self.setpoint != "off":
-                self.outputdict['Status'] = 'PID Control Active'
                 # Update error variables
                 e2 = e1
                 e1 = e
@@ -337,6 +336,8 @@ class PIDController(multiprocessing.Process):
             if self.variabledict['moutput'] != "auto":
                 self.outputdict['Status'] = 'Manual Mode Active'
                 u = float(self.variabledict['moutput'])
+            else:
+                self.outputdict['Status'] = 'PID Control Active'
 
             # clamp output to between min and max values
             if u > self.variabledict['umax']:
