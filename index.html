@@ -345,8 +345,8 @@ function opensubTab(evt, subtabName) {
 
 function doReboot() {
     rebootdict = {}
-    rebootdict[BrewManager] = {}
-    rebootdict[BrewManager][Restart] = "True"
+    rebootdict['BrewManager'] = {}
+    rebootdict['BrewManager']['Restart'] = "True"
     json = JSON.stringify(rebootdict)
     doSend(json)
 }
