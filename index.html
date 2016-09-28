@@ -341,11 +341,12 @@ function opensubTab(evt, subtabName) {
 </script>
 <script id="BrewManagerSend" language="JavaScript" type="text/javascript">
 
-    // Function for sending BrewManager specific commands
-    function doReboot() {
-        json = {"BrewManager":"{"Restart":"True"}"}
-        doSend(json)
-    }
+// Function for sending BrewManager specific commands
+
+function doReboot() {
+    json = {"BrewManager":"{"Restart":"True"}"}
+    doSend(json)
+}
 
 
 </script>
@@ -431,7 +432,7 @@ function opensubTab(evt, subtabName) {
         <h3>Page under construction</h3>
         <!--todo Create tab for managing the BrewManager
         -->
-        <button class="BrewManagerButton" onclick="doReboot()">Reboot Pi</button>
+        <button class="BrewManagerButton" onclick="doReboot('haha')">Reboot Pi</button>
         <button class="BrewManagerButton" onclick="doExit()">Exit BrewManager</button>
         <button class="BrewManagerButton" onclick="doRestart()">Restart PID Processes</button>
     </div>
