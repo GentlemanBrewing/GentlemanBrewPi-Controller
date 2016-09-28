@@ -289,6 +289,7 @@ class PIDController(multiprocessing.Process):
 
             # Check terminate variable
             if self.variabledict['terminate'] == 'True':
+                self.outputdict['Status'] = 'PID Controller Terminating'
                 break
 
             # Update Variables
@@ -321,6 +322,7 @@ class PIDController(multiprocessing.Process):
 
             # Check if setpoint is active and calculate control output if it is
             if self.setpoint != "off":
+                self.outputdict['Status'] = 'PID Control Active'
                 # Update error variables
                 e2 = e1
                 e1 = e
@@ -333,6 +335,7 @@ class PIDController(multiprocessing.Process):
 
             # check for manual mode
             if self.variabledict['moutput'] != "auto":
+                self.outputdict['Status'] = 'Manual Mode Active'
                 u = float(self.variabledict['moutput'])
 
             # clamp output to between min and max values
