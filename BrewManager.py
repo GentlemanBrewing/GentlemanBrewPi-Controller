@@ -345,11 +345,9 @@ class BrewManager(multiprocessing.Process):
                                 self.webdata[process]['Terminate'] = 'True'
                             if self.webdata[process]['Terminate'] == 'True':
                                 print('Exit BrewManager')
-                                deletelist = []
                                 for process in self.processdata.keys():
                                     self.webdata[process]={}
                                     self.webdata[process]['terminate'] = 'True'
-                                    deletelist.append(process)
                                 self.stop = True
                                 break
                             if self.webdata[process]['PIDReload'] == 'True':
@@ -359,6 +357,8 @@ class BrewManager(multiprocessing.Process):
                                     if process not in self.nonpidlist:
                                         self.webdata[process]={}
                                         self.webdata[process]['terminate'] = 'True'
+                                        variables = self.webdata[process]
+                                        self.processdata[process]['inputqueue'].put(variables)
                                         deletelist.append(process)
                                 for process in deletelist:
                                     del self.processdata[process]
