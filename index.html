@@ -343,10 +343,10 @@ function opensubTab(evt, subtabName) {
 
 // Function for sending BrewManager specific commands
 
-function doReboot() {
+function doManage(command) {
     rebootdict = {}
     rebootdict['BrewManager'] = {}
-    rebootdict['BrewManager']['Restart'] = "True"
+    rebootdict['BrewManager'][command] = "True"
     json = JSON.stringify(rebootdict)
     doSend(json)
 }
@@ -434,7 +434,7 @@ function doReboot() {
         <h3>Page under construction</h3>
         <!--todo Create tab for managing the BrewManager
         -->
-        <button class="BrewManagerButton" onclick="doReboot('haha')">Reboot Pi</button>
+        <button class="BrewManagerButton" onclick="doManage('Restart')">Reboot Pi</button>
         <button class="BrewManagerButton" onclick="doExit()">Exit BrewManager</button>
         <button class="BrewManagerButton" onclick="doRestart()">Restart PID Processes</button>
     </div>

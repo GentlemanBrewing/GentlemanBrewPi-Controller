@@ -54,7 +54,7 @@ class Buzzer(multiprocessing.Process):
                 self.variabledict['duration'] = 0
                 #GPIO.cleanup()
 
-            if self.variabledict['terminate'] == True:
+            if self.variabledict['terminate'] == 'True':
                 print('Buzzer Exiting')
                 break
 
