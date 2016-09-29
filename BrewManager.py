@@ -349,15 +349,15 @@ class BrewManager(multiprocessing.Process):
                     for process in self.webdata.keys():
                         # Check if message is for BrewManager
                         if process == 'BrewManager':
-                            if self.webdata[process]['Shutdown'] == 'True':
+                            if self.webdata['BrewManager']['Shutdown'] == 'True':
                                 print('Shutdown the System')
                                 os.system('sudo shutdown -h 1')
-                                self.webdata[process]['Terminate'] = 'True'
-                            if self.webdata[process]['Restart'] == 'True':
+                                self.webdata['BrewManager']['Terminate'] = 'True'
+                            if self.webdata['BrewManager']['Restart'] == 'True':
                                 print('Restart the System')
                                 os.system('sudo shutdown -r 1')
-                                self.webdata[process]['Terminate'] = 'True'
-                            if self.webdata[process]['Terminate'] == 'True':
+                                self.webdata['BrewManager']['Terminate'] = 'True'
+                            if self.webdata['BrewManager']['Terminate'] == 'True':
                                 print('Exit BrewManager')
                                 for process in self.processdata.keys():
                                     self.webdata[process]={}
@@ -435,6 +435,7 @@ class BrewManager(multiprocessing.Process):
                 if processname in self.processdata.keys():
                     self.processdata[processname]['inputqueue'].put(variables)
                     print('Data in %s inputqueue - BrewManager' % processname)
+                    print(variables)
                     if variables['terminate'] == 'True':
                         del self.processdata[processname]
                         print('deleted process data of %s' % processname)
