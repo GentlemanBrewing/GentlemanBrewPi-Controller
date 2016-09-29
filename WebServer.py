@@ -107,6 +107,9 @@ class QueueMonitor(threading.Thread):
                 try:
                     deletelist = []
                     self.newinput = self.inputqueue.get_nowait()
+                    # Check for terminate flag
+
+
                     # Delete processes no longer running
                     for process in self.processdata.keys():
                         if process not in self.newinput:
@@ -114,6 +117,7 @@ class QueueMonitor(threading.Thread):
                     for process in deletelist:
                         del self.processdata[process]
 
+                    # Update the information of the processes
                     for process in self.newinput.keys():
                         # If process is not in dictionary create process add whole process to difference dictionary
                         if process not in self.processdata:
