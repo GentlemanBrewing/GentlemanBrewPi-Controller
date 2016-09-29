@@ -307,6 +307,7 @@ class PIDController(multiprocessing.Process):
 
             # Check for autotune
             if self.variabledict['autotune_on'] == 'True':
+                print('autotune')
                 self.autotune()
 
             # Update control parameters
