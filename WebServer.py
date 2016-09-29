@@ -66,7 +66,7 @@ class QueueMonitor(threading.Thread):
         QueueMonitor.runninginstances.add(self)
         QueueMonitor.processtemplate = self.loadconfig('Template.yaml')
         QueueMonitor.processtemplateJSON = json.dumps(QueueMonitor.processtemplate, sort_keys=True)
-        self.exit = e
+        self.exitevent = e
         self.inputqueue = inputqueue
         self.outputqueue = outputqueue
         self.newinput = {}
@@ -75,6 +75,7 @@ class QueueMonitor(threading.Thread):
         self.inputdifference = {}
         self.jsoninputdifference = ""
         self.iterations = 0
+        self.exit = False
 
     # Function for loading config file
     def loadconfig(self, filename):
@@ -108,7 +109,10 @@ class QueueMonitor(threading.Thread):
                     deletelist = []
                     self.newinput = self.inputqueue.get_nowait()
                     # Check for terminate flag
-
+                    if 'terminate' in self.newinput:
+                        if self.newinput['terminate'] == True:
+                            self.exit = True
+                            break
 
                     # Delete processes no longer running
                     for process in self.processdata.keys():
@@ -148,11 +152,13 @@ class QueueMonitor(threading.Thread):
             self.iterations += 1
 
             # Check for Quit event
-
-            #self.exit.set()
+            if self.exit == True:
+                self.exitevent.set()
+                break
 
             time.sleep(1)
 
+        print('Queuemonitor Exiting')
 
 application = tornado.web.Application([
     (r'/ws', WSHandler),
