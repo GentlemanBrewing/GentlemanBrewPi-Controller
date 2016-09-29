@@ -348,6 +348,7 @@ function doManage(command) {
     rebootdict['BrewManager'] = {Shutdown:'False',Restart:'False',Terminate:'False',PIDReload:'False'}
     rebootdict['BrewManager'][command] = "True"
     json = JSON.stringify(rebootdict)
+    alert('Please wait while command executes')
     doSend(json)
 }
 
