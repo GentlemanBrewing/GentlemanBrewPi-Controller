@@ -84,6 +84,7 @@ class ADCReader(multiprocessing.Process):
             8: 0
         }
         self.sleeptime = 1
+        self.exit = False
         self.bitrate = 18
         self.addr1 = 0x68
         self.addr2 = 0x69
