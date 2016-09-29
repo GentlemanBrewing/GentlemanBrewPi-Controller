@@ -376,6 +376,7 @@ class BrewManager(multiprocessing.Process):
                                         deletelist.append(process)
                                 for process in deletelist:
                                     del self.processdata[process]
+                                    print('deleted process data of %s' % process)
                                 time.sleep(5)
                                 break
 
@@ -435,7 +436,6 @@ class BrewManager(multiprocessing.Process):
                 if processname in self.processdata.keys():
                     self.processdata[processname]['inputqueue'].put(variables)
                     print('Data in %s inputqueue - BrewManager' % processname)
-                    print(variables)
                     if variables['terminate'] == 'True':
                         del self.processdata[processname]
                         print('deleted process data of %s' % processname)

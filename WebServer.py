@@ -108,7 +108,6 @@ class QueueMonitor(threading.Thread):
                 try:
                     deletelist = []
                     self.newinput = self.inputqueue.get_nowait()
-                    #print(self.newinput)
                     # Check for terminate flag
                     if 'terminate' in self.newinput:
                         if self.newinput['terminate'] == 'True':
