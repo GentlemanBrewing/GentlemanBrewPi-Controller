@@ -290,6 +290,7 @@ class PIDController(multiprocessing.Process):
             # Check terminate variable
             if self.variabledict['terminate'] == 'True':
                 self.outputdict['Status'] = 'PID Controller Terminating'
+                self.outputqueue.put(self.outputdict)
                 break
 
             # Update Variables
