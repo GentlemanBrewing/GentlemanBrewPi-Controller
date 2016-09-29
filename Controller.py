@@ -337,6 +337,7 @@ class PIDController(multiprocessing.Process):
                 #self.outputdict['Status'] = 'Manual Mode Active'
                 u = float(self.variabledict['moutput'])
             else:
+                print(self.variabledict['moutput'])
                 print('On PID Control')
                 #self.outputdict['Status'] = 'PID Control Active'
 
