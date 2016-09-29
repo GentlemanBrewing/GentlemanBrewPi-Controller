@@ -307,8 +307,9 @@ class PIDController(multiprocessing.Process):
 
             # Check for autotune
             if self.variabledict['autotune_on'] == 'True':
-                print('autotune')
                 self.autotune()
+            else:
+                self.variabledict['autotune_iterations'] = 0
 
             # Update control parameters
             k1 = self.variabledict['kp'] + self.variabledict['ki'] + self.variabledict['kd']
@@ -336,11 +337,12 @@ class PIDController(multiprocessing.Process):
 
             # check for manual mode
             if self.variabledict['moutput'] != "auto":
-                self.outputdict['Status'] = 'Manual Mode Active'
+                if self.variabledict['autotune_on'] != 'True':
+                    self.outputdict['Status'] = 'Manual Mode Active'
                 u = float(self.variabledict['moutput'])
             else:
-                print(self.variabledict['moutput'])
-                print('On PID Control')
+                #print(self.variabledict['moutput'])
+                #print('On PID Control')
                 self.outputdict['Status'] = 'PID Control Active'
 
             # clamp output to between min and max values
