@@ -149,7 +149,7 @@ class QueueMonitor(threading.Thread):
 
             # Check for Quit event
 
-            self.exit.Set()
+            #self.exit.set()
 
             time.sleep(1)
 
