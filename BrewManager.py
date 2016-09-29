@@ -118,6 +118,19 @@ class ADCReader(multiprocessing.Process):
             except:
                 pass
 
+            # Check for exit flag
+            try:
+                while True:
+                    updated_variables = self.inputqueue.get_nowait()
+                    if 'terminate' in updated_variables:
+                        if updated_variables['terminate'] == 'True':
+                            self.exit = True
+            except queue.Empty:
+                pass
+
+            if self.exit == True:
+                print('ADC Reader Exiting')
+                break
 
 
 # Class for writing to Database

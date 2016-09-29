@@ -48,15 +48,10 @@ class IndexHandler(tornado.web.RequestHandler):
         processtemplate = QueueMonitor.processtemplate
         counter = 0
 
-
         self.render("index.html", pdict=processdict, outputlist=outputlist, dictionarylist=dictionarylist, counter=counter, ptemp=processtemplate )
         print("new web page opened")
 
 
-application = tornado.web.Application([
-    (r'/ws', WSHandler),
-    (r'/', IndexHandler),
-])
 class QueueMonitor(threading.Thread):
 
     processdictionary = {}
@@ -65,12 +60,13 @@ class QueueMonitor(threading.Thread):
     processJSON = ""
     runninginstances = set()
 
-    def __init__(self, inputqueue, outputqueue):
+    def __init__(self, inputqueue, outputqueue, e):
         threading.Thread.__init__(self)
         print('Queuemonitor started')
         QueueMonitor.runninginstances.add(self)
         QueueMonitor.processtemplate = self.loadconfig('Template.yaml')
         QueueMonitor.processtemplateJSON = json.dumps(QueueMonitor.processtemplate, sort_keys=True)
+        self.exit = e
         self.inputqueue = inputqueue
         self.outputqueue = outputqueue
         self.newinput = {}
@@ -147,17 +143,39 @@ class QueueMonitor(threading.Thread):
                 self.iterations = 0
             self.iterations += 1
 
+            # Check for Quit event
+
+            self.exit.Set()
+
             time.sleep(1)
 
-def main(inputqueue, outputqueue):
 
-    QueueMonitor(inputqueue, outputqueue).start()
-    #time.sleep(10) # Ensure Queuemonitor has time to initialize before starting tornado
+application = tornado.web.Application([
+    (r'/ws', WSHandler),
+    (r'/', IndexHandler),
+])
+
+def start_tornado():
     http_server = tornado.httpserver.HTTPServer(application)
     http_server.listen(8000)
     print('Tornado started')
     tornado.ioloop.IOLoop.instance().start()
     print('Tornado Exiting')
+
+def stop_tornado():
+    ioloop = tornado.ioloop.IOLoop.instance()
+    ioloop.add_callback(ioloop.stop)
+    print('Asked Tornado to exit')
+
+def main(inputqueue, outputqueue):
+    e = threading.Event()
+    QueueMonitor(inputqueue, outputqueue, e).start()
+    #time.sleep(10) # Ensure Queuemonitor has time to initialize before starting tornado
+    t=threading.Thread(target=start_tornado)
+    t.start()
+    e.wait()
+    stop_tornado()
+    time.sleep(4)
 
 if __name__ == "__main__":
     http_server = tornado.httpserver.HTTPServer(application)
