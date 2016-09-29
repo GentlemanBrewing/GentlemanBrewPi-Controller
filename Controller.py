@@ -284,6 +284,7 @@ class PIDController(multiprocessing.Process):
                     updated_variables = self.inputqueue.get_nowait()
                     for variable, value in updated_variables.items():
                         self.variabledict[variable] = value
+                    print(self.variabledict)
             except queue.Empty:
                 pass
 
